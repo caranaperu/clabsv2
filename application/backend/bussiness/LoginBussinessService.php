@@ -24,9 +24,9 @@ class LoginBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSer
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como UsuariosModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosModel();
         return $model;
     }
@@ -34,18 +34,18 @@ class LoginBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSer
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como UsuariosModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosModel();
         return $model;
     }
 
     /**
      *
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como UsuariosModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new UsuariosModel();
         return $model;
     }
@@ -55,11 +55,10 @@ class LoginBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSer
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosModel();
         return $model;
     }
 
 }
 
-?>

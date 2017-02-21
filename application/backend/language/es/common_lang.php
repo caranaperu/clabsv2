@@ -7,4 +7,3 @@ $lang['validateURL'] = 'La direccion web es incorrecta (se ha indicado el protoc
 $lang['greater_than_field'] = 'El campo %s no puede ser menor al campo %s.';
 $lang['less_than_field'] = 'El campo %s no puede ser mayor al campo %s.';
 $lang['isFuture_date'] = ' %s no puede ser una fecha menor a %s.';
-?>

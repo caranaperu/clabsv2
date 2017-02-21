@@ -60,4 +60,3 @@ $config['v_moneda'] = array(
         )
     )
 );
-?>

@@ -11,4 +11,3 @@ $lang['msg_regiones_rec_inactivo'] = 'La region ya existe , pero esta inactiva';
 $lang['regiones_codigo'] = 'Codigo de Region';
 $lang['regiones_descripcion'] = 'Descripcion';
 $lang['versionId'] = 'Version';
-?>

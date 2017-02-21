@@ -23,7 +23,7 @@ class ProductoController extends app\common\controller\TSLAppDefaultCRUDControll
     /**
      * {@inheritDoc}
      */
-    protected function setupData() {
+    protected function setupData() : void {
 
         $this->setupOpts = [
             "validateOptions" => [
@@ -50,7 +50,7 @@ class ProductoController extends app\common\controller\TSLAppDefaultCRUDControll
     /**
      * {@inheritDoc}
      */
-    protected function getBussinessService() {
+    protected function getBussinessService() : \app\common\bussiness\TSLAppCRUDBussinessService {
         return new ProductoBussinessService();
     }
 }

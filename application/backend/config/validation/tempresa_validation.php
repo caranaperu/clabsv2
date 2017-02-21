@@ -50,4 +50,3 @@ $config['vtipo_empresa'] = array(
         )
     )
 );
-?>

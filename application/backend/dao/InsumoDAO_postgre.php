@@ -24,18 +24,17 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @{inheritdoc}
-     * @see TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'select * from ( select sp_insumo_delete_record(' . $id . ',null,' . $versionId . ')  as updins) as ans where updins is not null';
 
     }
 
     /**
-     * @see TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         /* @var $record  InsumoModel  */
         return 'insert into tb_insumo (empresa_id,insumo_tipo,insumo_codigo,insumo_descripcion,tinsumo_codigo,tcostos_codigo,unidad_medida_codigo_ingreso,'.
                 'unidad_medida_codigo_costo,insumo_merma,insumo_costo,insumo_precio_mercado,moneda_codigo_costo,activo,usuario) values(' .
@@ -54,14 +53,12 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         $record->getActivo() . '\',\'' .
         $record->getUsuario() . '\')';
 
-        return $sql;
     }
 
     /**
-     * @{inheritdoc}
-     * @see TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si se esta solicitando la lista de insumos/productos para los posibles valores a
         // seleccionar para un nuevo item extraemos a que producto principal pertenece.
         // Si este valor existe sera usado para filtrar.
@@ -163,10 +160,11 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
                 // Chequeamos paginacion
                 $startRow = $constraints->getStartRow();
                 $endRow = $constraints->getEndRow();
-            }
 
-            if ($endRow > $startRow) {
-                $sql .= ' LIMIT '.($endRow - $startRow).' OFFSET '.$startRow;
+                if ($endRow > $startRow) {
+                    $sql .= ' LIMIT '.($endRow - $startRow).' OFFSET '.$startRow;
+                }
+
             }
 
 
@@ -177,17 +175,17 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints , $subOperation);
     }
 
     /**
-     * @see TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         if ($subOperation == 'readAfterSaveJoined' || $subOperation == 'readAfterUpdateJoined') {
             $sql = $this->_getFecthNormalized();
             $sql .= ' where insumo_id =  \'' . $code . '\'';
@@ -201,9 +199,9 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
 
     /**
      * Aqui el id es el codigo
-     * @see TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record  InsumoModel  */
 
         return 'update tb_insumo set empresa_id='.$record->get_empresa_id().','.
@@ -239,10 +237,8 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL)
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string
     {
         return 'SELECT currval(\'tb_insumo_insumo_id_seq\')';
     }
 }
-
-?>

@@ -7,14 +7,13 @@ if (!defined('BASEPATH'))
  * Modelo  para definir las tipos de costos.
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: RegionesModel.php 268 2014-06-27 18:11:45Z aranape $
- * @history ''
+ * @history , 09-02-2017 , primera version adaptada a php 7.1 y correccion de
+ * set_tcostos_indirecto/get_tcostos_indirecto referenciaban incorrectamente al miembro
+ * tinsumo_indirecto el cual no es parte del modelo.
  *
- * $Date: 2014-06-27 13:11:45 -0500 (vie, 27 jun 2014) $
- * $Rev: 268 $
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
+class TipoCostosModel extends TSLDataModel {
 
     protected $tcostos_codigo;
     protected $tcostos_descripcion;
@@ -26,7 +25,7 @@ class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $tcostos_codigo codigo  unico del tipo de insumo
      */
-    public function set_tcostos_codigo($tcostos_codigo) {
+    public function set_tcostos_codigo(string $tcostos_codigo) : void {
         $this->tcostos_codigo = $tcostos_codigo;
         $this->setId($tcostos_codigo);
     }
@@ -34,7 +33,7 @@ class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
     /**
      * @return string retorna el codigo unico del tipo de insumo.
      */
-    public function get_tcostos_codigo() {
+    public function get_tcostos_codigo() : string {
         return $this->tcostos_codigo;
     }
 
@@ -43,7 +42,7 @@ class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $tcostos_descripcion nombre del tipo de insumo.
      */
-    public function set_tcostos_descripcion($tcostos_descripcion) {
+    public function set_tcostos_descripcion(string $tcostos_descripcion) : void {
         $this->tcostos_descripcion = $tcostos_descripcion;
     }
 
@@ -51,7 +50,7 @@ class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el nombre del tipo de insumo.
      */
-    public function get_tcostos_descripcion() {
+    public function get_tcostos_descripcion() : string {
         return $this->tcostos_descripcion;
     }
 
@@ -61,39 +60,45 @@ class TipoCostosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param boolean $tcostos_protected TRUE si el tipo de costos es protegido
      */
-    public function set_tcostos_protected($tcostos_protected) {
-        $this->tcostos_protected = $tcostos_protected;
+    public function set_tcostos_protected(bool $tcostos_protected) : void {
+        $this->tcostos_protected = self::getAsBool($tcostos_protected);
     }
 
     /**
      * @return boolean retorna si el tipo de costos es protegido
      */
-    public function get_tcostos_protected() {
+    public function get_tcostos_protected() : bool {
+        if (!isset($this->tcostos_protected)) {
+            return false;
+        }
+
         return $this->tcostos_protected;
     }
 
     /**
      * Setea si el tipo de costo es indirecto.
      *
-     * @param boolean $tinsumo_indirecto TRUE O FALSE.
+     * @param boolean $tcostos_indirecto TRUE O FALSE.
      */
-    public function set_tcostos_indirecto($tinsumo_indirecto) {
-        $this->tinsumo_indirecto = $tinsumo_indirecto;
+    public function set_tcostos_indirecto(bool $tcostos_indirecto) : void {
+        $this->tcostos_indirecto = self::getAsBool($tcostos_indirecto);
     }
 
     /**
      *
      * @return boolean indicando si el tipo de costo es indirecto o no.
      */
-    public function get_tcostos_indirecto() {
-        return $this->tinsumo_indirecto;
+    public function get_tcostos_indirecto() : bool {
+        if (!isset($this->tcostos_indirecto)) {
+            return false;
+        }
+
+        return $this->tcostos_indirecto;
     }
 
-    public function &getPKAsArray() {
+    public function &getPKAsArray(): array {
         $pk['tcostos_codigo'] = $this->getId();
         return $pk;
     }
 
 }
-
-?>

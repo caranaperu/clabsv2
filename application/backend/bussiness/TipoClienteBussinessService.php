@@ -25,9 +25,9 @@ class TipoClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussin
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoClienteModel
+     * @return \TSLDataModel especificamente como TipoClienteModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoClienteModel();
         // Leo el id enviado en el DTO
         $model->set_tipo_cliente_codigo($dto->getParameterValue('tipo_cliente_codigo'));
@@ -43,9 +43,9 @@ class TipoClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussin
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoClienteModel
+     * @return \TSLDataModel especificamente como TipoClienteModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoClienteModel();
         // Leo el id enviado en el DTO
         $model->set_tipo_cliente_codigo($dto->getParameterValue('tipo_cliente_codigo'));
@@ -60,9 +60,9 @@ class TipoClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussin
 
     /**
      *
-     * @return TipoClienteModel
+     * @return \TSLDataModel especificamente como TipoClienteModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new TipoClienteModel();
         return $model;
     }
@@ -72,7 +72,7 @@ class TipoClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussin
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoClienteModel();
         $model->set_tipo_cliente_codigo($dto->getParameterValue('tipo_cliente_codigo'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -82,5 +82,3 @@ class TipoClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussin
     }
 
 }
-
-?>

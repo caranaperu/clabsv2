@@ -21,4 +21,3 @@ $config['v_login'] = array(
         )
     )
 );
-?>

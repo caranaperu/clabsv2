@@ -19,5 +19,3 @@ $lang['records_id_origen'] = 'Identificador del registro origen';
 $lang['records_protected'] = 'De Proteccion de registro';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-
-?>

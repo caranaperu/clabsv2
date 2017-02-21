@@ -44,7 +44,7 @@ class SystemMenuController extends app\common\controller\TSLAppDefaultController
             $this->getConstraintProcessor()->process($_REQUEST, $constraints);
 
             $systemMenuService->executeService('list', $this->DTO);
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $outMessage = &$this->DTO->getOutMessage();
             // TODO: Internacionalizar.
             $processError = new TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);

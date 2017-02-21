@@ -27,19 +27,17 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId)
+    protected function getDeleteRecordQuery($id, int $versionId) : string
     {
         return 'DELETE FROM tb_reglas WHERE regla_id = ' . $id . '  AND xmin =' . $versionId;
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record)
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string
     {
         /* @var $record  ReglasModel */
 
@@ -55,10 +53,9 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL)
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string
     {
 
         if ($subOperation == 'fetchJoined') {
@@ -108,20 +105,18 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL)
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string
     {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation);
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,$subOperation = NULL)
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string
     {
         if ($subOperation == 'readAfterSaveJoined' || $subOperation == 'readAfterUpdateJoined') {
             $sql = $this->_getFecthNormalized();
@@ -135,10 +130,9 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
 
     /**
      *
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record)
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string
     {
 
         /* @var $record  ReglasModel */
@@ -163,7 +157,7 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL)
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string
     {
         return 'SELECT currval(\'tb_reglas_regla_id_seq\')';
     }

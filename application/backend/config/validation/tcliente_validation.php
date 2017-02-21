@@ -50,4 +50,3 @@ $config['vtipo_cliente'] = array(
         )
     )
 );
-?>

@@ -25,43 +25,45 @@ class TipoInsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @{inheritdoc}
-     * @see TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_tinsumo where tinsumo_codigo = \'' . $id . '\'  and xmin =' . $versionId;
     }
 
     /**
-     * @see TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         /* @var $record  TipoInsumoModel  */
         return 'insert into tb_tinsumo (tinsumo_codigo,tinsumo_descripcion,tinsumo_protected,'
         . 'activo,usuario) values(\'' .
         $record->get_tinsumo_codigo() . '\',\'' .
-        $record->get_tinsumo_descripcion() . '\',\'' .
-        $record->get_tinsumo_protected() . '\',\'' .
+        $record->get_tinsumo_descripcion() . '\',' .
+        ($record->get_tinsumo_protected() != TRUE ? '0' : '1') . '::boolean,\'' .
         $record->getActivo() . '\',\'' .
         $record->getUsuario() . '\')';
     }
 
     /**
-     * @{inheritdoc}
-     * @see TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si la busqueda permite buscar solo activos e inactivos
-        $sql = 'select tinsumo_codigo,tinsumo_descripcion,tinsumo_protected,activo,xmin as "versionId" from  tb_tinsumo where tinsumo_protected = FALSE ';
+        $sql = 'select tinsumo_codigo,tinsumo_descripcion,tinsumo_protected,activo,xmin as "versionId" from  tb_tinsumo ';
 
         if ($this->activeSearchOnly == TRUE) {
             // Solo activos
-            $sql .= ' and "activo"=TRUE ';
+            $sql .= ' where "activo"=TRUE ';
         }
 
         $where = $constraints->getFilterFieldsAsString();
         if (strlen($where) > 0) {
-            $sql .= ' and ' . $where;
+            if ($this->activeSearchOnly == TRUE) {
+                $sql .= ' and ' . $where;
+            } else {
+                $sql .= ' where ' . $where;
+            }
         }
 
         if (isset($constraints)) {
@@ -85,31 +87,31 @@ class TipoInsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @see TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation );
     }
 
     /**
-     * @see TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return 'select tinsumo_codigo,tinsumo_descripcion,tinsumo_protected,activo,' .
                 'xmin as "versionId" from tb_tinsumo where tinsumo_codigo =  \'' . $code . '\'';
     }
 
     /**
      * Aqui el id es el codigo
-     * @see TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record  TipoInsumoModel  */
 
         return 'update tb_tinsumo set tinsumo_codigo=\'' . $record->get_tinsumo_codigo() . '\','.
         'tinsumo_descripcion=\'' . $record->get_tinsumo_descripcion() . '\',' .
-        'tinsumo_protected=\'' . $record->get_tinsumo_protected() . '\',' .
+        'tinsumo_protected=\'' . ($record->get_tinsumo_protected() != TRUE ? '0' : '1') . '\',' .
         'activo=\'' . $record->getActivo() . '\',' .
         'usuario_mod=\'' . $record->get_Usuario_mod() . '\'' .
         ' where "tinsumo_codigo" = \'' . $record->get_tinsumo_codigo() . '\'  and xmin =' . $record->getVersionId();
@@ -117,5 +119,3 @@ class TipoInsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
 }
-
-?>

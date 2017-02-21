@@ -83,3 +83,17 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+
+
+define('DB_OP_OK',0);
+define('DB_ERR_ALLOK',-100000);
+define('DB_ERR_SERVERNOTFOUND',-100001);
+define('DB_ERR_RECORDNOTFOUND',-100002);
+define('DB_ERR_RECORDNOTDELETED',-100003);
+define('DB_ERR_RECORDEXIST',-100004);
+define('DB_ERR_FOREIGNKEY',-100005);
+define('DB_ERR_CANTEXECUTE',-100006);
+define('DB_ERR_RECORD_MODIFIED',-100007);
+define('DB_ERR_RECORDINACTIVE',-100008);
+define('DB_ERR_DUPLICATEKEY',-100009);

@@ -24,7 +24,7 @@ class UsuariosPerfilController extends app\common\controller\TSLAppDefaultCRUDCo
    /**
      * {@inheritDoc}
      */
-    protected function setupData() {
+    protected function setupData() : void {
 
         $this->setupOpts = [
             "validateOptions" => [
@@ -50,7 +50,7 @@ class UsuariosPerfilController extends app\common\controller\TSLAppDefaultCRUDCo
     /**
      * {@inheritDoc}
      */
-    protected function getBussinessService() {
+    protected function getBussinessService() : \app\common\bussiness\TSLAppCRUDBussinessService {
         return new UsuariosPerfilBussinessService();
     }
 }

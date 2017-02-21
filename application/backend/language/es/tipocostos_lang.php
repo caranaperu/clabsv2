@@ -14,4 +14,3 @@ $lang['tcostos_descripcion'] = 'Descripcion';
 $lang['tcostos_protected'] = 'Flag de Protegido';
 $lang['tcostos_indirecto'] = 'Insumo Indirecto?';
 $lang['versionId'] = 'Version';
-?>

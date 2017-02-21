@@ -26,9 +26,9 @@ class CotizacionDetalleBussinessService extends \app\common\bussiness\TSLAppCRUD
      * @inheritdoc
      *
      * @param \TSLIDataTransferObj $dto
-     * @return CotizacionDetalleModel
+     * @return \TSLDataModel especificamente como CotizacionDetalleModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionDetalleModel();
         // Leo el id enviado en el DTO
         $model->set_cotizacion_id($dto->getParameterValue('cotizacion_id'));
@@ -47,9 +47,9 @@ class CotizacionDetalleBussinessService extends \app\common\bussiness\TSLAppCRUD
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return CotizacionDetalleModel
+     * @return \TSLDataModel especificamente como CotizacionDetalleModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionDetalleModel();
         // Leo el id enviado en el DTO
         $model->set_cotizacion_detalle_id($dto->getParameterValue('cotizacion_detalle_id'));
@@ -69,9 +69,9 @@ class CotizacionDetalleBussinessService extends \app\common\bussiness\TSLAppCRUD
 
     /**
      *
-     * @return CotizacionDetalleModel
+     * @return \TSLDataModel especificamente como CotizacionDetalleModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new CotizacionDetalleModel();
         return $model;
     }
@@ -81,7 +81,7 @@ class CotizacionDetalleBussinessService extends \app\common\bussiness\TSLAppCRUD
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionDetalleModel();
         $model->set_cotizacion_detalle_id($dto->getParameterValue('cotizacion_detalle_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -92,4 +92,3 @@ class CotizacionDetalleBussinessService extends \app\common\bussiness\TSLAppCRUD
 
 }
 
-?>

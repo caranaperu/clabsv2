@@ -27,16 +27,16 @@ class EmpresaDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_empresa where empresa_id = \'' . $id . '\'  and xmin =' . $versionId;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         /**
          * @var EmpresaModel $record
          */
@@ -57,9 +57,9 @@ class EmpresaDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
      * Siempre debe devolver un de haber mas de uno , la data habria
      * sido manipulada externamente.
      *
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
 
         if ($subOperation == 'fetchJoined') {
             $sql = $this->_getFecthNormalized();
@@ -104,17 +104,17 @@ class EmpresaDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation);
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         if ($subOperation == 'readAfterSaveJoined' || $subOperation == 'readAfterUpdateJoined') {
             $sql = $this->_getFecthNormalized();
             $sql .= ' WHERE empresa_id = ' . $code;
@@ -127,9 +127,9 @@ class EmpresaDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record  EmpresaModel  */
         $sql = 'update tb_empresa set empresa_razon_social=\'' . $record->get_empresa_razon_social() . '\'' .
                 ',empresa_ruc=\'' . $record->get_empresa_ruc() . '\'' .
@@ -152,10 +152,8 @@ class EmpresaDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string {
         return 'SELECT currval(\'tb_empresa_empresa_id_seq\')';
     }
 
 }
-
-?>

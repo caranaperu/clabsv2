@@ -25,17 +25,17 @@ class UnidadMedidaBussinessService extends \app\common\bussiness\TSLAppCRUDBussi
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UnidadMedidaModel
+     * @return \TSLDataModel especificamente UnidadMedidaModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UnidadMedidaModel();
         // Leo el id enviado en el DTO
         $model->set_unidad_medida_codigo($dto->getParameterValue('unidad_medida_codigo'));
         $model->set_unidad_medida_descripcion($dto->getParameterValue('unidad_medida_descripcion'));
         $model->set_unidad_medida_siglas($dto->getParameterValue('unidad_medida_siglas'));
         $model->set_unidad_medida_tipo($dto->getParameterValue('unidad_medida_tipo'));
-        $model->set_unidad_medida_default($dto->getParameterValue('unidad_medida_default'));
-        $model->set_unidad_medida_protected($dto->getParameterValue('unidad_medida_protected'));
+        $model->set_unidad_medida_default(($dto->getParameterValue('unidad_medida_default') == 'true' ? true : false));
+        $model->set_unidad_medida_protected(($dto->getParameterValue('unidad_medida_protected') == 'true' ? true : false));
 
         if ($dto->getParameterValue('activo') != NULL)
             $model->setActivo($dto->getParameterValue('activo'));
@@ -46,17 +46,17 @@ class UnidadMedidaBussinessService extends \app\common\bussiness\TSLAppCRUDBussi
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UnidadMedidaModel
+     * @return \TSLDataModel especificamente como UnidadMedidaModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) :\TSLDataModel {
         $model = new UnidadMedidaModel();
         // Leo el id enviado en el DTO
         $model->set_unidad_medida_codigo($dto->getParameterValue('unidad_medida_codigo'));
         $model->set_unidad_medida_descripcion($dto->getParameterValue('unidad_medida_descripcion'));
         $model->set_unidad_medida_siglas($dto->getParameterValue('unidad_medida_siglas'));
         $model->set_unidad_medida_tipo($dto->getParameterValue('unidad_medida_tipo'));
-        $model->set_unidad_medida_default($dto->getParameterValue('unidad_medida_default'));
-        $model->set_unidad_medida_protected($dto->getParameterValue('unidad_medida_protected'));
+        $model->set_unidad_medida_default(($dto->getParameterValue('unidad_medida_default') == 'true' ? true : false));
+        $model->set_unidad_medida_protected(($dto->getParameterValue('unidad_medida_protected') == 'true' ? true : false));
 
         $model->setVersionId($dto->getParameterValue('versionId'));
         if ($dto->getParameterValue('activo') != NULL)
@@ -67,9 +67,9 @@ class UnidadMedidaBussinessService extends \app\common\bussiness\TSLAppCRUDBussi
 
     /**
      *
-     * @return UnidadMedidaModel
+     * @return \TSLDataModel especificamente UnidadMedidaModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new UnidadMedidaModel();
         return $model;
     }
@@ -79,7 +79,7 @@ class UnidadMedidaBussinessService extends \app\common\bussiness\TSLAppCRUDBussi
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UnidadMedidaModel();
         $model->set_unidad_medida_codigo($dto->getParameterValue('unidad_medida_codigo'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -89,5 +89,3 @@ class UnidadMedidaBussinessService extends \app\common\bussiness\TSLAppCRUDBussi
     }
 
 }
-
-?>

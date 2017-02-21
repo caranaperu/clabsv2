@@ -17,4 +17,3 @@ $lang['clubes_telefono_oficina'] = 'Telefono Oficina';
 $lang['clubes_telefono_celular'] = 'Telefono Celular';
 $lang['clubes_web_url'] = 'Direccion Web';
 $lang['versionId'] = 'Version';
-?>

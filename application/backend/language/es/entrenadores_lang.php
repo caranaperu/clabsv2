@@ -16,4 +16,3 @@ $lang['entrenadores_ap_materno'] = 'Apellido Materno';
 $lang['entrenadores_nombres'] = 'Nombres';
 $lang['entrenadores_nivel_codigo'] = 'Tipo Documento De identidad';
 $lang['versionId'] = 'Version';
-?>

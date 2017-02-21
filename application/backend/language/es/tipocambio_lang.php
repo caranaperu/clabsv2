@@ -22,4 +22,3 @@ $lang['tipo_cambio_tasa_compra'] = 'Tasa Compra';
 $lang['tipo_cambio_tasa_venta'] = 'Tasa Venta';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

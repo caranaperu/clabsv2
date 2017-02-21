@@ -26,16 +26,16 @@ class UsuariosPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_sys_usuario_perfiles where "usuario_perfil_id" = \'' . $id . '\'  and xmin =' . $versionId;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         /* @var $record UsuariosPerfilModel */
         $sql = 'insert into tb_sys_usuario_perfiles (usuarios_id,perfil_id,activo,usuario) values(' .
                 $record->get_usuarios_id() . ',' .
@@ -47,9 +47,9 @@ class UsuariosPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si la busqueda permite buscar solo activos e inactivos
 //        $sql = 'select usuario_perfil_id,usuarios_id,perfil_id,activo,xmin as "versionId"';
 
@@ -90,16 +90,16 @@ class UsuariosPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return 'select usuario_perfil_id,usuarios_id,perfil_id,activo,xmin as "versionId" from tb_sys_usuario_perfiles where usuario_perfil_id = ' . $id;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,$subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string {
         return $this->getRecordQuery($code,$constraints, $subOperation);
     }
 
@@ -107,9 +107,9 @@ class UsuariosPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
      * La metodologia para el update es un hack por problemas en el psotgresql cuando un insert
      * es llevado a una function procedure , recomendamos leer el stored procedure.
      *
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record UsuariosPerfilModel */
         $sql = 'update tb_sys_usuario_perfiles set ' .
                 'usuario_perfil_id=' . $record->get_usuario_perfil_id() . ',' .
@@ -121,10 +121,8 @@ class UsuariosPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery() {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL)  : string {
         return 'SELECT currval(\'tb_sys_usuario_perfiles_usuario_perfil_id_seq\')';
     }
 
 }
-
-?>

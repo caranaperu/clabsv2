@@ -18,4 +18,3 @@ $lang['cliente_correo']= 'Correo';
 $lang['cliente_fax']= 'Fax';
 $lang['tipo_cliente_codigo']= 'Tipo Cliente';
 $lang['versionId'] = 'Version';
-?>

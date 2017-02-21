@@ -17,4 +17,3 @@ $lang['ligas_telefono_oficina'] = 'Telefono Oficina';
 $lang['ligas_telefono_celular'] = 'Telefono Celular';
 $lang['ligas_web_url'] = 'Direccion Web';
 $lang['versionId'] = 'Version';
-?>

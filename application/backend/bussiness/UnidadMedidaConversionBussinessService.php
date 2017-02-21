@@ -27,9 +27,9 @@ class UnidadMedidaConversionBussinessService extends \app\common\bussiness\TSLAp
      *
      * @param \TSLIDataTransferObj $dto
      *
-     * @return UnidadMedidaConversionModel
+     * @return \TSLDataModel en este caso UnidadMedidaConversionModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto)
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel
     {
         $model = new UnidadMedidaConversionModel();
         // Leo el id enviado en el DTO
@@ -47,9 +47,9 @@ class UnidadMedidaConversionBussinessService extends \app\common\bussiness\TSLAp
      *
      * @param \TSLIDataTransferObj $dto
      *
-     * @return UnidadMedidaConversionModel
+     * @return \TSLDataModel en este caso UnidadMedidaConversionModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto)
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel
     {
         $model = new UnidadMedidaConversionModel();
         // Leo el id enviado en el DTO
@@ -68,9 +68,9 @@ class UnidadMedidaConversionBussinessService extends \app\common\bussiness\TSLAp
 
     /**
      *
-     * @return UnidadMedidaConversionModel
+     * @return \TSLDataModel en este caso  UnidadMedidaConversionModel
      */
-    protected function &getEmptyModel()
+    protected function &getEmptyModel() : \TSLDataModel
     {
         $model = new UnidadMedidaConversionModel();
 
@@ -83,7 +83,7 @@ class UnidadMedidaConversionBussinessService extends \app\common\bussiness\TSLAp
      *
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto)
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto): \TSLDataModel
     {
         $model = new UnidadMedidaConversionModel();
         $model->set_unidad_medida_conversion_id($dto->getParameterValue('unidad_medida_conversion_id'));
@@ -94,5 +94,3 @@ class UnidadMedidaConversionBussinessService extends \app\common\bussiness\TSLAp
     }
 
 }
-
-?>

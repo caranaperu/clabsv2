@@ -24,9 +24,9 @@ class UsuariosPerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBus
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosPerfilModel
+     * @return \TSLDataModel en este caso UsuariosPerfilModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosPerfilModel();
         //
         $model->set_usuarios_id($dto->getParameterValue('usuarios_id'));
@@ -41,9 +41,9 @@ class UsuariosPerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBus
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosPerfilModel
+     * @return \TSLDataModel en este caso UsuariosPerfilModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel{
         $model = new UsuariosPerfilModel();
         //
         $model->set_usuario_perfil_id($dto->getParameterValue('usuario_perfil_id'));
@@ -57,9 +57,9 @@ class UsuariosPerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBus
 
     /**
      *
-     * @return UsuariosPerfilModel
+     * @return \TSLDataModel en este caso UsuariosPerfilModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new UsuariosPerfilModel();
         return $model;
     }
@@ -69,7 +69,7 @@ class UsuariosPerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBus
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosPerfilModel();
         $model->set_usuario_perfil_id($dto->getParameterValue('usuario_perfil_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -78,5 +78,3 @@ class UsuariosPerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBus
     }
 
 }
-
-?>

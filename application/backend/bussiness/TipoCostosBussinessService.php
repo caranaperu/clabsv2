@@ -25,15 +25,15 @@ class TipoCostosBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoCostosModel
+     * @return \TSLDataModel especificamente como TipoCostosModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoCostosModel();
         // Leo el id enviado en el DTO
         $model->set_tcostos_codigo($dto->getParameterValue('tcostos_codigo'));
         $model->set_tcostos_descripcion($dto->getParameterValue('tcostos_descripcion'));
-        $model->set_tcostos_protected($dto->getParameterValue('tcostos_protected'));
-        $model->set_tcostos_indirecto($dto->getParameterValue('tcostos_indirecto'));
+        $model->set_tcostos_protected(($dto->getParameterValue('tcostos_protected') == 'true' ? true : false));
+        $model->set_tcostos_indirecto(($dto->getParameterValue('tcostos_indirecto') == 'true' ? true : false));
 
         if ($dto->getParameterValue('activo') != NULL)
             $model->setActivo($dto->getParameterValue('activo'));
@@ -45,15 +45,15 @@ class TipoCostosBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoCostosModel
+     * @return \TSLDataModel especificamente como TipoCostosModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoCostosModel();
         // Leo el id enviado en el DTO
         $model->set_tcostos_codigo($dto->getParameterValue('tcostos_codigo'));
         $model->set_tcostos_descripcion($dto->getParameterValue('tcostos_descripcion'));
-        $model->set_tcostos_protected($dto->getParameterValue('tcostos_protected'));
-        $model->set_tcostos_indirecto($dto->getParameterValue('tcostos_indirecto'));
+        $model->set_tcostos_protected(($dto->getParameterValue('tcostos_protected') == 'true' ? true : false));
+        $model->set_tcostos_indirecto(($dto->getParameterValue('tcostos_indirecto') == 'true' ? true : false));
 
         $model->setVersionId($dto->getParameterValue('versionId'));
         if ($dto->getParameterValue('activo') != NULL)
@@ -64,9 +64,9 @@ class TipoCostosBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
 
     /**
      *
-     * @return TipoCostosModel
+     * @return \TSLDataModel especificamente como TipoCostosModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new TipoCostosModel();
         return $model;
     }
@@ -76,7 +76,7 @@ class TipoCostosBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoCostosModel();
         $model->set_tcostos_codigo($dto->getParameterValue('tcostos_codigo'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -86,5 +86,3 @@ class TipoCostosBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     }
 
 }
-
-?>

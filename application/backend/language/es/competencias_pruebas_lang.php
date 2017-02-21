@@ -26,4 +26,3 @@ $lang['competencias_pruebas_manual'] = 'Tiempo es manual?';
 $lang['competencias_pruebas_observaciones'] = 'Observaciones de la prueba';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

@@ -9,4 +9,3 @@ $lang['msg_appcategorias_rec_foreignkey_del'] = 'La validacion de categoria se e
 $lang['msg_appcategorias_rec_inactivo'] = 'La validacion de categoria ya existe , pero esta inactiva';
 $lang['appcat_codigo'] = 'Codigo de Validacion de Categoria';
 $lang['versionId'] = 'Version';
-?>

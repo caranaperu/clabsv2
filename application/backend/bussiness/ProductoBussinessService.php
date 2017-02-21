@@ -26,9 +26,9 @@ class ProductoBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return ProductoModel
+     * @return \TSLDataModel especificamente como ProductoModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ProductoModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -51,9 +51,9 @@ class ProductoBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return ProductoModel
+     * @return \TSLDataModel especificamente como ProductoModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ProductoModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -75,9 +75,9 @@ class ProductoBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
 
     /**
      *
-     * @return ProductoModel
+     * @return \TSLDataModel especificamente como ProductoModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new ProductoModel();
         return $model;
     }
@@ -87,7 +87,7 @@ class ProductoBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ProductoModel();
         $model->set_insumo_id($dto->getParameterValue('insumo_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -98,4 +98,3 @@ class ProductoBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
 
 }
 
-?>

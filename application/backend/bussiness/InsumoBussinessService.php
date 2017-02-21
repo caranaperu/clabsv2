@@ -24,9 +24,9 @@ class InsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return InsumoModel
+     * @return \TSLDataModel especificamente como InsumoModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new InsumoModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -51,9 +51,9 @@ class InsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return InsumoModel
+     * @return \TSLDataModel especificamente como InsumoModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new InsumoModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -79,9 +79,9 @@ class InsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
 
     /**
      *
-     * @return InsumoModel
+     * @return \TSLDataModel especificamente como InsumoModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new InsumoModel();
         return $model;
     }
@@ -91,7 +91,7 @@ class InsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new InsumoModel();
         $model->set_insumo_id($dto->getParameterValue('insumo_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -102,4 +102,3 @@ class InsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
 
 }
 
-?>

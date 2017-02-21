@@ -27,9 +27,9 @@ class ProductoDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBu
      *
      * @param \TSLIDataTransferObj $dto
      *
-     * @return ProductoDetalleModel
+     * @return \TSLDataModel especificamente como ProductoDetalleModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto)
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel
     {
         $model = new ProductoDetalleModel();
         // Leo el id enviado en el DTO
@@ -51,9 +51,9 @@ class ProductoDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBu
      *
      * @param \TSLIDataTransferObj $dto
      *
-     * @return ProductoDetalleModel
+     * @return \TSLDataModel especificamente como ProductoDetalleModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto)
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel
     {
         $model = new ProductoDetalleModel();
         // Leo el id enviado en el DTO
@@ -76,9 +76,9 @@ class ProductoDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBu
 
     /**
      *
-     * @return ProductoDetalleModel
+     * @return \TSLDataModel especificamente como ProductoDetalleModel
      */
-    protected function &getEmptyModel()
+    protected function &getEmptyModel() : \TSLDataModel
     {
         $model = new ProductoDetalleModel();
 
@@ -91,7 +91,7 @@ class ProductoDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBu
      *
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto)
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel
     {
         $model = new ProductoDetalleModel();
         $model->set_producto_detalle_id($dto->getParameterValue('producto_detalle_id'));
@@ -102,5 +102,3 @@ class ProductoDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBu
     }
 
 }
-
-?>

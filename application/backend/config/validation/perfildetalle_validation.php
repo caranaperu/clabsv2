@@ -23,22 +23,22 @@ $config['v_perfildetalle'] = array(
         array(
             'field' => 'perfdet_accleer',
             'label' => 'lang:perfdet_accleer',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_accagregar',
             'label' => 'lang:perfdet_accagregar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_accactualizar',
             'label' => 'lang:perfdet_accactualizar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_acceliminar',
             'label' => 'lang:perfdet_acceliminar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -67,23 +67,22 @@ $config['v_perfildetalle'] = array(
         array(
             'field' => 'perfdet_accleer',
             'label' => 'lang:perfdet_accleer',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_accagregar',
             'label' => 'lang:perfdet_accagregar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_accactualizar',
             'label' => 'lang:perfdet_accactualizar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'perfdet_acceliminar',
             'label' => 'lang:perfdet_acceliminar',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         )
     )
 );
-?>

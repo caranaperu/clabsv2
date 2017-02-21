@@ -128,7 +128,7 @@ isc.InsumoCostosHistoricosForm.addProperties({
                 {name: "insumo_costo", width: '12%',align: 'right'},
                 {name: "moneda_costo_descripcion", width: '10%'}
             ]
-        }),
+        })
 
         this.addMember(historicoInfoLabel);
         this.addMember(historyDateForm);

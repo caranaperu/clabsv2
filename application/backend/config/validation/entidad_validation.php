@@ -85,4 +85,3 @@ $config['v_entidad'] = array(
         )
     )
 );
-?>

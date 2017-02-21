@@ -18,4 +18,3 @@ $lang['pruebas_sexo'] = 'sexo';
 $lang['pruebas_record_hasta'] = 'Valida Record Hasta';
 $lang['pruebas_anotaciones'] = 'Anotaciones';
 $lang['versionId'] = 'Version';
-?>

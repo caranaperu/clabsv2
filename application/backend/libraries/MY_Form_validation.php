@@ -7,11 +7,11 @@ class MY_Form_validation extends CI_Form_validation {
      *
      * @access public
      *
-     * @param string value valor a verificar
+     * @param string $value valor a verificar
      *
-     * @return boolean true or false
+     * @return bool true or false
      */
-    function decimal($value) {
+    public function decimal( $value) : bool {
         $regx = '/^[-+]?[0-9]*\.?[0-9]*$/';
         if (!preg_match($regx, $value)) {
             return FALSE;
@@ -26,11 +26,11 @@ class MY_Form_validation extends CI_Form_validation {
      *
      * @access public
      *
-     * @param string value valor a verificar
+     * @param string $value valor a verificar
      *
-     * @return boolean true or false
+     * @return bool true or false
      */
-    public function onlyValidText($value) {
+    public function onlyValidText(string $value) : bool {
         $regx = "/^[A-Za-z0-9][A-Za-z0-9 ._\/-ÁÉÍÓÚáéíóuñÑ]*[A-Za-z0-9.]$/";
         if (!preg_match($regx, $value)) {
             return FALSE;
@@ -43,11 +43,11 @@ class MY_Form_validation extends CI_Form_validation {
      * verfica si una fecha es valida
      *
      * @param string $date
-     * @param boolean $verifyNull si es true se verificara de lo contrario se asumira correcto
-     * @return boolean true o false
+     * @param bool $verifyNull si es true se verificara de lo contrario se asumira correcto
+     * @return bool true o false
      */
 
-    public function validDate($date, $verifyNull = TRUE) {
+    public function validDate(string $date, bool $verifyNull = TRUE) : bool {
         // casos raros primero
         if (is_null($date) || $date === 'null') {
             if ($verifyNull) {
@@ -84,9 +84,9 @@ class MY_Form_validation extends CI_Form_validation {
      *
      * @param string $date
      *
-     * @return boolean true o false
+     * @return bool true o false
      */
-    public function validDateOrEmpty($date) {
+    public function validDateOrEmpty(string $date) : bool {
         // si la fecha esta vacia o la fecha esta en null
         // indicamos correcto.
         if (is_null($date) || strlen($date) == 0 || $date === 'null') {
@@ -100,11 +100,11 @@ class MY_Form_validation extends CI_Form_validation {
      * Para validar url del tipo http://www.domain como
      * minimo , requiere que se ponga el protocolo.
      *
-     * @param type $url la direccion URL a validar
+     * @param string $url la direccion URL a validar
      *
-     * @return boolean true si es ok , false de lo contrario
+     * @return bool true si es ok , false de lo contrario
      */
-    public function validateURL($url) {
+    public function validateURL(string $url) : bool {
         $regex = "((https?|ftp)\:\/\/)?"; // SCHEME
         $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
         $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
@@ -126,12 +126,12 @@ class MY_Form_validation extends CI_Form_validation {
      *
      * @access    public
      *
-     * @param mixed  $str con el valor numerico a chequear
+     * @param string  $str con el valor numerico a chequear
      * @param string $field con el nombre del campo con el que se va a chequear
      *
      * @return    bool
      */
-    public function greater_than_field($str, $field) {
+    public function greater_than_field(string $str, string $field) : bool {
         if (!isset($_POST[$field])) {
             return FALSE;
         }
@@ -150,12 +150,13 @@ class MY_Form_validation extends CI_Form_validation {
      * en fied.
      *
      * @access	public
-     * @param mixed $str con el valor numerico a chequear
+     *
+     * @param string $str con el valor numerico a chequear
      * @param string $field con el nombre del campo con el que se va a chequear
      * @return	bool
      */
 
-    public function less_than_field($str, $field) {
+    public function less_than_field(string $str,string $field) : bool {
         if (!isset($_POST[$field])) {
             return FALSE;
         }
@@ -172,12 +173,12 @@ class MY_Form_validation extends CI_Form_validation {
     /**
      * Verifica si un campo fecha es mayor a otro.
      *
-     * @param type $str la fecha contiene a fecha a cehquear si esta en el futuro.
-     * @param      type El nombre del campo que contiene la fecha limite superior.
+     * @param string  $str la fecha contiene a fecha a cehquear si esta en el futuro.
+     * @param string $field El nombre del campo que contiene la fecha limite superior.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isFuture_date($str, $field) {
+    public function isFuture_date(string $str, string $field) : bool {
         if (!isset($_POST[$field])) {
             return FALSE;
         }
@@ -194,12 +195,12 @@ class MY_Form_validation extends CI_Form_validation {
     /**
      * Verifica si un campo fecha es mayor o igual  a otro.
      *
-     * @param type $str la fecha contiene a fecha a cehquear si esta en el futuro.
-     * @param      type El nombre del campo que contiene la fecha limite superior.
+     * @param string $str la fecha contiene a fecha a cehquear si esta en el futuro.
+     * @param string $field El nombre del campo que contiene la fecha limite superior.
      *
-     * @return boolean
+     * @return bool
      */
-    public function isFutureOrSame_date($str, $field) {
+    public function isFutureOrSame_date(string $str, string $field) : bool {
         if (!isset($_POST[$field])) {
             return FALSE;
         }
@@ -217,12 +218,12 @@ class MY_Form_validation extends CI_Form_validation {
      * Verifica si el campo es valido , siempre que otro campo
      * representado por el parametro este en true.
      *
-     * @param type $field
+     * @param mixed $field
      *
      * @return boolean true si es valido
      *
      */
-    public function dependsOnBoolean($field) {
+    public function dependsOnBoolean($field) : bool {
         if (isset($field)) {
             if ($field != FALSE) {
                 return true;
@@ -235,12 +236,12 @@ class MY_Form_validation extends CI_Form_validation {
     /**
      * Verifica si un campo es mayor o igual  a otro.
      *
-     * @param double $str el numero a validar.
-     * @param double el minimo numero admisible.
+     * @param string  $str el numero a validar.
+     * @param string $min el minimo numero admisible.
      *
      * @return boolean
      */
-    public function greater_than_equal($str, $min) {
+    public function greater_than_equal($str, $min) : bool {
         if (!is_numeric($str)) {
             return FALSE;
         }
@@ -248,6 +249,23 @@ class MY_Form_validation extends CI_Form_validation {
         return $str >= $min;
     }
 
-}
+    /**
+     * Verifica si es booleano , el problema de is_bool es que no verifica
+     * en el caso el parametro no sea string, en este caso 0 y 1 no se tomaran
+     * como booleanos.
+     *
+     * @access public
+     *
+     * @param mixed $value valor a verificar
+     *
+     * @return bool true or false
+     */
+    function is_boolean($value) : bool{
+        if ($value == true || $value == TRUE || $value == 'true' || $value == 'TRUE' ||
+        $value == false || $value == FALSE || $value == 'false' || $value == 'FALSE' ) {
+            return true;
+        }
+        return false;
+    }
 
-?>
+}

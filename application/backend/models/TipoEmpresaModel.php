@@ -7,14 +7,10 @@ if (!defined('BASEPATH'))
  * Modelo  para definir los tipos de empresas
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: UnidadMedidaModel.php 136 2014-04-07 00:31:52Z aranape $
- * @history ''
- *
- * $Date: 2014-04-06 19:31:52 -0500 (dom, 06 abr 2014) $
- * $Rev: 136 $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class TipoEmpresaModel extends \app\common\model\TSLAppCommonBaseModel
+class TipoEmpresaModel extends TSLDataModel
 {
 
     protected $tipo_empresa_codigo;
@@ -25,7 +21,7 @@ class TipoEmpresaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $tipo_empresa_codigo codigo unico del tipo de empresa
      */
-    public function set_tipo_empresa_codigo($tipo_empresa_codigo)
+    public function set_tipo_empresa_codigo(string $tipo_empresa_codigo) : void
     {
         $this->tipo_empresa_codigo = $tipo_empresa_codigo;
         $this->setId($tipo_empresa_codigo);
@@ -34,7 +30,7 @@ class TipoEmpresaModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * @return string retorna el codigo unico del tipo de empresa.
      */
-    public function get_tipo_empresa_codigo()
+    public function get_tipo_empresa_codigo() : string
     {
         return $this->tipo_empresa_codigo;
     }
@@ -44,7 +40,7 @@ class TipoEmpresaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $tipo_empresa_descripcion la descrpcion del tipo de empresa.
      */
-    public function set_tipo_empresa_descripcion($tipo_empresa_descripcion)
+    public function set_tipo_empresa_descripcion(string $tipo_empresa_descripcion) : void
     {
         $this->tipo_empresa_descripcion = $tipo_empresa_descripcion;
     }
@@ -53,18 +49,16 @@ class TipoEmpresaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return string la descripcion del tipo de empresa.
      */
-    public function get_tipo_empresa_descripcion()
+    public function get_tipo_empresa_descripcion() : string
     {
         return $this->tipo_empresa_descripcion;
     }
 
 
-    public function &getPKAsArray()
+    public function &getPKAsArray() : array
     {
         $pk['tipo_empresa_codigo'] = $this->getId();
         return $pk;
     }
 
 }
-
-?>

@@ -28,39 +28,36 @@ class CotizacionDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
 
     /**
      * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId)
+    protected function getDeleteRecordQuery($id, int $versionId) : string
     {
         return 'DELETE FROM tb_cotizacion WHERE cotizacion_id = ' . $id . '  AND xmin =' . $versionId;
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record)
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string
     {
         /* @var $record  CotizacionModel */
         return 'insert into tb_cotizacion (empresa_id,cliente_id,cotizacion_es_cliente_real,cotizacion_cerrada,cotizacion_numero,moneda_codigo,cotizacion_fecha,'.
         'activo,usuario) values(' .
         $record->get_empresa_id() . ',' .
-        $record->get_cliente_id() . ',\'' .
-        $record->get_cotizacion_es_cliente_real() . '\',\'' .
-        $record->get_cotizacion_cerrada() . '\',' .
+        $record->get_cliente_id() . ',' .
+        ($record->get_cotizacion_es_cliente_real() == true ? 1 : 0). '::boolean,' .
+        ($record->get_cotizacion_cerrada() == true ? 1 : 0). '::boolean,' .
         '(select fn_get_cotizacion_next_id()),\'' .
         $record->get_moneda_codigo() . '\',\'' .
         $record->get_cotizacion_fecha() . '\',\'' .
         $record->getActivo() . '\',\'' .
         $record->getUsuario() . '\')';
-
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL)
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string
     {
 
         if ($subOperation == 'fetchJoined') {
@@ -115,20 +112,18 @@ class CotizacionDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL)
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string
     {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation);
     }
 
     /**
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,$subOperation = NULL)
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string
     {
         if ($subOperation == 'readAfterSaveJoined' || $subOperation == 'readAfterUpdateJoined') {
             $sql = $this->_getFecthNormalized();
@@ -142,10 +137,9 @@ class CotizacionDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
 
     /**
      *
-     * @{inheritdoc}
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record)
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string
     {
 
         /* @var $record  CotizacionModel */
@@ -153,8 +147,8 @@ class CotizacionDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
         return 'update tb_cotizacion set cotizacion_id=' . $record->get_cotizacion_id() . ',' .
         'empresa_id=' . $record->get_empresa_id() . ',' .
         'cliente_id=' . $record->get_cliente_id() . ',' .
-        'cotizacion_es_cliente_real=\'' . $record->get_cotizacion_es_cliente_real() . '\',' .
-        'cotizacion_cerrada=\'' . $record->get_cotizacion_cerrada() . '\',' .
+        'cotizacion_es_cliente_real=' . ($record->get_cotizacion_es_cliente_real() == true ? 1 : 0). '::boolean,' .
+        'cotizacion_cerrada=' . ($record->get_cotizacion_cerrada() == true ? 1 : 0). '::boolean,' .
         'cotizacion_numero=' . $record->get_cotizacion_numero() . ',' .
         'moneda_codigo=\'' . $record->get_moneda_codigo() . '\',' .
         'cotizacion_fecha=\'' . $record->get_cotizacion_fecha() . '\',' .
@@ -176,7 +170,7 @@ class CotizacionDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL)
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string
     {
         return 'SELECT currval(\'tb_cotizacion_cotizacion_id_seq\')';
     }

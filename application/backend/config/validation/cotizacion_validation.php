@@ -28,7 +28,7 @@ $config['v_cotizacion'] = array(
         array(
             'field' => 'cotizacion_es_cliente_real',
             'label' => 'lang:cotizacion_es_cliente_real',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'moneda_codigo',
@@ -48,12 +48,12 @@ $config['v_cotizacion'] = array(
         array(
             'field' => 'cotizacion_cerrada',
             'label' => 'lang:cotizacion_cerrada',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -87,7 +87,7 @@ $config['v_cotizacion'] = array(
         array(
             'field' => 'cotizacion_es_cliente_real',
             'label' => 'lang:cotizacion_es_cliente_real',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'moneda_codigo',
@@ -102,13 +102,12 @@ $config['v_cotizacion'] = array(
         array(
             'field' => 'cotizacion_cerrada',
             'label' => 'lang:cotizacion_cerrada',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         )
     )
 );
-?>

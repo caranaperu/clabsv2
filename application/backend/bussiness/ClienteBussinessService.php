@@ -1,4 +1,5 @@
 <?php
+//declare(strict_types=1);
 
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
@@ -8,11 +9,10 @@ if (!defined('BASEPATH'))
  * de los clientes..
  *
  * @author $Author: aranape $
- * @version $Id: EmpresaBussinessService.php 7 2014-02-11 23:55:54Z aranape $
- * @since 17-May-2013
- *
- * $Date: 2014-02-11 18:55:54 -0500 (mar, 11 feb 2014) $
- * $Rev: 7 $
+ * @history
+ *          09-02-2017 Compatibilidad con php 7 .
+ *                      Dado que los modelos usan ahora declare(strict_types=1) , bastara con eso
+ *                      para que rechaze valores no validos en el modelo.
  */
 class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessService {
 
@@ -24,9 +24,9 @@ class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return ClienteModel
+     * @return \TSLDataModel especificamente como ClienteModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ClienteModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -47,9 +47,9 @@ class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return ClienteModel
+     * @return \TSLDataModel especificamente como ClienteModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ClienteModel();
         // Leo el id enviado en el DTO
         $model->set_cliente_id($dto->getParameterValue('cliente_id'));
@@ -70,9 +70,9 @@ class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
 
     /**
      *
-     * @return ClienteModel
+     * @return \TSLDataModel especificamente como ClienteModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new ClienteModel();
         return $model;
     }
@@ -82,7 +82,7 @@ class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new ClienteModel();
         $model->set_cliente_id($dto->getParameterValue('cliente_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -92,4 +92,3 @@ class ClienteBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
 
 }
 
-?>

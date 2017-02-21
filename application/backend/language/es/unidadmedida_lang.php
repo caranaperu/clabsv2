@@ -18,4 +18,3 @@ $lang['unidad_medida_tipo'] = 'Tipo';
 $lang['unidad_medida_default'] = 'Default';
 $lang['unidad_medida_protected'] = 'Flag de protegido';
 $lang['versionId'] = 'Version';
-?>

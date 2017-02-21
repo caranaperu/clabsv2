@@ -110,4 +110,3 @@ $config['v_producto'] = array(
         )
     )
 );
-?>

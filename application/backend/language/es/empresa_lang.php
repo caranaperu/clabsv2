@@ -17,4 +17,3 @@ $lang['empresa_correo']= 'Correo';
 $lang['empresa_fax']= 'Fax';
 $lang['tipo_empresa_codigo']= 'Tipo Empresa';
 $lang['versionId'] = 'Version';
-?>

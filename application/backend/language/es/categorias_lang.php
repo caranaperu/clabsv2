@@ -15,4 +15,3 @@ $lang['categorias_edad_final'] = 'Edad Final';
 $lang['categorias_valido_desde'] = 'Valido Hasta';
 $lang['categorias_validacion'] = 'Tipo de Validacion';
 $lang['versionId'] = 'Version';
-?>

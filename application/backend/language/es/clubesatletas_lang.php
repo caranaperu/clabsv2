@@ -18,4 +18,3 @@ $lang['clubesatletas_desde'] = 'La fecha desde la cual pertenece al club';
 $lang['clubesatletas_hasta'] = 'La fecha hasta la cual pertenecio ala club';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

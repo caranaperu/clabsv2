@@ -25,7 +25,7 @@ isc.WinUsuariosWindow.addProperties({
                 {name: "usuarios_nombre_completo", width: '30%'},
                 {name: "empresa_razon_social", width: '30%'},
                 {name: "usuarios_admin", width: '*'},
-                {name: "activo",  width: '*'},
+                {name: "activo",  width: '*'}
             ],
             canReorderFields: false,
             showFilterEditor: true,

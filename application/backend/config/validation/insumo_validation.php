@@ -155,4 +155,3 @@ $config['v_insumo'] = array(
         )
     )
 );
-?>

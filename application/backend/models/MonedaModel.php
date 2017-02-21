@@ -7,20 +7,16 @@ if (!defined('BASEPATH'))
  * Modelo  para definir las monedas
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: UnidadMedidaModel.php 136 2014-04-07 00:31:52Z aranape $
- * @history ''
- *
- * $Date: 2014-04-06 19:31:52 -0500 (dom, 06 abr 2014) $
- * $Rev: 136 $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : moneda_protected no es usada por ahora , ver si queda o sale.
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
+class MonedaModel extends TSLDataModel
 {
 
     protected $moneda_codigo;
     protected $moneda_simbolo;
     protected $moneda_descripcion;
-    protected $moneda_tipo;
     protected $moneda_protected;
 
     /**
@@ -28,7 +24,7 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $moneda_codigo codigo unico de la monedas
      */
-    public function set_moneda_codigo($moneda_codigo)
+    public function set_moneda_codigo(string $moneda_codigo) : void
     {
         $this->moneda_codigo = $moneda_codigo;
         $this->setId($moneda_codigo);
@@ -37,7 +33,7 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * @return string retorna el codigo unico de la monedas
      */
-    public function get_moneda_codigo()
+    public function get_moneda_codigo() : string
     {
         return $this->moneda_codigo;
     }
@@ -47,7 +43,7 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $moneda_simbolo simbolo de la monedas
      */
-    public function set_moneda_simbolo($moneda_simbolo)
+    public function set_moneda_simbolo(string $moneda_simbolo) : void
     {
         $this->moneda_simbolo = $moneda_simbolo;
     }
@@ -55,7 +51,7 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * @return string retorna el simbolo que representa a la monedas
      */
-    public function get_moneda_simbolo()
+    public function get_moneda_simbolo() : string
     {
         return $this->moneda_simbolo;
     }
@@ -63,9 +59,9 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * Setea la descrpcion de la monedas
      *
-     * @param string $moneda_descripcionla descrpcion de la monedas
+     * @param string $moneda_descripcion la descrpcion de la monedas
      */
-    public function set_moneda_descripcion($moneda_descripcion)
+    public function set_moneda_descripcion(string $moneda_descripcion) : void
     {
         $this->moneda_descripcion = $moneda_descripcion;
     }
@@ -74,7 +70,7 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return string la descripcion de la monedas
      */
-    public function get_moneda_descripcion()
+    public function get_moneda_descripcion() : string
     {
         return $this->moneda_descripcion;
     }
@@ -86,8 +82,12 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean
      */
-    public function get_moneda_protected()
+    public function get_moneda_protected() : bool
     {
+        if (!isset($this->moneda_protected)) {
+            return false;
+        }
+
         return $this->moneda_protected;
     }
 
@@ -95,19 +95,17 @@ class MonedaModel extends \app\common\model\TSLAppCommonBaseModel
      * Setea si es un registro protegido, la parte cliente no administrativa
      * debe validar que si este campo es TRUE solo puede midificarse por el admin.
      *
-     * @param boolean $categorias_protected
+     * @param boolean $moneda_protected
      */
-    public function set_moneda_protected($moneda_protected)
+    public function set_moneda_protected(bool $moneda_protected) : void
     {
-        $this->moneda_protected = $moneda_protected;
+        $this->moneda_protected = self::getAsBool($moneda_protected);
     }
 
-    public function &getPKAsArray()
+    public function &getPKAsArray() : array
     {
         $pk['moneda_codigo'] = $this->getId();
         return $pk;
     }
 
 }
-
-?>

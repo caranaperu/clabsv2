@@ -12,13 +12,11 @@ if (!defined('BASEPATH')) {
  * de los insumos.
  *
  * @author  Carlos Arana Reategui <aranape@gmail.com>
- * @version 0.1
- * @package CLABS
- * @copyright 2015-2016 Carlos Arana Reategui.
- * @license GPL
+ * @history , 09-02-2017 , primera version adaptada a php 7.1
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  *
  */
-class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
+class ProductoModel extends TSLDataModel {
     protected $empresa_id;
     protected $insumo_id;
     protected $insumo_tipo;
@@ -37,7 +35,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return int empresa_id con el id de la empresa asociada a este producto.
      */
-    public function get_empresa_id() {
+    public function get_empresa_id() : int {
         return $this->empresa_id;
     }
 
@@ -48,17 +46,17 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param int $empresa_id con el id de la empresa asociada a este producto
      */
-    public function set_empresa_id($empresa_id) {
+    public function set_empresa_id(int $empresa_id) : void {
         $this->empresa_id = $empresa_id;
     }
 
 
-    public function set_insumo_id($insumo_id) {
+    public function set_insumo_id(int $insumo_id) : void {
         $this->insumo_id = $insumo_id;
         $this->setId($insumo_id);
     }
 
-    public function get_insumo_id() {
+    public function get_insumo_id() : int {
         return $this->insumo_id;
     }
 
@@ -67,7 +65,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el tipo de insumo.
      */
-    public function get_insumo_tipo() {
+    public function get_insumo_tipo() : string {
         return $this->insumo_tipo;
     }
 
@@ -78,7 +76,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      * @param string $insumo_tipo con el tipo de insumo.
      * los valores pueden ser 'IN','PR'
      */
-    public function set_insumo_tipo($insumo_tipo) {
+    public function set_insumo_tipo(string $insumo_tipo) : void {
         $insumo_tipo_u = strtoupper($insumo_tipo);
 
         if (in_array($insumo_tipo_u, ProductoModel::$_INSUMO_TIPO)) {
@@ -94,14 +92,14 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $insumo_codigo codigo  unico del del insumo
      */
-    public function set_insumo_codigo($insumo_codigo) {
+    public function set_insumo_codigo(string $insumo_codigo) : void {
         $this->insumo_codigo = $insumo_codigo;
     }
 
     /**
      * @return string retorna el codigo unico del insumo.
      */
-    public function get_insumo_codigo() {
+    public function get_insumo_codigo() : string {
         return $this->insumo_codigo;
     }
 
@@ -110,7 +108,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $insumo_descripcion nombre del insumo.
      */
-    public function set_insumo_descripcion($insumo_descripcion) {
+    public function set_insumo_descripcion(string $insumo_descripcion) : void {
         $this->insumo_descripcion = $insumo_descripcion;
     }
 
@@ -118,7 +116,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el nombre del insumo.
      */
-    public function get_insumo_descripcion() {
+    public function get_insumo_descripcion() : string {
         return $this->insumo_descripcion;
     }
 
@@ -129,7 +127,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $unidad_medida_codigo_costo codigo de la unidad de medida del insumo para costos
      */
-    public function set_unidad_medida_codigo_costo($unidad_medida_codigo_costo) {
+    public function set_unidad_medida_codigo_costo(string $unidad_medida_codigo_costo) : void {
         $this->unidad_medida_codigo_costo = $unidad_medida_codigo_costo;
     }
 
@@ -139,7 +137,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string el codigo de la unidad de medida del insumo para costo
      */
-    public function get_unidad_medida_codigo_costo() {
+    public function get_unidad_medida_codigo_costo() : string {
         return $this->unidad_medida_codigo_costo;
     }
 
@@ -150,7 +148,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param float $insumo_merma merma del insumo.
      */
-    public function set_insumo_merma($insumo_merma) {
+    public function set_insumo_merma(float $insumo_merma) : void {
         $this->insumo_merma = $insumo_merma;
     }
 
@@ -160,7 +158,7 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return float merma del insumo.
      */
-    public function get_insumo_merma() {
+    public function get_insumo_merma() : float {
         return $this->insumo_merma;
     }
 
@@ -168,9 +166,9 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      * Setea el codigo de la moneda el codigo de la moneda en el que se encuentra
      * el costo.
      *
-     * @param $moneda_codigo_costo codigo de la moneda .
+     * @param string $moneda_codigo_costo codigo de la moneda .
      */
-    public function set_moneda_codigo_costo($moneda_codigo_costo) {
+    public function set_moneda_codigo_costo(string $moneda_codigo_costo) : void {
         $this->moneda_codigo_costo = $moneda_codigo_costo;
     }
 
@@ -181,16 +179,16 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string codigo de la moneda.
      */
-    public function get_moneda_codigo_costo() {
+    public function get_moneda_codigo_costo() : string {
         return $this->moneda_codigo_costo;
     }
     
     /**
      * Retrona el precio de mercado.
      *
-     * @return double con el precio del mercado.
+     * @return float con el precio del mercado.
      */
-    public function get_insumo_precio_mercado() {
+    public function get_insumo_precio_mercado() : float {
         return $this->insumo_precio_mercado;
     }
 
@@ -200,11 +198,11 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param double $insumo_precio_mercado con el precio de mercado.
      */
-    public function set_insumo_precio_mercado($insumo_precio_mercado) {
+    public function set_insumo_precio_mercado(float $insumo_precio_mercado) : void {
         $this->insumo_precio_mercado = $insumo_precio_mercado;
     }
 
-    public function &getPKAsArray() {
+    public function &getPKAsArray() : array {
         $pk['insumo_id'] = $this->getId();
 
         return $pk;
@@ -216,10 +214,8 @@ class ProductoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity() {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
 }
-
-?>

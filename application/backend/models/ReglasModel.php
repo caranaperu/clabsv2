@@ -8,9 +8,10 @@ if (!defined('BASEPATH'))
  * Digasmos entre la fabrica y el importador.
  *
  * @author  $Author: aranape $
- * @since   2-SET-2016
+ * @history , 13-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
+class ReglasModel extends TSLDataModel
 {
 
     protected $regla_id;
@@ -24,7 +25,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param int $regla_id id unico de la regla
      */
-    public function set_regla_id($regla_id) {
+    public function set_regla_id(int $regla_id) : void {
         $this->regla_id = $regla_id;
         $this->setId($regla_id);
     }
@@ -33,7 +34,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * @return int con el id unico de la regla.
      */
-    public function get_regla_id() {
+    public function get_regla_id() : int {
         return $this->regla_id;
     }
 
@@ -43,7 +44,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param int $regla_empresa_origen_id id de la empresa origen.
      */
-    public function set_regla_empresa_origen_id($regla_empresa_origen_id) {
+    public function set_regla_empresa_origen_id(int $regla_empresa_origen_id) : void {
         $this->regla_empresa_origen_id = $regla_empresa_origen_id;
     }
 
@@ -53,7 +54,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return int id de la empresa origen.
      */
-    public function get_regla_empresa_origen_id() {
+    public function get_regla_empresa_origen_id() : int {
         return $this->regla_empresa_origen_id;
     }
 
@@ -62,7 +63,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param int $regla_empresa_destino_id el id de la empresa destino
      */
-    public function set_regla_empresa_destino_id($regla_empresa_destino_id) {
+    public function set_regla_empresa_destino_id(int $regla_empresa_destino_id) : void {
         $this->regla_empresa_destino_id = $regla_empresa_destino_id;
     }
 
@@ -71,7 +72,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return int con el id de la empresa destino
      */
-    public function get_regla_empresa_destino_id() {
+    public function get_regla_empresa_destino_id() : int {
         return $this->regla_empresa_destino_id;
     }
 
@@ -84,15 +85,8 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param boolean $regla_by_costo true basado en costo , false en precio mercado.
      */
-    public function set_regla_by_costo($regla_by_costo) {
-       // $this->regla_by_costo = $regla_by_costo;
-        if ($regla_by_costo !== 'true' && $regla_by_costo !== 'TRUE' &&
-            $regla_by_costo !== TRUE && $regla_by_costo != 't' &&
-            $regla_by_costo != 'T' && $regla_by_costo != '1') {
-            $this->regla_by_costo = false;
-        } else {
-            $this->regla_by_costo = true;
-        }
+    public function set_regla_by_costo(bool $regla_by_costo) : void {
+        $this->regla_by_costo = self::getAsBool($regla_by_costo);
     }
 
     /**
@@ -104,7 +98,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean true si el costo sera calculado basado en el costo de origen.
      */
-    public function get_regla_by_costo() {
+    public function get_regla_by_costo() : bool {
         if (!isset($this->regla_by_costo)) {
             return false;
         }
@@ -116,7 +110,7 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return double el porcentaje sobre costo o precio mercado
      */
-    public function get_regla_porcentaje() {
+    public function get_regla_porcentaje() : float {
         return $this->regla_porcentaje;
     }
 
@@ -125,13 +119,13 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      * El costo o precio de mercado se refieren al indicado por la empresa de origen
      * para el insumo a costear en la empresa destino.
      *
-     * @param double $regla_porcentaje el porcentaje sobre costo o precio mercado
+     * @param float $regla_porcentaje el porcentaje sobre costo o precio mercado
      */
-    public function set_regla_porcentaje($regla_porcentaje) {
+    public function set_regla_porcentaje(float $regla_porcentaje) : void {
         $this->regla_porcentaje = $regla_porcentaje;
     }
 
-    public function &getPKAsArray()
+    public function &getPKAsArray() : array
     {
         $pk['regla_id'] = $this->getId();
         return $pk;
@@ -142,11 +136,9 @@ class ReglasModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity()
+    public function isPKSequenceOrIdentity() : bool
     {
         return true;
     }
 
 }
-
-?>

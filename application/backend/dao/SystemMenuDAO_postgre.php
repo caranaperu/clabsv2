@@ -28,9 +28,9 @@ class SystemMenuDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     /**
      * El orden ya esta prefijado ignorara cual parametro en ese sentido.
      *
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
 
         if ($subOperation == 'fetchForUser') {
             $systemCode = $constraints->getFilterField('sys_systemcode');
@@ -71,18 +71,18 @@ class SystemMenuDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         $sql = 'select sys_systemcode,menu_id,menu_codigo,menu_descripcion,menu_accesstype,menu_parent_id,menu_orden,activo,xmin as "versionId" from  tb_sys_menu ';
         $sql .= 'where menu_id=' . $id;
         return $sql;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         $sql = 'select sys_systemcode,menu_id,menu_codigo,menu_descripcion,menu_accesstype,menu_parent_id,menu_orden,activo,xmin as "versionId" from  tb_sys_menu ';
         $sql .= 'where menu_codigo=' . $code;
         return $sql;
@@ -91,18 +91,25 @@ class SystemMenuDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
     /***********************************************************
      * Por ahora no se usan
      * ********************************************************/
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    /**
+     * @inheritdoc
+     */
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         return NULL;
     }
 
-    protected function getDeleteRecordQuery($id, $versionId) {
+    /**
+     * @inheritdoc
+     */
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return NULL;
     }
 
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    /**
+     * @inheritdoc
+     */
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         return NULL;
     }
 
 }
-
-?>

@@ -13,4 +13,3 @@ $lang['paises_descripcion'] = 'Descripcion';
 $lang['paises_codigo'] = 'Codigo de Pais';
 $lang['ciudades_altura'] = 'Esta en Altura?';
 $lang['versionId'] = 'Version';
-?>

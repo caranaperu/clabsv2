@@ -10,4 +10,3 @@ $lang['msg_pruebastipo_rec_inactivo'] = 'El tipo de prueba ya existe , pero esta
 $lang['pruebas_tipo_codigo'] = 'Codigo de Tipo De Prueba';
 $lang['pruebas_tipo_descripcion'] = 'Descripcion';
 $lang['versionId'] = 'Version';
-?>

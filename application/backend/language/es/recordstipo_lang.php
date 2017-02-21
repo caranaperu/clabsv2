@@ -16,4 +16,3 @@ $lang['records_tipo_clasificacion'] = 'Clasificacion';
 $lang['records_tipo_peso'] = 'Peso';
 $lang['records_tipo_protected'] = 'Protegido';
 $lang['versionId'] = 'Version';
-?>

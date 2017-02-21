@@ -17,4 +17,3 @@ $lang['pruebas_detalle_prueba_codigo'] = 'Codigo de la Prueba';
 $lang['pruebas_detalle_orden'] = 'El orden de la prueba';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

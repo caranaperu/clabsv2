@@ -25,9 +25,9 @@ class MonedaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return MonedaModel
+     * @return \TSLDataModel especificamente como MonedaModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new MonedaModel();
         // Leo el id enviado en el DTO
         $model->set_moneda_codigo($dto->getParameterValue('moneda_codigo'));
@@ -44,9 +44,9 @@ class MonedaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return MonedaModel
+     * @return \TSLDataModel especificamente como MonedaModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new MonedaModel();
         // Leo el id enviado en el DTO
         $model->set_moneda_codigo($dto->getParameterValue('moneda_codigo'));
@@ -61,9 +61,9 @@ class MonedaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
 
     /**
      *
-     * @return MonedaModel
+     * @return \TSLDataModel especificamente como MonedaModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new MonedaModel();
         return $model;
     }
@@ -73,7 +73,7 @@ class MonedaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new MonedaModel();
         $model->set_moneda_codigo($dto->getParameterValue('moneda_codigo'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -83,5 +83,3 @@ class MonedaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     }
 
 }
-
-?>

@@ -1,21 +1,18 @@
 <?php
 
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
  * Modelo fisico de cada item de la cotizacion.
  *
  * @author $Author: aranape $
- * @version $Id: CotizacionModel.php 7 2014-02-11 23:55:54Z aranape $
- * @history , ''
- *
- * $Rev: 7 $
- * $Date: 2014-02-11 18:55:54 -0500 (mar, 11 feb 2014) $
+ * @history , 08-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
-{
+class CotizacionDetalleModel extends TSLDataModel {
 
     protected $cotizacion_detalle_id;
     protected $cotizacion_id;
@@ -24,19 +21,14 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
     protected $unidad_medida_codigo;
     protected $cotizacion_detalle_precio;
     protected $cotizacion_detalle_total;
-    protected $regla_by_costo;
-    protected $regla_porcentaje;
-    protected $tipo_cambio_tasa_compra;
-    protected $tipo_cambio_tasa_venta;
 
-    public function set_cotizacion_detalle_id($cotizacion_detalle_id)
-    {
+
+    public function set_cotizacion_detalle_id(int $cotizacion_detalle_id) : void {
         $this->cotizacion_detalle_id = $cotizacion_detalle_id;
         $this->setId($cotizacion_detalle_id);
     }
 
-    public function get_cotizacion_detalle_id()
-    {
+    public function get_cotizacion_detalle_id() : int {
         return $this->cotizacion_detalle_id;
     }
 
@@ -44,18 +36,16 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * Setea a la cotizacion que corresponde este item.
      *
-     * @param integer $cotizacion_id id de la cotizacion a la que corresponde este item.
+     * @param int $cotizacion_id id de la cotizacion a la que corresponde este item.
      */
-    public function set_cotizacion_id($cotizacion_id)
-    {
+    public function set_cotizacion_id(int $cotizacion_id) : void {
         $this->cotizacion_id = $cotizacion_id;
     }
 
     /**
-     * @return integer con el id de la cotizacion a la que corresponde este item.
+     * @return int con el id de la cotizacion a la que corresponde este item.
      */
-    public function get_cotizacion_id()
-    {
+    public function get_cotizacion_id() : int {
         return $this->cotizacion_id;
     }
 
@@ -65,8 +55,7 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param integer $insumo_id id del insumo a cotizar.
      */
-    public function set_insumo_id($insumo_id)
-    {
+    public function set_insumo_id(int $insumo_id) : void {
         $this->insumo_id = $insumo_id;
     }
 
@@ -74,10 +63,9 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * Retorna el id del insumo a cotizar.
      *
-     * @return integer con el el id del insumo a cotizar.
+     * @return int con el el id del insumo a cotizar.
      */
-    public function get_insumo_id()
-    {
+    public function get_insumo_id() : int {
         return $this->insumo_id;
     }
 
@@ -85,38 +73,36 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * Setea el precio total del  insumo a cotizar..
      *
-     * @param double $cotizacion_detalle_total precio del insumo.
+     * @param float $cotizacion_detalle_total precio del insumo.
      */
-    public function set_cotizacion_detalle_total($cotizacion_detalle_total)
-    {
+    public function set_cotizacion_detalle_total(float $cotizacion_detalle_total) : void {
         $this->cotizacion_detalle_total = $cotizacion_detalle_total;
     }
 
     /**
      * Retorna el el precio total del insumo a cotizar..
      *
-     * @return double con el precio total  del insumo a cotizar..
+     * @return float con el precio total  del insumo a cotizar..
      */
-    public function get_cotizacion_detalle_total()
-    {
+    public function get_cotizacion_detalle_total() : float {
         return $this->cotizacion_detalle_total;
     }
 
     /**
      * Retorna la cantidad a cotizar..
      *
-     * @return double con la cantidad a cotizar.
+     * @return float con la cantidad a cotizar.
      */
-    public function get_cotizacion_detalle_cantidad() {
+    public function get_cotizacion_detalle_cantidad() : float {
         return $this->cotizacion_detalle_cantidad;
     }
 
     /**
      * Setea la cantidad a cotizar..
      *
-     * @param double $cotizacion_detalle_cantidad la cantidad a cotizar.
+     * @param float $cotizacion_detalle_cantidad la cantidad a cotizar.
      */
-    public function set_cotizacion_detalle_cantidad($cotizacion_detalle_cantidad) {
+    public function set_cotizacion_detalle_cantidad(float $cotizacion_detalle_cantidad) : void  {
         $this->cotizacion_detalle_cantidad = $cotizacion_detalle_cantidad;
     }
 
@@ -125,7 +111,7 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return string codigo de la  unidad de medida.
      */
-    public function get_unidad_medida_codigo() {
+    public function get_unidad_medida_codigo() : string {
         return $this->unidad_medida_codigo;
     }
 
@@ -134,118 +120,33 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $unidad_medida_codigo codigo de la unidad de medida
      */
-    public function set_unidad_medida_codigo($unidad_medida_codigo) {
+    public function set_unidad_medida_codigo(string $unidad_medida_codigo) : void {
         $this->unidad_medida_codigo = $unidad_medida_codigo;
     }
 
     /**
      * Retorna el precio unitario del producto.
-     * 
-     * @return double con el precio unitario del producto.
+     *
+     * @return float con el precio unitario del producto.
      */
-    public function get_cotizacion_detalle_precio() {
+    public function get_cotizacion_detalle_precio() : float {
         return $this->cotizacion_detalle_precio;
     }
 
     /**
      * Setea el precio unitario del producto.
-     * 
-     * @param double $cotizacion_detalle_precio el precio unitario del producto.
+     *
+     * @param float $cotizacion_detalle_precio el precio unitario del producto.
      */
-    public function set_cotizacion_detalle_precio($cotizacion_detalle_precio) {
+    public function set_cotizacion_detalle_precio(float $cotizacion_detalle_precio) : void {
         $this->cotizacion_detalle_precio = $cotizacion_detalle_precio;
     }
-    
-    
-    /**
-     * Setea con que tipo de regla se determino es precio de
-     * cotizacion , esto es por motivos historicos.
-     *
-     * @param boolean $regla_by_costo true/false/null
-     */
-    public function setReglaByCosto($regla_by_costo) {
-        $this->regla_by_costo = $regla_by_costo;
-    }
 
 
-    /**
-     *
-     * Retorna con que tipo de regla se determino es precio de
-     * cotizacion , esto es por motivos historicos.
-     *
-     * En el caso que se un cliente final este valor sera null.
-     *
-     * @return boolean true/false/null
-     */
-    public function getReglaByCosto() {
-        return $this->regla_by_costo;
-    }
 
-    /**
-     * Setea el porcentaje de la regla aplicada al costo,
-     * en el caso que se cotize a un cliente final puede ser null.
-     *
-     * @param double $regla_porcentaje el porcentaje o null.
-     */
-    public function setReglaPorcentaje($regla_porcentaje) {
-        $this->regla_porcentaje = $regla_porcentaje;
-    }
-
-    /**
-     * Retorna el porcentaje de la regla aplicada al costo,
-     * en el caso que se cotize a un cliente final puede ser null.
-     *
-     * @return double un valor o null
-     */
-    public function getReglaPorcentaje() {
-        return $this->regla_porcentaje;
-    }
-
-    /**
-     * Setea el tipo de cambio de compra que se aplico
-     * para determinar el precio .
-     *
-     * @param double $tipo_cambio_tasa_compra
-     */
-    public function setTipoCambioTasaCompra($tipo_cambio_tasa_compra) {
-        $this->tipo_cambio_tasa_compra = $tipo_cambio_tasa_compra;
-    }
-
-
-    /**
-     * Retorna el tipo de cambio de compra que se aplico
-     * para determinar el precio .
-     *
-     * @return double con el tc de compra.
-     */
-    public function getTipoCambioTasaCompra() {
-        return $this->tipo_cambio_tasa_compra;
-    }
-
-    /**
-     * Setea el tipo de cambio de ventas que se aplico
-     * para determinar el precio .
-     *
-     * @param double $tipo_cambio_tasa_venta
-     */
-    public function setTipoCambioTasaVenta($tipo_cambio_tasa_venta) {
-        $this->tipo_cambio_tasa_venta = $tipo_cambio_tasa_venta;
-    }
-
-    /**
-     * Retorna el tipo de cambio de venta que se aplico
-     * para determinar el precio .
-     *
-     * @return double con el tc de venta.
-     */
-    public function getTipoCambioTasaVenta() {
-        return $this->tipo_cambio_tasa_venta;
-    }
-
-
-    public function &getPKAsArray()
-    {
+    public function &getPKAsArray() : array {
         $pk['cotizacion_detalle_id'] = $this->getId();
+
         return $pk;
     }
 
@@ -254,11 +155,8 @@ class CotizacionDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity()
-    {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
 }
-
-?>

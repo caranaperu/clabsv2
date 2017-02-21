@@ -8,14 +8,10 @@ if (!defined('BASEPATH'))
  * o mezcla.
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: RegionesModel.php 268 2014-06-27 18:11:45Z aranape $
- * @history ''
- *
- * $Date: 2014-06-27 13:11:45 -0500 (vie, 27 jun 2014) $
- * $Rev: 268 $
+ * @history , 08-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
+class TipoInsumoModel extends TSLDataModel {
 
     protected $tinsumo_codigo;
     protected $tinsumo_descripcion;
@@ -26,7 +22,7 @@ class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $tinsumo_codigo codigo  unico del tipo de insumo
      */
-    public function set_tinsumo_codigo($tinsumo_codigo) {
+    public function set_tinsumo_codigo(string $tinsumo_codigo) : void {
         $this->tinsumo_codigo = $tinsumo_codigo;
         $this->setId($tinsumo_codigo);
     }
@@ -34,7 +30,7 @@ class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
     /**
      * @return string retorna el codigo unico del tipo de insumo.
      */
-    public function get_tinsumo_codigo() {
+    public function get_tinsumo_codigo() : string {
         return $this->tinsumo_codigo;
     }
 
@@ -43,8 +39,9 @@ class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $tinsumo_descripcion nombre del tipo de insumo.
      */
-    public function set_tinsumo_descripcion($tinsumo_descripcion) {
+    public function set_tinsumo_descripcion(string $tinsumo_descripcion) : void {
         $this->tinsumo_descripcion = $tinsumo_descripcion;
+
     }
 
     /**
@@ -53,14 +50,18 @@ class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param boolean $tinsumo_protected TRUE si el tipo de insumo es protegido
      */
-    public function set_tinsumo_protected($tinsumo_protected) {
-        $this->tinsumo_protected = $tinsumo_protected;
+    public function set_tinsumo_protected(bool $tinsumo_protected) : void {
+        $this->tinsumo_protected = self::getAsBool($tinsumo_protected);
     }
 
     /**
      * @return boolean retorna si el tipo de insumo es protegido
      */
-    public function get_tinsumo_protected() {
+    public function get_tinsumo_protected() : bool {
+        if (!isset($this->tinsumo_protected)) {
+            return false;
+        }
+
         return $this->tinsumo_protected;
     }
 
@@ -68,16 +69,14 @@ class TipoInsumoModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el nombre del tipo de insumo.
      */
-    public function get_tinsumo_descripcion() {
+    public function get_tinsumo_descripcion() : string {
         return $this->tinsumo_descripcion;
     }
 
 
-    public function &getPKAsArray() {
+    public function &getPKAsArray() : array {
         $pk['tinsumo_codigo'] = $this->getId();
         return $pk;
     }
 
 }
-
-?>

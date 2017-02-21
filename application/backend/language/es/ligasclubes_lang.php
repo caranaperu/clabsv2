@@ -18,4 +18,3 @@ $lang['ligasclubes_desde'] = 'La fecha desde la cual pertenece a la liga';
 $lang['ligasclubes_hasta'] = 'La fecha hasta la cual pertenecio a la liga';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

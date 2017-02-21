@@ -56,4 +56,3 @@ $config['v_usuario_perfil'] = array(
         )
     )
 );
-?>

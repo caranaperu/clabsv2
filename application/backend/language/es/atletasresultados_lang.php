@@ -22,4 +22,3 @@ $lang['atletas_resultados_puntos'] = 'Puntos';
 $lang['atletas_resultados_viento'] = 'Viento';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

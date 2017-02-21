@@ -13,4 +13,3 @@ $lang['pruebas_clasificacion_descripcion'] = 'Descripcion';
 $lang['pruebas_tipo_codigo'] = 'Codigo de Tipo De Prueba';
 $lang['unidad_medida_codigo'] = 'Codigo de Unidad de Medida';
 $lang['versionId'] = 'Version';
-?>

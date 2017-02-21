@@ -47,7 +47,7 @@ $config['v_cotizacion_detalle'] = [
         [
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ],
         [
             'field' => 'versionId',
@@ -101,8 +101,7 @@ $config['v_cotizacion_detalle'] = [
         [
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ]
     ]
 ];
-?>

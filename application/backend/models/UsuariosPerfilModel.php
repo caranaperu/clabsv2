@@ -8,25 +8,21 @@ if (!defined('BASEPATH'))
  * para cada sistema.
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: UsuariosPerfilModel.php 388 2014-01-11 09:17:22Z aranape $
- * @history ''
- *
- * $Date: 2014-01-11 04:17:22 -0500 (sáb, 11 ene 2014) $
- * $Rev: 388 $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class UsuariosPerfilModel extends \app\common\model\TSLAppCommonBaseModel {
+class UsuariosPerfilModel extends TSLDataModel {
 
     protected $usuario_perfil_id;
     protected $usuarios_id;
     protected $perfil_id;
 
-    public function set_usuario_perfil_id($usuario_perfil_id) {
+    public function set_usuario_perfil_id(int $usuario_perfil_id) : void {
         $this->usuario_perfil_id = $usuario_perfil_id;
         $this->setId($usuario_perfil_id);
     }
 
-    public function get_usuario_perfil_id() {
+    public function get_usuario_perfil_id() : int {
         return $this->usuario_perfil_id;
     }
 
@@ -36,7 +32,7 @@ class UsuariosPerfilModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return int el id del usuario al que se le asocia el perfil
      */
-    public function get_usuarios_id() {
+    public function get_usuarios_id() : int {
         return $this->usuarios_id;
     }
 
@@ -47,7 +43,7 @@ class UsuariosPerfilModel extends \app\common\model\TSLAppCommonBaseModel {
      * @param int $usuarios_id el id unico del usuario al que se asocian los
      * perfiles.
      */
-    public function set_usuarios_id($usuarios_id) {
+    public function set_usuarios_id(int $usuarios_id) : void {
         $this->usuarios_id = $usuarios_id;
     }
 
@@ -55,7 +51,7 @@ class UsuariosPerfilModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return int el id unico del perfil a asociar al usuario
      */
-    public function get_perfil_id() {
+    public function get_perfil_id() : int {
         return $this->perfil_id;
     }
 
@@ -64,30 +60,24 @@ class UsuariosPerfilModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param int $perfil_id con el unique id del perfil
      */
-    public function set_perfil_id($perfil_id) {
+    public function set_perfil_id(int $perfil_id) : void {
         $this->perfil_id = $perfil_id;
     }
 
 
 
-/*    public function getUniqueCode() {
-        return $this->get_usuario_perfil_id();
-    }*/
-
     /**
      * Indica que su pk o id es una secuencia o campo identity
      *
-     * @return boolean true
+     * @return bool true
      */
-    public function isPKSequenceOrIdentity() {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
-    public function &getPKAsArray() {
+    public function &getPKAsArray() : array {
         $pk['usuario_perfil_id'] = $this->getId();
         return $pk;
     }
 
 }
-
-?>

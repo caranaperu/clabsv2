@@ -31,4 +31,3 @@
     $lang['atletas_norma_zapatillas'] = 'Norma Zapatillas';
     $lang['atletas_url_foto'] = 'Direccion de Foto';
     $lang['versionId'] = 'Version';
-?>

@@ -24,9 +24,9 @@ class EntidadBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return EntidadModel
+     * @return \TSLDataModel especificamente como EntidadModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EntidadModel();
         // Leo el id enviado en el DTO
         $model->set_entidad_razon_social($dto->getParameterValue('entidad_razon_social'));
@@ -45,9 +45,9 @@ class EntidadBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return EntidadModel
+     * @return \TSLDataModel especificamente como EntidadModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EntidadModel();
         // Leo el id enviado en el DTO
         $model->set_entidad_id($dto->getParameterValue('entidad_id'));
@@ -66,9 +66,9 @@ class EntidadBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
 
     /**
      *
-     * @return EntidadModel
+     * @return \TSLDataModel especificamente como EntidadModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new EntidadModel();
         return $model;
     }
@@ -78,7 +78,7 @@ class EntidadBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EntidadModel();
         $model->set_entidad_id($dto->getParameterValue('entidad_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -88,4 +88,3 @@ class EntidadBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
 
 }
 
-?>

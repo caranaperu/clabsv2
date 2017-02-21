@@ -14,4 +14,3 @@
     $lang['regla_by_costo'] = 'El tipo de regla';
     $lang['regla_porcentaje'] = 'El porcentaje';
     $lang['versionId'] = 'Version';
-?>

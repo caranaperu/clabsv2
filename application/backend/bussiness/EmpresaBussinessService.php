@@ -24,9 +24,9 @@ class EmpresaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return EmpresaModel
+     * @return \TSLDataModel especificamente como EmpresaModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EmpresaModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_razon_social($dto->getParameterValue('empresa_razon_social'));
@@ -46,9 +46,9 @@ class EmpresaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return EmpresaModel
+     * @return \TSLDataModel especificamente como EmpresaModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EmpresaModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
@@ -68,9 +68,9 @@ class EmpresaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
 
     /**
      *
-     * @return EmpresaModel
+     * @return \TSLDataModel especificamente como EmpresaModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new EmpresaModel();
         return $model;
     }
@@ -80,7 +80,7 @@ class EmpresaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new EmpresaModel();
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -89,5 +89,3 @@ class EmpresaBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessS
     }
 
 }
-
-?>

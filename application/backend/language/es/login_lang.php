@@ -5,4 +5,3 @@ $lang['msg_login_recdeleted'] = 'El Usuario no existe';
 
 $lang['usuarios_code'] = 'Codigo de Usuario';
 $lang['usuarios_password'] = 'Password de Usuario';
-?>

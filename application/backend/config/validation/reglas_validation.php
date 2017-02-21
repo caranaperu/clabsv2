@@ -27,12 +27,12 @@
             [
                 'field' => 'regla_by_costo',
                 'label' => 'lang:regla_by_costo',
-                'rules' => 'required|is_bool'
+                'rules' => 'required|is_boolean'
             ],
             [
                 'field' => 'regla_porcentaje',
                 'label' => 'lang:regla_porcentaje',
-                'rules' => 'required|decimal|les_than[100.00]'
+                'rules' => 'required|decimal|less_than[100.00]'
             ],
             [
                 'field' => 'versionId',
@@ -66,13 +66,12 @@
             [
                 'field' => 'regla_by_costo',
                 'label' => 'lang:regla_by_costo',
-                'rules' => 'required|is_bool'
+                'rules' => 'required|is_boolean'
             ],
             [
                 'field' => 'regla_porcentaje',
                 'label' => 'lang:regla_porcentaje',
-                'rules' => 'required|decimal|les_than[100.00]'
+                'rules' => 'required|decimal|less_than[100.00]'
             ]
         ]
     ];
-?>

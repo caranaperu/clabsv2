@@ -37,9 +37,9 @@ class LoginController extends app\common\controller\TSLAppDefaultController {
                 } else {
                     return false;
                 }
-                return true;
             }
-        } catch (Exception $ex) {
+            return false;
+        } catch (Throwable $ex) {
             $outMessage = &$this->DTO->getOutMessage();
             // TODO: Internacionalizar.
             $processError = new TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);

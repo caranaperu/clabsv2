@@ -10,4 +10,3 @@ $config['v_appcategorias'] = array(
     )
 
 );
-?>

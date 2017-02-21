@@ -25,9 +25,9 @@
          *
          * @param \TSLIDataTransferObj $dto
          *
-         * @return TipoCambioModel
+         * @return \TSLDataModel especificamente TipoCambioModel
          */
-        protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+        protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new TipoCambioModel();
             // Leo el id enviado en el DTO
             $model->set_moneda_codigo_origen($dto->getParameterValue('moneda_codigo_origen'));
@@ -47,9 +47,9 @@
          *
          * @param \TSLIDataTransferObj $dto
          *
-         * @return TipoCambioModel
+         * @return \TSLDataModel especificamente como TipoCambioModel
          */
-        protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+        protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new TipoCambioModel();
             // Leo el id enviado en el DTO
             $model->set_tipo_cambio_id($dto->getParameterValue('tipo_cambio_id'));
@@ -70,9 +70,9 @@
 
         /**
          *
-         * @return AtletasResultadosModel
+         * @return \TSLDataModel especificamente como TipoCambioModel
          */
-        protected function &getEmptyModel() {
+        protected function &getEmptyModel() : \TSLDataModel {
             $model = new TipoCambioModel();
 
             return $model;
@@ -84,7 +84,7 @@
          *
          * @return \TSLDataModel
          */
-        protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+        protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new TipoCambioModel();
             $model->set_tipo_cambio_id($dto->getParameterValue('tipo_cambio_id'));
             $model->setVersionId($dto->getParameterValue('versionId'));
@@ -94,5 +94,3 @@
         }
 
     }
-
-?>

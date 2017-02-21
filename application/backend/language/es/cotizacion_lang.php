@@ -24,4 +24,3 @@ $lang['cotizacion_fecha'] = 'Fecha';
 $lang['cotizacion_cerrada'] = 'Cerrada ?';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

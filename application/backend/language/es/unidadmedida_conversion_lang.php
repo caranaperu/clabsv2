@@ -20,4 +20,3 @@ $lang['unidad_medida_destino'] = 'Unidad de Medida Destino';
 $lang['unidad_medida_conversion_factor'] = 'Factor de conversion';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

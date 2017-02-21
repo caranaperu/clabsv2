@@ -20,4 +20,3 @@ $lang['competencias_fecha_final'] = 'Fecha Final';
 $lang['competencias_es_oficial'] = 'Es competencia inicial';
 $lang['competencias_clasificacion'] = 'Clasificacion';
 $lang['versionId'] = 'Version';
-?>

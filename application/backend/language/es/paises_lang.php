@@ -15,4 +15,3 @@
     $lang['paises_use_docid'] = 'Usa documento de identidad';
     $lang['regiones_codigo'] = 'Codigo de la region';
     $lang['versionId'] = 'Version';
-?>

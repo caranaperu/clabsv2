@@ -22,7 +22,7 @@ $config['v_tinsumo'] = array(
         array(
             'field' => 'tinsumo_protected',
             'label' => 'lang:tinsumo_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -56,8 +56,7 @@ $config['v_tinsumo'] = array(
         array(
             'field' => 'tinsumo_protected',
             'label' => 'lang:tinsumo_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         )
     )
 );
-?>

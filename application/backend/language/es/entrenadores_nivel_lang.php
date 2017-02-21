@@ -11,4 +11,3 @@ $lang['msg_entrenadores_nivel_rec_inactivo'] = 'El nivel ya existe , pero esta i
 $lang['entrenadores_nivel_codigo'] = 'Codigo de Nivel';
 $lang['entrenadores_nivel_descripcion'] = 'Descripcion';
 $lang['versionId'] = 'Version';
-?>

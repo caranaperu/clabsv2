@@ -105,4 +105,3 @@ $config['v_cliente'] = array(
         )
     )
 );
-?>

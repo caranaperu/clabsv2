@@ -13,4 +13,3 @@ $lang['tinsumo_codigo'] = 'Codigo de Tipo de Insumo';
 $lang['tinsumo_descripcion'] = 'Descripcion';
 $lang['tinsumo_protected'] = 'Flag de Proteccion';
 $lang['versionId'] = 'Version';
-?>

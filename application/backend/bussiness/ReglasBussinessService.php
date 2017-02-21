@@ -21,14 +21,14 @@
          *
          * @param \TSLIDataTransferObj $dto
          *
-         * @return ReglasModel
+         * @return \TSLDataModel especificamente como ReglasModel
          */
-        protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+        protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new ReglasModel();
             // Leo el id enviado en el DTO
             $model->set_regla_empresa_origen_id($dto->getParameterValue('regla_empresa_origen_id'));
             $model->set_regla_empresa_destino_id($dto->getParameterValue('regla_empresa_destino_id'));
-            $model->set_regla_by_costo($dto->getParameterValue('regla_by_costo'));
+            $model->set_regla_by_costo(($dto->getParameterValue('regla_by_costo') == 'true' ? true : false));
             $model->set_regla_porcentaje($dto->getParameterValue('regla_porcentaje'));
             if ($dto->getParameterValue('activo') != NULL)
                 $model->setActivo($dto->getParameterValue('activo'));
@@ -41,15 +41,15 @@
          *
          * @param \TSLIDataTransferObj $dto
          *
-         * @return ReglasModel
+         * @return \TSLDataModel especificamente como ReglasModel
          */
-        protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+        protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new ReglasModel();
             // Leo el id enviado en el DTO
             $model->set_regla_id($dto->getParameterValue('regla_id'));
             $model->set_regla_empresa_origen_id($dto->getParameterValue('regla_empresa_origen_id'));
             $model->set_regla_empresa_destino_id($dto->getParameterValue('regla_empresa_destino_id'));
-            $model->set_regla_by_costo($dto->getParameterValue('regla_by_costo'));
+            $model->set_regla_by_costo(($dto->getParameterValue('regla_by_costo') == 'true' ? true : false));
             $model->set_regla_porcentaje($dto->getParameterValue('regla_porcentaje'));
             $model->setVersionId($dto->getParameterValue('versionId'));
             if ($dto->getParameterValue('activo') != NULL)
@@ -61,9 +61,9 @@
 
         /**
          *
-         * @return ReglasModel
+         * @return \TSLDataModel especificamente como ReglasModel
          */
-        protected function &getEmptyModel() {
+        protected function &getEmptyModel() : \TSLDataModel {
             $model = new ReglasModel();
 
             return $model;
@@ -75,7 +75,7 @@
          *
          * @return \TSLDataModel
          */
-        protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+        protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
             $model = new ReglasModel();
             $model->set_regla_id($dto->getParameterValue('regla_id'));
             $model->setVersionId($dto->getParameterValue('versionId'));
@@ -85,5 +85,3 @@
         }
 
     }
-
-?>

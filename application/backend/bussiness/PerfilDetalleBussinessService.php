@@ -8,11 +8,7 @@ if (!defined('BASEPATH'))
  *
  * @author $Author: aranape $
  * @since 17-May-2013
- * @version $Id: PerfilDetalleBussinessService.php 402 2014-01-11 09:28:24Z aranape $
- * @history 1.01 , Se agrego soporte para foreign key
- *
- * $Date: 2014-01-11 04:28:24 -0500 (sáb, 11 ene 2014) $
- * $Rev: 402 $
+ * @history , 09-02-2017 , se mejoro el pase de parametros boolenaos en add y update
  */
 class PerfilDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessService {
 
@@ -23,23 +19,23 @@ class PerfilDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBuss
 
     /**
      *
-     * @return \app\common\model\impl\TSLAppPerfilDetalleModel()
+     * @return \TSLDataModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilDetalleModel();
         return $model;
     }
 
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel{
         $model = new \app\common\model\impl\TSLAppPerfilDetalleModel();
 
         $model->set_perfil_id($dto->getParameterValue('perfil_id'));
         $model->set_perfdet_accessdef($dto->getParameterValue('perfdet_accessdef'));
-        $model->set_perfdet_accagregar($dto->getParameterValue('perfdet_accagregar'));
-        $model->set_perfdet_accactualizar($dto->getParameterValue('perfdet_accactualizar'));
-        $model->set_perfdet_accleer($dto->getParameterValue('perfdet_accleer'));
-        $model->set_perfdet_acceliminar($dto->getParameterValue('perfdet_acceliminar'));
-        $model->set_perfdet_accimprimir($dto->getParameterValue('perfdet_accimprimir'));
+        $model->set_perfdet_accagregar(($dto->getParameterValue('perfdet_accagregar') == 'true' ? true : false));
+        $model->set_perfdet_accactualizar(($dto->getParameterValue('perfdet_accactualizar') == 'true' ? true : false));
+        $model->set_perfdet_accleer(($dto->getParameterValue('perfdet_accleer') == 'true' ? true : false));
+        $model->set_perfdet_acceliminar(($dto->getParameterValue('perfdet_acceliminar') == 'true' ? true : false));
+        $model->set_perfdet_accimprimir(($dto->getParameterValue('perfdet_accimprimir') == 'true' ? true : false));
 
         $model->set_menu_id($dto->getParameterValue('menu_id'));
 
@@ -50,7 +46,7 @@ class PerfilDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBuss
         return $model;
     }
 
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilDetalleModel();
         $model->set_perfdet_id($dto->getParameterValue('perfdet_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -58,17 +54,17 @@ class PerfilDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBuss
         return $model;
     }
 
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilDetalleModel();
 
         $model->set_perfdet_id($dto->getParameterValue('perfdet_id'));
         $model->set_perfil_id($dto->getParameterValue('perfil_id'));
         $model->set_perfdet_accessdef($dto->getParameterValue('perfdet_accessdef'));
-        $model->set_perfdet_accagregar($dto->getParameterValue('perfdet_accagregar'));
-        $model->set_perfdet_accactualizar($dto->getParameterValue('perfdet_accactualizar'));
-        $model->set_perfdet_accleer($dto->getParameterValue('perfdet_accleer'));
-        $model->set_perfdet_acceliminar($dto->getParameterValue('perfdet_acceliminar'));
-        $model->set_perfdet_accimprimir($dto->getParameterValue('perfdet_accimprimir'));
+        $model->set_perfdet_accagregar(($dto->getParameterValue('perfdet_accagregar') == 'true' ? true : false));
+        $model->set_perfdet_accactualizar(($dto->getParameterValue('perfdet_accactualizar') == 'true' ? true : false));
+        $model->set_perfdet_accleer(($dto->getParameterValue('perfdet_accleer') == 'true' ? true : false));
+        $model->set_perfdet_acceliminar(($dto->getParameterValue('perfdet_acceliminar') == 'true' ? true : false));
+        $model->set_perfdet_accimprimir(($dto->getParameterValue('perfdet_accimprimir') == 'true' ? true : false));
 
         $model->set_menu_id($dto->getParameterValue('menu_id'));
 
@@ -81,5 +77,3 @@ class PerfilDetalleBussinessService extends \app\common\bussiness\TSLAppCRUDBuss
     }
 
 }
-
-?>

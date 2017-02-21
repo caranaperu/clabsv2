@@ -21,7 +21,7 @@ isc.WinPaisesWindow.addProperties({
             fields: [
                 {name: "paises_codigo", title: "Codigo", width: '25%'},
                 {name: "paises_descripcion", title: "Nombre", width: '55%'},
-                {name: "regiones_codigo", title: "Region", width: '20%'},
+                {name: "regiones_codigo", title: "Region", width: '20%'}
             ],
             canReorderFields: false,
             showFilterEditor: true,

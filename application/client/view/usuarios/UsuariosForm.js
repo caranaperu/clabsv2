@@ -68,18 +68,6 @@ isc.WinUsuariosForm.addProperties({
                 fetchOperation: 'fetchFull',
                 autoFetchData: false,
                 fields: [
-                    {name: "sys_systemcode", title: 'Sistema', editorType: "comboBoxExt",
-                        valueField: "sys_systemcode", displayField: "sistema_descripcion",
-                        optionDataSource: mdl_sistemas, // TODO: podria ser tipo basic para no relleer , ver despues
-                        pickListFields: [{name: "sys_systemcode", width: '25%'}, {name: "sistema_descripcion", title: 'Descripcion', width: '75%'}],
-                        pickListWidth: 260,
-                        completeOnTab: true,
-                        width: '45%',
-                        // Si hay cambios limpiamos el campo de perfil ya que los perfiles estan asociados a sistema
-                        changed: function (form, item, value) {
-                            this.grid.setEditValue(this.rowNum, 1, null);
-                        }
-                    },
                     {name: "perfil_id", editorType: "comboBoxExt",
                         valueField: "perfil_id", displayField: "perfil_descripcion",
                         optionDataSource: mdl_perfil, // TODO: podria ser tipo basic para no relleer , ver despues
@@ -88,29 +76,12 @@ isc.WinUsuariosForm.addProperties({
                         width: '45%',
                         editorProperties: {
                             getPickListFilterCriteria: function () {
-                                var systemcode = this.grid.getEditedCell(this.rowNum, "sys_systemcode");
-                                return {sys_systemcode: systemcode};
+                                return {sys_systemcode: glb_systemident};
                             }
                         }
                     },
                     {name: "activo", width: '10%', canToggle: false}
-                ],
-                /**
-                 * Luego de grabar se actualiza el caampo virtual del codigo del sistema ya que este en realidad no es
-                 * parte del registro de la relacion perfil-usuario
-                 */
-                editComplete: function (rowNum, colNum, newValues, oldValues, editCompletionEvent, dsResponse) {
-                    if (oldValues) {
-                        if (oldValues.sys_systemcode != newValues.sys_systemcode && newValues.sys_systemcode) {
-                            dsResponse.data[0].sys_systemcode = newValues.sys_systemcode;
-
-                        } else {
-                            dsResponse.data[0].sys_systemcode = oldValues.sys_systemcode;
-                        }
-                    } else {
-                        dsResponse.data[0].sys_systemcode = newValues.sys_systemcode;
-                    }
-                }
+                ]
             }});
     },
     initWidget: function () {

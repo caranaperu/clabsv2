@@ -16,4 +16,3 @@ $lang['atletas_carnets_agno'] = 'A&ntilde;o del Carnet';
 $lang['atletas_carnets_fecha'] = 'Fecha del Carnet';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

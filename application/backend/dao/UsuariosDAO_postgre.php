@@ -26,16 +26,16 @@ class UsuariosDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_usuarios where usuarios_id = ' . $id . '  and xmin =' . $versionId;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL)  : string {
         /* @var $record  UsuariosModel  */
         return 'insert into tb_usuarios (usuarios_code,usuarios_password,usuarios_nombre_completo,empresa_id,usuarios_admin,activo,usuario) values(\''.
                 $record->get_usuarios_code() . '\',\'' .
@@ -48,9 +48,9 @@ class UsuariosDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string {
         if ($subOperation == 'fetchJoined') {
             $sql = $this->_getFecthNormalized();
         } else {
@@ -81,17 +81,17 @@ class UsuariosDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL,$subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation);
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         if ($subOperation == 'readAfterSaveJoined' || $subOperation == 'readAfterUpdateJoined') {
             $sql = $this->_getFecthNormalized();
             $sql .= ' WHERE usuarios_id = ' . $code;
@@ -112,9 +112,9 @@ class UsuariosDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
 
     /**
      * Aqui el id es el codigo
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record  UsuariosModel  */
         return 'update tb_usuarios set usuarios_code=\'' . $record->get_usuarios_code() . '\',' .
                 'usuarios_password=\''.$record->get_usuarios_password(). '\',' .
@@ -133,10 +133,8 @@ class UsuariosDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL)  : string {
         return 'SELECT currval(\'tb_usuarios_usuarios_id_seq\')';
     }
 
 }
-
-?>

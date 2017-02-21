@@ -1,4 +1,5 @@
 <?php
+//declare(strict_types=1);
 
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
@@ -8,12 +9,9 @@ if (!defined('BASEPATH'))
  *  tales como listar , agregar , eliminar , etc.
  *
  * @author $Author: aranape@gmail.com $
- * @since 17-May-2013
- * @version $Id: UsuariosBussinessService.php 57 2015-08-23 22:46:22Z aranape@gmail.com $
- * @history 1.01 , Se agrego soporte para foreign key
+ * @history 09-02-2017 Compatibilidad con php 7 , manejo del booleano se tuvo que ajustar.
  *
- * $Date: 2015-08-23 17:46:22 -0500 (dom, 23 ago 2015) $
- * $Rev: 57 $
+ *
  */
 class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessService {
 
@@ -25,15 +23,15 @@ class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
     /**
      * NO usada
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return \TSLDataModel en este caso UsuariosModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosModel();
         $model->set_usuarios_code($dto->getParameterValue('usuarios_code'));
         $model->set_usuarios_password($dto->getParameterValue('usuarios_password'));
         $model->set_usuarios_nombre_completo($dto->getParameterValue('usuarios_nombre_completo'));
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
-        $model->set_usuarios_admin($dto->getParameterValue('usuarios_admin'));
+        $model->set_usuarios_admin(($dto->getParameterValue('usuarios_admin') == 'true' ? true : false));
 
         if ($dto->getParameterValue('activo') != NULL) {
             $model->setActivo($dto->getParameterValue('activo'));
@@ -47,16 +45,16 @@ class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
     /**
      * NO USADA
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return  \TSLDataModel en este caso UsuariosModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto): \TSLDataModel {
         $model = new UsuariosModel();
 
         $model->set_usuarios_id($dto->getParameterValue('usuarios_id'));
         $model->set_usuarios_code($dto->getParameterValue('usuarios_code'));
         $model->set_usuarios_password($dto->getParameterValue('usuarios_password'));
         $model->set_usuarios_nombre_completo($dto->getParameterValue('usuarios_nombre_completo'));
-        $model->set_usuarios_admin($dto->getParameterValue('usuarios_admin'));
+        $model->set_usuarios_admin(($dto->getParameterValue('usuarios_admin') == 'true' ? true : false));
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
 
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -72,9 +70,9 @@ class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
 
     /**
      *
-     * @return UsuariosModel
+     * @return \TSLDataModel en este caso UsuariosModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new UsuariosModel();
         return $model;
     }
@@ -84,7 +82,7 @@ class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new UsuariosModel();
         $model->set_usuarios_id($dto->getParameterValue('usuarios_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -93,5 +91,3 @@ class UsuariosBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
     }
 
 }
-
-?>

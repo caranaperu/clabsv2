@@ -22,12 +22,12 @@ $config['v_tcostos'] = array(
         array(
             'field' => 'tcostos_protected',
             'label' => 'lang:tcostos_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'tcostos_indirecto',
             'label' => 'lang:tinsumo_indirecto',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -61,13 +61,12 @@ $config['v_tcostos'] = array(
         array(
             'field' => 'tcostos_protected',
             'label' => 'lang:tcostos_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'tcostos_indirecto',
             'label' => 'lang:tinsumo_indirecto',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         )
     )
 );
-?>

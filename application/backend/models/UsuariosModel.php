@@ -7,14 +7,10 @@ if (!defined('BASEPATH'))
  * Modelo  para definir los usuarios del sistema
  *
  * @author  $Author: aranape@gmail.com $
- * @since   06-FEB-2013
- * @version $Id: UsuariosModel.php 57 2015-08-23 22:46:22Z aranape@gmail.com $
- * @history ''
- *
- * $Date: 2015-08-23 17:46:22 -0500 (dom, 23 ago 2015) $
- * $Rev: 57 $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1.
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
+class UsuariosModel extends TSLDataModel {
 
     protected $usuarios_id;
     protected $usuarios_code;
@@ -24,12 +20,12 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
     protected $empresa_id;
 
 
-    public function set_usuarios_id($usuarios_id) {
+    public function set_usuarios_id(int $usuarios_id) {
         $this->usuarios_id = $usuarios_id;
         $this->setId($usuarios_id);
     }
 
-    public function get_usuarios_id() {
+    public function get_usuarios_id() : int {
         return $this->usuarios_id;
     }
 
@@ -38,7 +34,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $usuarios_code
      */
-    public function set_usuarios_code($usuarios_code) {
+    public function set_usuarios_code(string $usuarios_code) : void {
         $this->usuarios_code = $usuarios_code;
     }
 
@@ -46,7 +42,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el codigo unico del usuario
      */
-    public function get_usuarios_code() {
+    public function get_usuarios_code() : string {
         return $this->usuarios_code;
     }
 
@@ -56,7 +52,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $usuarios_password
      */
-    public function set_usuarios_password($usuarios_password) {
+    public function set_usuarios_password(string $usuarios_password) : void {
         $this->usuarios_password = $usuarios_password;
     }
 
@@ -66,7 +62,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string
      */
-    public function get_usuarios_password() {
+    public function get_usuarios_password() : string {
         return $this->usuarios_password;
     }
 
@@ -75,7 +71,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $usuarios_nombre_completo
      */
-    public function set_usuarios_nombre_completo($usuarios_nombre_completo) {
+    public function set_usuarios_nombre_completo(string $usuarios_nombre_completo) : void {
         $this->usuarios_nombre_completo = $usuarios_nombre_completo;
     }
 
@@ -83,7 +79,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con el nombre completo del usuario
      */
-    public function get_usuarios_nombre_completo() {
+    public function get_usuarios_nombre_completo() : string {
         return $this->usuarios_nombre_completo;
     }
 
@@ -92,8 +88,8 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param boolean $usuarios_admin true si es administrados.
      */
-    public function set_usuarios_admin($usuarios_admin) {
-        $this->usuarios_admin = UsuariosModel::getAsBool($usuarios_admin);
+    public function set_usuarios_admin(bool $usuarios_admin) : void {
+        $this->usuarios_admin = self::getAsBool($usuarios_admin);
     }
 
     /**
@@ -101,7 +97,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return boolean
      */
-    public function get_usuarios_admin() {
+    public function get_usuarios_admin() : bool {
         return $this->usuarios_admin;
     }
 
@@ -111,7 +107,7 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return integer con el id al que pertenece el usuario.
      */
-    public function get_empresa_id() {
+    public function get_empresa_id() : int {
         return $this->empresa_id;
     }
 
@@ -120,11 +116,11 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param integer $empresa_id con el id de la empresa.
      */
-    public function set_empresa_id($empresa_id) {
+    public function set_empresa_id(int $empresa_id) {
         $this->empresa_id = $empresa_id;
     }
 
-    public function &getPKAsArray() {
+    public function &getPKAsArray() : array {
         $pk['usuarios_id'] = $this->getId();
         return $pk;
     }
@@ -132,12 +128,10 @@ class UsuariosModel extends \app\common\model\TSLAppCommonBaseModel {
     /**
      * Indica que su pk o id es una secuencia o campo identity
      *
-     * @return boolean true
+     * @return bool true
      */
-    public function isPKSequenceOrIdentity() {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
 }
-
-?>

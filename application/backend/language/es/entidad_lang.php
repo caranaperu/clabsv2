@@ -16,4 +16,3 @@ $lang['entidad_razon_social'] = 'Razon Social';
 $lang['entidad_correo']= 'Correo';
 $lang['entidad_fax']= 'Fax';
 $lang['versionId'] = 'Version';
-?>

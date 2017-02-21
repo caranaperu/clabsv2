@@ -24,4 +24,3 @@ $lang['producto_detalle_valor'] = 'Valor';
 $lang['producto_detalle_merma'] = 'Merma';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

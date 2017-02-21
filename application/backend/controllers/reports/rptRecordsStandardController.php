@@ -21,15 +21,15 @@ class rptRecordsStandardController extends TSLReportJasperController {
         parent::__construct();
     }
 
-    protected function getReportURI() {
+    protected function getReportURI() : string {
         return '/reports/atletismo/rptAtlRecordsStandard';
     }
 
-    protected function getTmpOutputDirectory() {
+    protected function getTmpOutputDirectory() : string {
         return '/var/www/tmp/';
     }
 
-    protected function &getInputReportParamsList() {
+    protected function &getInputReportParamsList() : array {
         $dependencia = $this->input->get_post('virt_dependencia');
         if (isset($dependencia)) {
             // convertimos el parametro de campo virtual a los reales.

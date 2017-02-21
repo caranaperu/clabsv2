@@ -23,4 +23,3 @@ $lang['cotizacion_detalle_precio']='Precio';
 $lang['cotizacion_detalle_total'] = 'Total';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

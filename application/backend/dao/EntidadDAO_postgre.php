@@ -27,16 +27,16 @@ class EntidadDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_entidad where entidad_id = \'' . $id . '\'  and xmin =' . $versionId;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         /**
          * @var EntidadModel $record
          */
@@ -56,9 +56,9 @@ class EntidadDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
      * Siempre debe devolver un de haber mas de uno , la data habria
      * sido manipulada externamente.
      *
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si la busqueda permite buscar solo activos e inactivos
         $sql = 'select entidad_id,entidad_razon_social,entidad_ruc,entidad_direccion,' .
                 'entidad_telefonos,entidad_fax,entidad_correo,activo,xmin as "versionId" from  tb_entidad LIMIT 1';
@@ -66,26 +66,26 @@ class EntidadDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // en este caso el codigo es la llave primaria
         return $this->getRecordQueryByCode($id,$constraints, $subOperation);
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return 'select entidad_id,entidad_razon_social,entidad_ruc,entidad_direccion,' .
                 'entidad_telefonos,entidad_fax,entidad_correo,activo,xmin as "versionId" from tb_entidad where "entidad_id" = ' .
                 ($code === NULL ? 'null' : $code);
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         /* @var $record  EntidadModel  */
         $sql = 'update tb_entidad set entidad_razon_social=\'' . $record->get_entidad_razon_social() . '\'' .
                 ',entidad_ruc=\'' . $record->get_entidad_ruc() . '\'' .
@@ -99,10 +99,8 @@ class EntidadDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string {
         return 'SELECT currval(\'tb_entidad_entidad_id_seq\')';
     }
 
 }
-
-?>

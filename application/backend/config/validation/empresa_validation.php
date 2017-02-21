@@ -95,4 +95,3 @@ $config['v_empresa'] = array(
         )
     )
 );
-?>

@@ -18,4 +18,3 @@ $lang['entrenadoresatletas_desde'] = 'La fecha desde la cual fue entrenado por e
 $lang['entrenadoresatletas_hasta'] = 'La fecha hasta la cual fue entrenado por el entrenador';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

@@ -32,7 +32,7 @@ $config['v_usuarios'] = array(
         array(
             'field' => 'usuarios_admin',
             'label' => 'lang:usuarios_admin',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -71,8 +71,7 @@ $config['v_usuarios'] = array(
         array(
             'field' => 'usuarios_admin',
             'label' => 'lang:usuarios_admin',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         )
     )
 );
-?>

@@ -17,4 +17,3 @@ $lang['usuarios_nombre_completo'] = 'Nombres del Usuario';
 $lang['usuarios_admin'] = 'Administrador?';
 $lang['empresa_id'] = 'Empresa';
 $lang['versionId'] = 'Version';
-?>

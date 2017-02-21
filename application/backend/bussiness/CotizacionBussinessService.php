@@ -27,15 +27,15 @@ class CotizacionBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
      * momento del add y no puede ser determinado desde el cliente.
      *
      * @param \TSLIDataTransferObj $dto
-     * @return CotizacionModel
+     * @return \TSLDataModel especificamente como CotizacionModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionModel();
         // Leo el id enviado en el DTO
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
         $model->set_cliente_id($dto->getParameterValue('cliente_id'));
-        $model->set_cotizacion_es_cliente_real($dto->getParameterValue('cotizacion_es_cliente_real'));
-        $model->set_cotizacion_cerrada($dto->getParameterValue('cotizacion_cerrada'));
+        $model->set_cotizacion_es_cliente_real(($dto->getParameterValue('cotizacion_es_cliente_real')== 'true' ? true : false));
+        $model->set_cotizacion_cerrada(($dto->getParameterValue('cotizacion_cerrada')== 'true' ? true : false));
         $model->set_moneda_codigo($dto->getParameterValue('moneda_codigo'));
         $model->set_cotizacion_fecha($dto->getParameterValue('cotizacion_fecha'));
 
@@ -48,16 +48,16 @@ class CotizacionBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return CotizacionModel
+     * @return \TSLDataModel especificamente como CotizacionModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionModel();
         // Leo el id enviado en el DTO
         $model->set_cotizacion_id($dto->getParameterValue('cotizacion_id'));
         $model->set_empresa_id($dto->getParameterValue('empresa_id'));
         $model->set_cliente_id($dto->getParameterValue('cliente_id'));
-        $model->set_cotizacion_es_cliente_real($dto->getParameterValue('cotizacion_es_cliente_real'));
-        $model->set_cotizacion_cerrada($dto->getParameterValue('cotizacion_cerrada'));
+        $model->set_cotizacion_es_cliente_real(($dto->getParameterValue('cotizacion_es_cliente_real')== 'true' ? true : false));
+        $model->set_cotizacion_cerrada(($dto->getParameterValue('cotizacion_cerrada') == 'true' ? true : false));
         $model->set_cotizacion_numero($dto->getParameterValue('cotizacion_numero'));
         $model->set_moneda_codigo($dto->getParameterValue('moneda_codigo'));
         $model->set_cotizacion_fecha($dto->getParameterValue('cotizacion_fecha'));
@@ -72,9 +72,9 @@ class CotizacionBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
 
     /**
      *
-     * @return CotizacionModel
+     * @return \TSLDataModel especificamente como CotizacionModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new CotizacionModel();
         return $model;
     }
@@ -84,7 +84,7 @@ class CotizacionBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new CotizacionModel();
         $model->set_cotizacion_id($dto->getParameterValue('cotizacion_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -95,4 +95,3 @@ class CotizacionBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
 
 }
 
-?>

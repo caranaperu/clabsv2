@@ -25,4 +25,3 @@ $lang['apppruebas_viento_limite_multiple'] = 'Viento (Combinada)';
 $lang['apppruebas_nro_atletas'] = 'Viento (Combinada)';
 $lang['apppruebas_factor_manual'] = 'Factor de correccion de manual a electronico';
 $lang['versionId'] = 'Version';
-?>

@@ -33,4 +33,3 @@ $lang['atletas_resultados_puesto'] = 'Puesto en la prueba';
 $lang['atletas_resultados_puntos'] = 'Puntos de la prueba';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

@@ -14,4 +14,3 @@ $lang['msg_tcliente_rec_inactivo'] = 'El tipo de cliente ya existe , pero esta i
 $lang['tipo_empresa_codigo'] = 'Codigo De Tipo De Empresa';
 $lang['tipo_empresa_descripcion'] = 'Descripcion';
 $lang['versionId'] = 'Version';
-?>

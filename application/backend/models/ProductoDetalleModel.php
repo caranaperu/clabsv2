@@ -1,22 +1,19 @@
 <?php
 
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
  * Modelo de entidad fisica que representa los datos de los items que componen un producto,
  * estos pueden ser otro producto o un insumo.
  *
  * @author $Author: aranape $
- * @version $Id: EntidadModel.php 7 2014-02-11 23:55:54Z aranape $
- * @history , ''
- *
- * $Rev: 7 $
- * $Date: 2014-02-11 18:55:54 -0500 (mar, 11 feb 2014) $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
-{
+class ProductoDetalleModel extends TSLDataModel {
 
     protected $producto_detalle_id;
     protected $insumo_id_origen;
@@ -28,14 +25,12 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
     protected $producto_detalle_merma;
 
 
-    public function set_producto_detalle_id($producto_detalle_id)
-    {
+    public function set_producto_detalle_id(int $producto_detalle_id): void {
         $this->producto_detalle_id = $producto_detalle_id;
         $this->setId($producto_detalle_id);
     }
 
-    public function get_producto_detalle_id()
-    {
+    public function get_producto_detalle_id(): int {
         return $this->producto_detalle_id;
     }
 
@@ -43,10 +38,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Setea el id del insumo (producto) del cual sera comoponente
      * este registro.
      *
-     * @param $insumo_id el id del insumo(producto) del cual es componente.
+     * @param int $insumo_id_origen el id del insumo(producto) del cual es componente.
      */
-    public function set_insumo_id_origen($insumo_id_origen)
-    {
+    public function set_insumo_id_origen(int $insumo_id_origen): void {
         $this->insumo_id_origen = $insumo_id_origen;
     }
 
@@ -56,8 +50,7 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return integer con el id del insumo (producto origen).
      */
-    public function get_insumo_id_origen()
-    {
+    public function get_insumo_id_origen(): int {
         return $this->insumo_id_origen;
     }
 
@@ -67,10 +60,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * producto principal , este puede ser insumo u otro
      * producto.
      *
-     * @param $insumo_id el ide del insumo o producto parte de este.
+     * @param int $insumo_id el ide del insumo o producto parte de este.
      */
-    public function set_insumo_id($insumo_id)
-    {
+    public function set_insumo_id(int $insumo_id): void {
         $this->insumo_id = $insumo_id;
     }
 
@@ -81,8 +73,7 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return integer con el id del insumo.
      */
-    public function get_insumo_id()
-    {
+    public function get_insumo_id(): int {
         return $this->insumo_id;
     }
 
@@ -91,7 +82,7 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return int empresa_id con el id de la empresa asociada a este item.
      */
-    public function get_empresa_id() {
+    public function get_empresa_id(): int {
         return $this->empresa_id;
     }
 
@@ -102,7 +93,7 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param int $empresa_id con el id de la empresa asociada a este item
      */
-    public function set_empresa_id($empresa_id) {
+    public function set_empresa_id(int $empresa_id): void {
         $this->empresa_id = $empresa_id;
     }
 
@@ -110,10 +101,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Setea el codigo de la unidad de medida en la que se costeara este
      * insumo o producto.
      *
-     * @param $unidad_medida_codigo codigo de la unidad de medida en que se costeara.
+     * @param string $unidad_medida_codigo codigo de la unidad de medida en que se costeara.
      */
-    public function set_unidad_medida_codigo($unidad_medida_codigo)
-    {
+    public function set_unidad_medida_codigo(string $unidad_medida_codigo): void {
         $this->unidad_medida_codigo = $unidad_medida_codigo;
     }
 
@@ -124,8 +114,7 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return string codigo de la unidad de medida en que se costeara.
      */
-    public function get_unidad_medida_codigo()
-    {
+    public function get_unidad_medida_codigo(): string {
         return $this->unidad_medida_codigo;
     }
 
@@ -133,10 +122,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Setea la cantidad en las unidades de medida en que se costeara este elemento dentro
      * del producto al que aporta.
      *
-     * @param double $producto_detalle_cantidad cantidad en las unidades de medida en que se costeara.
+     * @param float $producto_detalle_cantidad cantidad en las unidades de medida en que se costeara.
      */
-    public function set_producto_detalle_cantidad($producto_detalle_cantidad)
-    {
+    public function set_producto_detalle_cantidad(float $producto_detalle_cantidad): void {
         $this->producto_detalle_cantidad = $producto_detalle_cantidad;
     }
 
@@ -145,10 +133,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Retorna la cantidad en las unidades de medida en que se costeara este elemento dentro
      * del producto al que aporta.
      *
-     * @return double con la cantidad.
+     * @return float con la cantidad.
      */
-    public function get_producto_detalle_cantidad()
-    {
+    public function get_producto_detalle_cantidad(): float {
         return $this->producto_detalle_cantidad;
     }
 
@@ -156,10 +143,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Setea el valor de base que sirve para calcular el costo , este debe estar en la
      * moneda original del insumo / producto siempre.
      *
-     * @param double $producto_detalle_valor valor de base que sirve para calcular el costo.
+     * @param float $producto_detalle_valor valor de base que sirve para calcular el costo.
      */
-    public function set_producto_detalle_valor($producto_detalle_valor)
-    {
+    public function set_producto_detalle_valor(float $producto_detalle_valor): void {
         $this->producto_detalle_valor = $producto_detalle_valor;
     }
 
@@ -168,10 +154,9 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      * Retorna el valor de base que sirve para calcular el costo , este estara en la
      * moneda original del insumo / producto padre siempre.
      *
-     * @return double con el valor
+     * @return float con el valor
      */
-    public function get_producto_detalle_valor()
-    {
+    public function get_producto_detalle_valor(): float {
         return $this->producto_detalle_valor;
     }
 
@@ -189,14 +174,14 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param float $producto_detalle_merma la merma del producto o insumo
      */
-    public function set_producto_detalle_merma($producto_detalle_merma) {
+    public function set_producto_detalle_merma(float $producto_detalle_merma): void {
         $this->producto_detalle_merma = $producto_detalle_merma;
     }
 
 
-    public function &getPKAsArray()
-    {
+    public function &getPKAsArray() : array  {
         $pk['producto_detalle_id'] = $this->getId();
+
         return $pk;
     }
 
@@ -205,11 +190,8 @@ class ProductoDetalleModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity()
-    {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
 }
-
-?>

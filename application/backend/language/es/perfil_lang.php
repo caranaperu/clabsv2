@@ -14,4 +14,3 @@ $lang['sys_systemcode'] = 'codigo del sistema';
 $lang['perfil_codigo'] = 'Codigo de Perfil';
 $lang['perfil_descripcion'] = 'Descripcion de Perfil';
 $lang['versionId'] = 'Version';
-?>

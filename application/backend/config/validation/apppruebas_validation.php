@@ -27,7 +27,7 @@ $config['v_apppruebas'] = array(
         array(
             'field' => 'apppruebas_multiple',
             'label' => 'lang:pruebas_multiple',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'apppruebas_marca_menor',
@@ -42,12 +42,12 @@ $config['v_apppruebas'] = array(
         array(
             'field' => 'apppruebas_verifica_viento',
             'label' => 'lang:apppruebas_verifica_viento',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'apppruebas_viento_individual',
             'label' => 'lang:apppruebas_verifica_viento',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'apppruebas_viento_limite_normal',
@@ -106,7 +106,7 @@ $config['v_apppruebas'] = array(
         array(
             'field' => 'apppruebas_multiple',
             'label' => 'lang:pruebas_multiple',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ),
         array(
             'field' => 'apppruebas_marca_menor',
@@ -121,12 +121,12 @@ $config['v_apppruebas'] = array(
         array(
             'field' => 'apppruebas_verifica_viento',
             'label' => 'lang:apppruebas_verifica_viento',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'apppruebas_viento_individual',
             'label' => 'lang:apppruebas_verifica_viento',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'apppruebas_viento_limite_normal',
@@ -150,4 +150,3 @@ $config['v_apppruebas'] = array(
         )
     )
 );
-?>

@@ -9,13 +9,10 @@ if (!defined('BASEPATH'))
  * entre 2 unidades de medida.
  *
  * @author $Author: aranape $
- * @version $Id: EntidadModel.php 7 2014-02-11 23:55:54Z aranape $
- * @history , ''
- *
- * $Rev: 7 $
- * $Date: 2014-02-11 18:55:54 -0500 (mar, 11 feb 2014) $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseModel
+class UnidadMedidaConversionModel extends TSLDataModel
 {
 
     protected $unidad_medida_conversion_id;
@@ -24,13 +21,13 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
     protected $unidad_medida_conversion_factor;
 
 
-    public function set_unidad_medida_conversion_id($unidad_medida_conversion_id)
+    public function set_unidad_medida_conversion_id(int $unidad_medida_conversion_id) : void
     {
         $this->unidad_medida_conversion_id = $unidad_medida_conversion_id;
         $this->setId($unidad_medida_conversion_id);
     }
 
-    public function get_unidad_medida_conversion_id()
+    public function get_unidad_medida_conversion_id() : int
     {
         return $this->unidad_medida_conversion_id;
     }
@@ -38,9 +35,9 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
     /**
      * Setea el codigo de la unidad de medida origen de conversion.
      *
-     * @param $unidad_medida_origen codigo de la unidad de medida origen de conversion.
+     * @param string $unidad_medida_origen codigo de la unidad de medida origen de conversion.
      */
-    public function set_unidad_medida_origen($unidad_medida_origen)
+    public function set_unidad_medida_origen(string $unidad_medida_origen) : void
     {
         $this->unidad_medida_origen = $unidad_medida_origen;
     }
@@ -51,7 +48,7 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
      *
      * @return string codigo de la unidad de medida origen de conversion.
      */
-    public function get_unidad_medida_origen()
+    public function get_unidad_medida_origen() : string
     {
         return $this->unidad_medida_origen;
     }
@@ -59,9 +56,9 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
     /**
      * Setea el codigo de la unidad de medida destino de conversion.
      *
-     * @param $unidad_medida_origen codigo de la unidad de medida destino de conversion.
+     * @param string $unidad_medida_destino codigo de la unidad de medida destino de conversion.
      */
-    public function set_unidad_medida_destino($unidad_medida_destino)
+    public function set_unidad_medida_destino(string $unidad_medida_destino) : void
     {
         $this->unidad_medida_destino = $unidad_medida_destino;
     }
@@ -72,7 +69,7 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
      *
      * @return string codigo de la unidad de medida destino de conversion.
      */
-    public function get_unidad_medida_destino()
+    public function get_unidad_medida_destino() : string
     {
         return $this->unidad_medida_destino;
     }
@@ -80,9 +77,9 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
     /**
      * Setea el factor de conversion entre la unidad de medida y destino.
      *
-     * @param $unidad_medida_conversion_factor factor de conversion entre la unidad de medida y destino.
+     * @param float $unidad_medida_conversion_factor factor de conversion entre la unidad de medida y destino.
      */
-    public function set_unidad_medida_conversion_factor($unidad_medida_conversion_factor)
+    public function set_unidad_medida_conversion_factor(float $unidad_medida_conversion_factor) : void
     {
         $this->unidad_medida_conversion_factor = $unidad_medida_conversion_factor;
     }
@@ -93,13 +90,13 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
      *
      * @return double con el factor de conversion.
      */
-    public function get_unidad_medida_conversion_factor()
+    public function get_unidad_medida_conversion_factor() : float
     {
         return $this->unidad_medida_conversion_factor;
     }
 
 
-    public function &getPKAsArray()
+    public function &getPKAsArray() : array
     {
         $pk['unidad_medida_conversion_id'] = $this->getId();
         return $pk;
@@ -110,11 +107,9 @@ class UnidadMedidaConversionModel extends \app\common\model\TSLAppCommonBaseMode
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity()
+    public function isPKSequenceOrIdentity() : bool
     {
         return true;
     }
 
 }
-
-?>

@@ -13,4 +13,3 @@ $lang['usuario_perfil_id'] = 'El id de la relacion usuario-perfil no esta indica
 $lang['usuarios_id'] = 'Identificador del usuario';
 $lang['perfil_id'] = 'Identificacdor del perfil';
 $lang['versionId'] = 'Version';
-?>

@@ -24,23 +24,22 @@ class SistemasBussinessService extends \app\common\bussiness\TSLAppCRUDBussiness
 
 
 
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         return NULL;
     }
 
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         return NULL;
     }
 
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model =  new app\common\model\impl\TSLAppSistemasModel();
         return $model;
     }
 
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         return NULL;
     }
 
 }
 
-?>

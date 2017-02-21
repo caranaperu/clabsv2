@@ -1,21 +1,18 @@
 <?php
 
-if (!defined('BASEPATH'))
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
+}
 
 /**
  * Modelo  para definir las unidades de medida
  *
  * @author  $Author: aranape $
- * @since   06-FEB-2013
- * @version $Id: UnidadMedidaModel.php 136 2014-04-07 00:31:52Z aranape $
- * @history ''
- *
- * $Date: 2014-04-06 19:31:52 -0500 (dom, 06 abr 2014) $
- * $Rev: 136 $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1 y correccion de
+ * get_unidad_medida_protected la cual actuaba como
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
-{
+class UnidadMedidaModel extends TSLDataModel {
 
     protected $unidad_medida_codigo;
     protected $unidad_medida_siglas;
@@ -23,15 +20,19 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
     protected $unidad_medida_tipo;
     protected $unidad_medida_protected;
     protected $unidad_medida_default;
-    private static $_UM_TIPO = array('P', 'V', 'L', 'T');
+    private static $_UM_TIPO = [
+        'P',
+        'V',
+        'L',
+        'T'
+    ];
 
     /**
      * Setea el codigo de la unidad de medida
      *
      * @param string $unidad_medida_codigo codigo unico de la unidad de medida
      */
-    public function set_unidad_medida_codigo($unidad_medida_codigo)
-    {
+    public function set_unidad_medida_codigo(string $unidad_medida_codigo): void {
         $this->unidad_medida_codigo = $unidad_medida_codigo;
         $this->setId($unidad_medida_codigo);
     }
@@ -39,8 +40,7 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
     /**
      * @return string retorna el codigo unico de la unidad de medida
      */
-    public function get_unidad_medida_codigo()
-    {
+    public function get_unidad_medida_codigo(): string {
         return $this->unidad_medida_codigo;
     }
 
@@ -49,16 +49,14 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $unidad_medida_siglas siglas de la unidad de medida
      */
-    public function set_unidad_medida_siglas($unidad_medida_siglas)
-    {
+    public function set_unidad_medida_siglas(string $unidad_medida_siglas): void {
         $this->unidad_medida_siglas = $unidad_medida_siglas;
     }
 
     /**
      * @return string retorna las siglas de la unidad de medida
      */
-    public function get_unidad_medida_siglas()
-    {
+    public function get_unidad_medida_siglas() : string {
         return $this->unidad_medida_siglas;
     }
 
@@ -67,8 +65,7 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param string $unidad_medida_descripcion la descrpcion de la unidad de medida
      */
-    public function set_unidad_medida_descripcion($unidad_medida_descripcion)
-    {
+    public function set_unidad_medida_descripcion(string $unidad_medida_descripcion) : void {
         $this->unidad_medida_descripcion = $unidad_medida_descripcion;
     }
 
@@ -76,8 +73,7 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return string la descripcion de la unidad de medida
      */
-    public function get_unidad_medida_descripcion()
-    {
+    public function get_unidad_medida_descripcion() : string {
         return $this->unidad_medida_descripcion;
     }
 
@@ -87,12 +83,12 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *      'P' - Peso
      *      'V' - Volumen
      *      'L' - Longitud
+     *      'T' - Tiempo
      *
-     * @return char el tipo de unidad de medida,, null si no esta
-     * bien definido.
+     * @return string el tipo de unidad de medida de un solo caracter,
+     * null si no esta bien definido.
      */
-    public function get_unidad_medida_tipo()
-    {
+    public function get_unidad_medida_tipo() : string {
         return $this->unidad_medida_tipo;
     }
 
@@ -101,10 +97,12 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *      'P' - Peso
      *      'V' - Volumen
      *      'L' - Longitud
-     * @param char $unidad_medida_tipo con el tipo
+     *      'T' - Tiempo
+     *
+     * @param string $unidad_medida_tipo con el tipo (u caracter)
+     * @TODO: Deberia poder indicarse que en realidad devuelve un caracter.
      */
-    public function set_unidad_medida_tipo($unidad_medida_tipo)
-    {
+    public function set_unidad_medida_tipo(string $unidad_medida_tipo) : void {
         $unidad_medida_tipo_u = strtoupper($unidad_medida_tipo);
 
         if (in_array($unidad_medida_tipo_u, UnidadMedidaModel::$_UM_TIPO)) {
@@ -120,20 +118,23 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean
      */
-    public function get_unidad_medida_protected()
-    {
+    public function get_unidad_medida_protected() : bool {
+        if (!isset($this->unidad_medida_protected)) {
+            return false;
+        }
+
         return $this->unidad_medida_protected;
+
     }
 
     /**
      * Setea si es un registro protegido, la parte cliente no administrativa
      * debe validar que si este campo es TRUE solo puede midificarse por el admin.
      *
-     * @param boolean $categorias_protected
+     * @param bool $unidad_medida_protected
      */
-    public function set_unidad_medida_protected($unidad_medida_protected)
-    {
-        $this->unidad_medida_protected = $unidad_medida_protected;
+    public function set_unidad_medida_protected(bool $unidad_medida_protected) : void {
+        $this->unidad_medida_protected = self::getAsBool($unidad_medida_protected);
     }
 
     /**
@@ -143,15 +144,8 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @param boolean $unidad_medida_default true /  false.
      */
-    public function set_unidad_medida_default($unidad_medida_default) {
-        // $this->unidad_medida_default = $unidad_medida_default;
-        if ($unidad_medida_default !== 'true' && $unidad_medida_default !== 'TRUE' &&
-            $unidad_medida_default !== TRUE && $unidad_medida_default != 't' &&
-            $unidad_medida_default != 'T' && $unidad_medida_default != '1') {
-            $this->unidad_medida_default = false;
-        } else {
-            $this->unidad_medida_default = true;
-        }
+    public function set_unidad_medida_default(bool $unidad_medida_default) : void{
+        $this->unidad_medida_default = self::getAsBool($unidad_medida_default);
     }
 
     /**
@@ -160,19 +154,18 @@ class UnidadMedidaModel extends \app\common\model\TSLAppCommonBaseModel
      *
      * @return boolean true / true.
      */
-    public function get_unidad_medida_default() {
+    public function get_unidad_medida_default() : bool {
         if (!isset($this->unidad_medida_default)) {
             return false;
         }
+
         return $this->unidad_medida_default;
     }
-    
-    public function &getPKAsArray()
-    {
+
+    public function &getPKAsArray() : array {
         $pk['unidad_medida_codigo'] = $this->getId();
+
         return $pk;
     }
 
 }
-
-?>

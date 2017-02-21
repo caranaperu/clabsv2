@@ -15,4 +15,3 @@ $lang['moneda_codigo'] = 'Codigo de monedas';
 $lang['moneda_descripcion'] = 'Descripcion';
 $lang['moneda_simbolo'] = 'Simbolo';
 $lang['versionId'] = 'Version';
-?>

@@ -9,13 +9,10 @@ if (!defined('BASEPATH'))
  * usuaria del sistema como nombre , direccion , telefonos, etc.
  *
  * @author $Author: aranape $
- * @version $Id: EntidadModel.php 7 2014-02-11 23:55:54Z aranape $
- * @history , ''
- *
- * $Rev: 7 $
- * $Date: 2014-02-11 18:55:54 -0500 (mar, 11 feb 2014) $
+ * @history , 09-02-2017 , primera version adaptada a php 7.1 .
+ * @TODO : Las funciones que vienen de la clase padre faltan ser adaptadas.
  */
-class EntidadModel extends \app\common\model\TSLAppCommonBaseModel {
+class EntidadModel extends TSLDataModel {
 
     protected $entidad_id;
     protected $entidad_razon_social;
@@ -25,25 +22,25 @@ class EntidadModel extends \app\common\model\TSLAppCommonBaseModel {
     protected $entidad_telefonos;
     protected $entidad_fax;
 
-    public function get_entidad_id() {
+    public function get_entidad_id() : int {
         return $this->entidad_id;
     }
 
-    public function get_entidad_razon_social() {
+    public function get_entidad_razon_social() : string {
         return $this->entidad_razon_social;
     }
 
-    public function get_entidad_ruc() {
+    public function get_entidad_ruc() : string {
         return $this->entidad_ruc;
     }
 
 
-    public function get_entidad_direccion() {
+    public function get_entidad_direccion() : string {
         return $this->entidad_direccion;
     }
 
 
-    public function get_entidad_correo() {
+    public function get_entidad_correo() : string {
         return $this->entidad_correo;
     }
 
@@ -53,36 +50,36 @@ class EntidadModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return string con los telefonos
      */
-    public function get_entidad_telefonos() {
+    public function get_entidad_telefonos() : string {
         return $this->entidad_telefonos;
     }
 
-    public function get_entidad_fax() {
+    public function get_entidad_fax() : string {
         return $this->entidad_fax;
     }
 
 
-    public function set_entidad_id($entidad_id) {
+    public function set_entidad_id(int $entidad_id) : void {
         $this->entidad_id = $entidad_id;
         $this->setId($entidad_id);
     }
 
-    public function set_entidad_razon_social($entidad_razon_social) {
+    public function set_entidad_razon_social(string $entidad_razon_social) : void {
         $this->entidad_razon_social = $entidad_razon_social;
     }
 
-    public function set_entidad_ruc($entidad_ruc) {
+    public function set_entidad_ruc(string $entidad_ruc) : void {
         $this->entidad_ruc = $entidad_ruc;
     }
 
 
 
-    public function set_entidad_direccion($entidad_direccion) {
+    public function set_entidad_direccion(string $entidad_direccion) : void {
         $this->entidad_direccion = $entidad_direccion;
     }
 
 
-    public function set_entidad_correo($entidad_correo) {
+    public function set_entidad_correo(string $entidad_correo) : void {
         $this->entidad_correo = $entidad_correo;
     }
 
@@ -92,17 +89,17 @@ class EntidadModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @param string $entidad_telefonos con los telefonos
      */
-    public function set_entidad_telefonos($entidad_telefonos) {
+    public function set_entidad_telefonos(string $entidad_telefonos) : void {
         $this->entidad_telefonos = $entidad_telefonos;
     }
 
-    public function set_entidad_fax($entidad_fax) {
+    public function set_entidad_fax(string $entidad_fax) : void {
         $this->entidad_fax = $entidad_fax;
     }
 
 
-    public function &getPKAsArray() {
-        $pk['$entidad_id'] = $this->getId();
+    public function &getPKAsArray() : array {
+        $pk['entidad_id'] = $this->getId();
         return $pk;
     }
 
@@ -111,10 +108,8 @@ class EntidadModel extends \app\common\model\TSLAppCommonBaseModel {
      *
      * @return boolean true
      */
-    public function isPKSequenceOrIdentity() {
+    public function isPKSequenceOrIdentity() : bool {
         return true;
     }
 
 }
-
-?>

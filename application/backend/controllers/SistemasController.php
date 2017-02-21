@@ -37,7 +37,7 @@ class SistemasController extends app\common\controller\TSLAppDefaultController {
            // $this->getConstraintProcessor()->process($_REQUEST);
 
             $sistemasService->executeService('list', $this->DTO);
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $outMessage = &$this->DTO->getOutMessage();
             // TODO: Internacionalizar.
             $processError = new TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);

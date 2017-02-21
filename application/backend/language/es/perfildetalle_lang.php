@@ -17,4 +17,3 @@ $lang['perfdet_acceliminar'] = 'Permiso de eliminar no indicado';
 $lang['perfdet_accleer'] = 'Permiso de lectura no indicado';
 $lang['perfdet_accimprimir'] = 'Permiso de imprimir no indicado';
 $lang['versionId'] = 'Version';
-?>

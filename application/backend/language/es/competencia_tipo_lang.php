@@ -11,4 +11,3 @@ $lang['msg_competencia_tipo_rec_inactivo'] = 'El Tipo de Competencia ya existe ,
 $lang['competencia_tipo_codigo'] = 'Codigo de Tipo de Competencia';
 $lang['competencia_tipo_descripcion'] = 'Descripcion';
 $lang['versionId'] = 'Version';
-?>

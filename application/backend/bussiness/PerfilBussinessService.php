@@ -23,9 +23,9 @@ class PerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como \app\common\model\impl\TSLAppPerfilModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilModel();
         //
         $model->set_sys_systemcode($dto->getParameterValue('sys_systemcode'));
@@ -42,9 +42,9 @@ class PerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como \app\common\model\impl\TSLAppPerfilModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilModel();
         //
         $model->set_perfil_id($dto->getParameterValue('perfil_id'));
@@ -61,9 +61,9 @@ class PerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
 
     /**
      *
-     * @return UsuariosModel
+     * @return \TSLDataModel especificamente como \app\common\model\impl\TSLAppPerfilModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilModel();
         return $model;
     }
@@ -71,9 +71,9 @@ class PerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return \TSLDataModel
+     * @return \TSLDataModel especificamente como \app\common\model\impl\TSLAppPerfilModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new \app\common\model\impl\TSLAppPerfilModel();
         $model->set_perfil_id($dto->getParameterValue('perfil_id'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -83,4 +83,3 @@ class PerfilBussinessService extends \app\common\bussiness\TSLAppCRUDBussinessSe
 
 }
 
-?>

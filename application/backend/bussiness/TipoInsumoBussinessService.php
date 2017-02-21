@@ -25,14 +25,14 @@ class TipoInsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoInsumoModel
+     * @return \TSLDataModel especificamente como TipoInsumoModel
      */
-    protected function &getModelToAdd(\TSLIDataTransferObj $dto) {
+    protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoInsumoModel();
         // Leo el id enviado en el DTO
         $model->set_tinsumo_codigo($dto->getParameterValue('tinsumo_codigo'));
         $model->set_tinsumo_descripcion($dto->getParameterValue('tinsumo_descripcion'));
-        $model->set_tinsumo_protected($dto->getParameterValue('tinsumo_protected'));
+        $model->set_tinsumo_protected(($dto->getParameterValue('tinsumo_protected') == 'true' ? true : false));
         if ($dto->getParameterValue('activo') != NULL)
             $model->setActivo($dto->getParameterValue('activo'));
         $model->setUsuario($dto->getSessionUser());
@@ -43,14 +43,14 @@ class TipoInsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     /**
      *
      * @param \TSLIDataTransferObj $dto
-     * @return TipoInsumoModel
+     * @return \TSLDataModel especificamente como TipoInsumoModel
      */
-    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) {
+    protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoInsumoModel();
         // Leo el id enviado en el DTO
         $model->set_tinsumo_codigo($dto->getParameterValue('tinsumo_codigo'));
         $model->set_tinsumo_descripcion($dto->getParameterValue('tinsumo_descripcion'));
-        $model->set_tinsumo_protected($dto->getParameterValue('tinsumo_protected'));
+        $model->set_tinsumo_protected(($dto->getParameterValue('tinsumo_protected') == 'true' ? true : false));
 
         $model->setVersionId($dto->getParameterValue('versionId'));
         if ($dto->getParameterValue('activo') != NULL)
@@ -61,9 +61,9 @@ class TipoInsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
 
     /**
      *
-     * @return TipoInsumoModel
+     * @return \TSLDataModel especificamente como TipoInsumoModel
      */
-    protected function &getEmptyModel() {
+    protected function &getEmptyModel() : \TSLDataModel {
         $model = new TipoInsumoModel();
         return $model;
     }
@@ -73,7 +73,7 @@ class TipoInsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
      * @param \TSLIDataTransferObj $dto
      * @return \TSLDataModel
      */
-    protected function &getModelToDelete(\TSLIDataTransferObj $dto) {
+    protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel {
         $model = new TipoInsumoModel();
         $model->set_tinsumo_codigo($dto->getParameterValue('tinsumo_codigo'));
         $model->setVersionId($dto->getParameterValue('versionId'));
@@ -83,5 +83,3 @@ class TipoInsumoBussinessService extends \app\common\bussiness\TSLAppCRUDBussine
     }
 
 }
-
-?>

@@ -23,7 +23,7 @@ class UnidadMedidaConversionController extends app\common\controller\TSLAppDefau
     /**
      * {@inheritDoc}
      */
-    protected function setupData() {
+    protected function setupData(): void {
 
         $this->setupOpts = [
             "validateOptions" => [
@@ -49,7 +49,7 @@ class UnidadMedidaConversionController extends app\common\controller\TSLAppDefau
     /**
      * {@inheritDoc}
      */
-    protected function getBussinessService() {
+    protected function getBussinessService()  : \app\common\bussiness\TSLAppCRUDBussinessService {
         return new UnidadMedidaConversionBussinessService();
     }
 

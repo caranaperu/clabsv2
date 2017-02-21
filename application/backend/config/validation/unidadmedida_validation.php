@@ -32,12 +32,12 @@ $config['v_unidadmedida'] = [
         [
             'field' => 'unidad_medida_default',
             'label' => 'lang:unidad_medida_default',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ],
         [
             'field' => 'unidad_medida_protected',
             'label' => 'lang:unidad_medida_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ],
         [
             'field' => 'versionId',
@@ -81,13 +81,12 @@ $config['v_unidadmedida'] = [
         [
             'field' => 'unidad_medida_default',
             'label' => 'lang:unidad_medida_default',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ],
         [
             'field' => 'unidad_medida_protected',
             'label' => 'lang:unidad_medida_protected',
-            'rules' => 'required|is_bool'
+            'rules' => 'required|is_boolean'
         ]
     ]
 ];
-?>

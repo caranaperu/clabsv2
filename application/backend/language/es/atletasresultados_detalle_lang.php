@@ -22,4 +22,3 @@ $lang['atletas_resultados_detalle_viento'] = 'Viento registrado en la prueba';
 $lang['atletas_resultados_detalle_puntos'] = 'Puntos';
 $lang['activo'] = 'El campo obligatorio debe ser si o no';
 $lang['versionId'] = 'Version';
-?>

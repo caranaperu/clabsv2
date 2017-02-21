@@ -33,7 +33,7 @@ $config['v_unidadmedida_conversion'] = array(
         array(
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         ),
         array(
             'field' => 'versionId',
@@ -72,8 +72,7 @@ $config['v_unidadmedida_conversion'] = array(
         array(
             'field' => 'activo',
             'label' => 'lang:activo',
-            'rules' => 'is_bool'
+            'rules' => 'is_boolean'
         )
     )
 );
-?>
