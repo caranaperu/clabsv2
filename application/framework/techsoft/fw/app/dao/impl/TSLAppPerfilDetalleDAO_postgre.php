@@ -45,12 +45,9 @@ if (!defined('BASEPATH'))
  * ALTER TABLE tb_sys_perfil_detalle
  *   OWNER TO muniren;
  *
- * @author  $Author: aranape $
  * @version $Id: TSLAppPerfilDetalleDAO_postgre.php 4 2014-02-11 03:31:42Z aranape $
- * @history ''
+ * @history  11-02-2017  manejo del booleano se ajusto en el add y update.
  *
- * $Date: 2014-02-10 22:31:42 -0500 (lun, 10 feb 2014) $
- * $Rev: 4 $
  */
 class TSLAppPerfilDetalleDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
 
@@ -63,17 +60,17 @@ class TSLAppPerfilDetalleDAO_postgre extends \app\common\dao\TSLAppBasicRecordDA
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return 'delete from tb_sys_perfil_detalle  where perfdet_id = \'' . $id . '\'  and xmin =' . $versionId;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) {
-        /* @var $record \app\common\model\TLSAppPerfilDetalleModel */
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
+        /* @var $record \app\common\model\impl\TSLAppPerfilDetalleModel*/
         $sql = 'insert into tb_sys_perfil_detalle (perfil_id,perfil_id,perfdet_accessdef,activo,usuario) values(' .
                 $record->getId() . ',' .
                 $record->get_perfil_id() . '\',\'' .
@@ -89,9 +86,9 @@ class TSLAppPerfilDetalleDAO_postgre extends \app\common\dao\TSLAppBasicRecordDA
      * hace un join al menu para determinar los accesos permitidos , es basicamente para uso del GUI
      * al definir los perfiles.
      *
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         $sql = 'select perfdet_id,perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,' .
                 'perfdet_accimprimir,pd.activo,pd.xmin as "versionId" ';
         if ($subOperation === 'fetchWithAccess') {
@@ -139,17 +136,17 @@ class TSLAppPerfilDetalleDAO_postgre extends \app\common\dao\TSLAppBasicRecordDA
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return 'select perfdet_id,perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,' .
                 'perfdet_accimprimir,activo,xmin as "versionId" from tb_sys_perfil_detalle where perfdet_id =' . $id;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return $this->getRecordQuery($code);
     }
 
@@ -157,20 +154,20 @@ class TSLAppPerfilDetalleDAO_postgre extends \app\common\dao\TSLAppBasicRecordDA
      * La metodologia para el update es un hack por problemas en el psotgresql cuando un updaate
      * es llevado a una function procedure , recomendamos leer el stored procedure.
      *
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record)  : string {
 
         /* @var $record \app\common\model\impl\TSLAppPerfilDetalleModel */
         $sql = 'select * from (select sp_perfil_detalle_save_record(' .
                 $record->get_perfdet_id() . ',' .
                 $record->get_perfil_id() . ',' .
                 $record->get_menu_id() . ',' .
-                '\'' . $record->get_perfdet_accleer() . '\'::boolean,' .
-                '\'' . $record->get_perfdet_accagregar() . '\'::boolean,' .
-                '\'' . $record->get_perfdet_accactualizar() . '\'::boolean,' .
-                '\'' . $record->get_perfdet_acceliminar() . '\'::boolean,' .
-                '\'' . $record->get_perfdet_accimprimir() . '\'::boolean,' .
+                '\'' . ($record->get_perfdet_accleer() != TRUE ? '0' : '1') . '\'::boolean,' .
+                '\'' . ($record->get_perfdet_accagregar() != TRUE ? '0' : '1')  . '\'::boolean,' .
+                '\'' . ($record->get_perfdet_accactualizar() != TRUE ? '0' : '1')  . '\'::boolean,' .
+                '\'' . ($record->get_perfdet_acceliminar() != TRUE ? '0' : '1')  . '\'::boolean,' .
+                '\'' . ($record->get_perfdet_accimprimir() != TRUE ? '0' : '1')  . '\'::boolean,' .
                 '\'' . $record->getActivo() . '\'::boolean,' .
                 '\'' . $record->get_Usuario_mod() . '\'::varchar,' .
                 $record->getVersionId() . ') as insupd) as ans where insupd is not null;';

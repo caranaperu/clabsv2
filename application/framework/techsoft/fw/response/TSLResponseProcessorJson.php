@@ -17,8 +17,8 @@ class TSLResponseProcessorJson implements TSLIResponseProcessor {
     /**
      * Genera la salida en JSON.
      *
-     * @param TSLIDataTransferObj con el Data Transfer Object a procesar
-     * @return un String con el DTO en formato JSON
+     * @param TSLIDataTransferObj $DTO con el Data Transfer Object a procesar
+     * @return  mixed en este caso un String con el DTO en formato JSON
      */
     public function &process(TSLIDataTransferObj &$DTO) {
         if (isset($DTO)) {
@@ -108,7 +108,10 @@ class TSLResponseProcessorJson implements TSLIResponseProcessor {
         }
     }
 
-    protected function _processExtraData(&$p_extdata) {
+    /**
+     * @param mixed | TSLDataModel $p_extdata
+     */
+    private function _processExtraData(&$p_extdata) : void {
         if (isset($p_extdata)) {
             $extdata = $p_extdata;
             // IF not an array
@@ -126,5 +129,3 @@ class TSLResponseProcessorJson implements TSLIResponseProcessor {
     }
 
 }
-
-?>

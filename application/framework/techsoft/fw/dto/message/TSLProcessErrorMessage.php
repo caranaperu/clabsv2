@@ -36,10 +36,10 @@ class TSLProcessErrorMessage extends TSLBaseMessage {
      * con el metodo setErrorMessage(), de esta forma se permitira su 
      * internacionalizacion posteriormente.
      * 
-     * @param Exception $exception en caso el error provenga de una excepcion
+     * @param Throwable $exception en caso el error provenga de una excepcion
      * 
      */
-    public function __construct($errorCode, $errorMessage=null, Exception $exception=null) {
+    public function __construct($errorCode, $errorMessage=null, Throwable $exception=null) {
         parent::__construct( $errorMessage);
         $this->m_errorCode = $errorCode;
         $this->m_exception = $exception;
@@ -49,9 +49,9 @@ class TSLProcessErrorMessage extends TSLBaseMessage {
     /**
      * Retorna la excepcion que provoco el error de proceso.
      * 
-     * @return Exception con la excepccion provocada pro el proceso.
+     * @return Throwable con la excepccion provocada pro el proceso.
      */
-    public function getException() {
+    public function getException() : ?Throwable {
         return $this->m_exception;
     }
     
@@ -60,10 +60,8 @@ class TSLProcessErrorMessage extends TSLBaseMessage {
      * 
      * @return int el codigo de error 
      */
-    public function getErrorCode() {
+    public function getErrorCode() : int {
         return $this->m_errorCode;
     }    
     
 }
-
-?>

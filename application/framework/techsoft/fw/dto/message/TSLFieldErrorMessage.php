@@ -44,9 +44,7 @@ class TSLFieldErrorMessage extends TSLBaseMessage {
      * 
      * @return String con el nombre del campo, fuente del error.
      */
-    public function getField() {
+    public function getField() : string {
         return $this->m_field;
     }
 }
-
-?>

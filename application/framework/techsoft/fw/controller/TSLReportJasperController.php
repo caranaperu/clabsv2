@@ -57,7 +57,7 @@ abstract class TSLReportJasperController extends TSLReportController {
      *
      * @param string $error el error a pintar.
      */
-    protected function outputError($error) {
+    protected function outputError(string $error) {
         $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
         header($protocol . ' 500 Internal Server Error');
         echo (strlen($error) > 0 ? $error : 'Error no conocido...');
@@ -66,11 +66,11 @@ abstract class TSLReportJasperController extends TSLReportController {
     /**
      * Rutina principal de entrada .
      *
-     * @param type $reportServerUser
-     * @param type $reportServerPassword
-     * @param type $formatOutput
+     * @param string $reportServerUser
+     * @param string $reportServerPassword
+     * @param string $formatOutput
      */
-    protected function executeReport($reportServerUser, $reportServerPassword, $formatOutput) {
+    protected function executeReport(string $reportServerUser, string $reportServerPassword, string $formatOutput) : void {
         try {
 
             // recogemos los que seran parametros del reporte y los parseamos
@@ -139,7 +139,7 @@ abstract class TSLReportJasperController extends TSLReportController {
             } else {
                 $this->outputError('No se encontro contenido del reporte...');
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $this->outputError($ex->getMessage());
         }
     }
@@ -150,5 +150,5 @@ abstract class TSLReportJasperController extends TSLReportController {
      *
      * @return array Lista de parametros
      */
-    abstract protected function &getInputReportParamsList();
+    abstract protected function &getInputReportParamsList() : array;
 }

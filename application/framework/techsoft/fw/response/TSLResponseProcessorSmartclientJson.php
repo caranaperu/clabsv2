@@ -17,8 +17,8 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
     /**
      * Genera la salida en JSON.
      *
-     * @param TSLIDataTransferObj con el Data Transfer Object a procesar
-     * @return un String con el DTO en formato JSON
+     * @param TSLIDataTransferObj $DTO con el Data Transfer Object a procesar
+     * @return mixed en este caso un String con el DTO en formato JSON
      */
     public function &process(TSLIDataTransferObj &$DTO) {
         $out = NULL;
@@ -125,19 +125,16 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
 
                     $out .= ',data:';
 
-                    $dataResults = $outMessage->getResultData();
-                    $this->_processExtraData($dataResults);
+                 //   $dataResults = $outMessage->getResultData();
+                    $this->_processExtraData($data);
                 //    $dataResults = TSLUtilsHelper::array_ut8_encode_recursive($outMessage->getResultData());
-                    $out .= json_encode($dataResults);
+                    $out .= json_encode($data);
 
                     // Numero de registros = al numero de registros leidos + la posicion inicial en el set
                     // siempre que haya mas de una respuesta
                     $constraints = &$DTO->getConstraints();
-                    if ($oneRecord === FALSE) {
-                        $numRecords = $constraints->getStartRow() + count($dataResults);
-                    } else {
-                        $numRecords = 1;
-                    }
+                    $numRecords = $oneRecord === FALSE ? $constraints->getStartRow() + count($data) : 1;
+
                     // SE hace de tal forma que si no es el ultimo registro osea numRecords es menor a la ultima fila solicitada
                     // Ponemos como el total de registros una pagina mas (esto para evitar hacer un count)
                     $out .= ',endRow : "' . $numRecords . '"';
@@ -160,7 +157,10 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
         }
     }
 
-    protected function _processExtraData(&$p_extdata) {
+    /**
+     * @param mixed | TSLDataModel $p_extdata
+     */
+    private function _processExtraData(&$p_extdata) : void  {
         if (isset($p_extdata)) {
             $extdata = $p_extdata;
             // IF not an array
@@ -168,6 +168,7 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
                 // if is an object
                 if (is_object($p_extdata)) {
                     if ($p_extdata instanceof TSLDataModel) {
+                        //settype($extdata,'object');
                         $p_extdata = $extdata->getAsArray();
                     } else {
                         $p_extdata = (array) $extdata;
@@ -178,5 +179,3 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
     }
 
 }
-
-?>

@@ -19,7 +19,7 @@ abstract class TSLBaseController extends CI_Controller {
     /**
      * Dado que durante las rutinas de eror se cambian los working directories
      * se requiere una instancia del encoder de salida para los casos de error.
-     * @var un encoder de salida
+     * @var TSLIResponseProcessor un encoder de salida
      */
     protected $responseProcessor;
 
@@ -62,6 +62,7 @@ abstract class TSLBaseController extends CI_Controller {
                 case E_RECOVERABLE_ERROR:
                 case E_NOTICE:
                 case E_DEPRECATED:
+                case E_PARSE:
                     $isError = true;
             }
         }
@@ -95,7 +96,7 @@ abstract class TSLBaseController extends CI_Controller {
         }
     }
 
-    public function myErrorHandler($errno, $errstr, $errfile, $errline) {
+    public function myErrorHandler(int $errno, string $errstr, string $errfile, int $errline) {
         switch ($errno) {
             case E_NOTICE:
             case E_USER_NOTICE:
@@ -149,7 +150,7 @@ abstract class TSLBaseController extends CI_Controller {
         //$this->load->view($this->getView(), $data);
     }
 
-    public function MyExceptionHandler($exception) {
+    public function MyExceptionHandler(Throwable $exception) {
         echo "Uncaught exception: ", $exception->getMessage(), "\n";
     }
 
@@ -161,10 +162,12 @@ abstract class TSLBaseController extends CI_Controller {
      * real.
      *
      * @param string $parameterName
-     * @param mixed $valueToSearch
+     * @param string $valueToSearch
      * @param mixed $valueToReplace
+     *
+     * @return mixed
      */
-    protected function fixParameter($parameterName,$valueToSearch,$valueToReplace) {
+    protected function fixParameter(string $parameterName,string $valueToSearch, $valueToReplace) {
         if (array_key_exists ($parameterName , $_POST)) {
             if ($_POST[$parameterName] === $valueToSearch) {
                 $_POST[$parameterName] = $valueToReplace;
@@ -174,7 +177,7 @@ abstract class TSLBaseController extends CI_Controller {
         return NULL;
     }
 
-    protected final function validateInputData(TSLIDataTransferObj $DTO, $langId, $validationId, $validationGroupId, $validationRulesId) {
+    protected final function validateInputData(TSLIDataTransferObj $DTO, string $langId, string $validationId, string $validationGroupId, string $validationRulesId) : bool {
 
         // IMPORTANTE , solo funciona si hay POST data!!!!
 
@@ -219,12 +222,12 @@ abstract class TSLBaseController extends CI_Controller {
     /**
      * Deber retorna la vista de salida
      */
-    abstract protected function getView();
+    abstract protected function getView() : string ;
 
     /*
      * Deber retorna la el procesador de la respuesta
      */
-    abstract protected function getResponseProcessor();
+    abstract protected function getResponseProcessor() : \TSLIResponseProcessor;
 
     /**
      * Override si se usa un response especifico en algun caso.
@@ -233,7 +236,7 @@ abstract class TSLBaseController extends CI_Controller {
      * por el usuario , de ser null se aplicara los metodos default de carga
      * de dichas clases ver TSLResponseProcessorLoaderHelper
      */
-    protected function getUserResponseProcessor() {
+    protected function getUserResponseProcessor() : ?string {
         return NULL;
     }
 }

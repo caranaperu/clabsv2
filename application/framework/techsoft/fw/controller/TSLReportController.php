@@ -26,7 +26,7 @@ abstract class TSLReportController extends CI_Controller {
      *
      * @return string con el prefijo para el nombre de los parametros
      */
-    public function getReportParameterPrefix() {
+    public function getReportParameterPrefix() : string {
         return 'PARAM_';
     }
 
@@ -45,7 +45,7 @@ abstract class TSLReportController extends CI_Controller {
      * @return array con los parametros del reporte ya procesados al formato PREFIX_nombrecampo
      *
      */
-    protected function &getReportParams(array $reportParamNames) {
+    protected function &getReportParams(array $reportParamNames) : array {
         $prefix = $this->getReportParameterPrefix();
         $report_params = array();
 
@@ -79,7 +79,7 @@ abstract class TSLReportController extends CI_Controller {
      *
      * @return string El URI del reporte.
      */
-    abstract protected function getReportURI();
+    abstract protected function getReportURI() : string ;
 
     /**
      * Retorna el directorio donde se guardaran los reportes generados
@@ -87,7 +87,7 @@ abstract class TSLReportController extends CI_Controller {
      *
      * @return string con el directorio a guardar la salida final
      */
-    abstract protected function getTmpOutputDirectory();
+    abstract protected function getTmpOutputDirectory() : string ;
 
     /**
      * Dado el contenido final , este metodo debera grabar y devolver si no ha habido
@@ -106,7 +106,5 @@ abstract class TSLReportController extends CI_Controller {
      * @param string $reportServerPassword password del usuario del reporteador.
      * @param string $formatOutput formato de salida (PDF,XLS,HTML).
      */
-    abstract protected function executeReport($reportServerUser, $reportServerPassword, $formatOutput);
+    abstract protected function executeReport(string $reportServerUser, string $reportServerPassword, string $formatOutput) : void;
 }
-
-?>

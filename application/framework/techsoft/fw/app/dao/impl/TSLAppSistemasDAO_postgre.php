@@ -52,25 +52,26 @@ class TSLAppSistemasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
         return NULL;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) {
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
         return NULL;
     }
 
     /**
      * Esta es solo la lista de sistemas no requiere constaraints especiales ni order especifico
      * fuera de los indicados.
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     *
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si la busqueda permite buscar solo activos e inactivos
         $sql = 'select sys_systemcode,sistema_descripcion,activo,xmin as "versionId" from tb_sys_sistemas';
 
@@ -86,16 +87,16 @@ class TSLAppSistemasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return NULL;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return NULL;
     }
 
@@ -103,9 +104,9 @@ class TSLAppSistemasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_pos
      * La metodologia para el update es un hack por problemas en el psotgresql cuando un insert
      * es llevado a una function procedure , recomendamos leer el stored procedure.
      *
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
         return NULL;
     }
 

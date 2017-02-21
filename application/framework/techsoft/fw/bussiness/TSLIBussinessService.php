@@ -27,8 +27,7 @@ interface TSLIBussinessService {
      * todo lo necesario para la ejecucion de la accion.
      *
      */
-    function executeService($action, TSLIDataTransferObj $dto);
+    function executeService($action, TSLIDataTransferObj $dto) : void;
 
 }
 
-?>

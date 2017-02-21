@@ -20,11 +20,13 @@ class TSLProgrammingException extends TSLGenericException {
 
     /**
      * Constructor , soporte el tener alguna data
-     * que pueda 
+     * que pueda
+     *
+     * @param string $message
+     * @param int    $code
      */
-    public function __construct($message = NULL, $code = 0) {
+    public function __construct(string $message = NULL, int $code = 0) {
         parent::__construct($message, $code);
     }
 
 }
-?>

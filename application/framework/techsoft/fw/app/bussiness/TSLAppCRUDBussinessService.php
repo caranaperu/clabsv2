@@ -2,6 +2,7 @@
 
 namespace app\common\bussiness;
 
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -52,7 +53,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * por ejemplo "msg_tcontrib" el cual sera prefijado a "_servererror" para la
      * busqueda del mensaje , la segunda parte esta fija en el codigo.
      */
-    public function setup($IdDAOName, $IdMSGLanguage, $msgPrefix) {
+    public function setup(string $IdDAOName, string $IdMSGLanguage, string $msgPrefix) : void {
         $this->IdDAOName = $IdDAOName;
         $this->IdMSGLanguage = $IdMSGLanguage;
         $this->msgPrefix = $msgPrefix;
@@ -63,22 +64,21 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * Se entiende que a traves del DTO o DATA TRANSFER OBJECT se
      * entregara la informacion necesaria para el procesamiento de la operacion.
      *
-     * @param type $action , las acciones estandard soportadas son list,read,delete,update,add
+     * @param string $action , las acciones estandard soportadas son list,read,delete,update,add
      * @param \TSLIDataTransferObj $dto el DATA TRANSFER OBJECT
-     * @return Mixed el resultado de la operacion o los registros de dicha operacion, ver casos
-     * especificos en cada operacion, los errores o excepciones se retornaran dentro del DTO.
      */
-    protected function doService($action, \TSLIDataTransferObj $dto) {
-        if ($action == 'fetch' || $action == 'list') {
-            return $this->fetch($dto);
-        } else if ($action == 'read') {
-            return $this->read($dto);
+    protected function doService(string $action, \TSLIDataTransferObj $dto) : void {
+        if ($action == 'read') {
+             $this->read($dto);
         } else if ($action == 'delete' || $action == 'del') {
-            return $this->delete($dto);
+             $this->delete($dto);
         } else if ($action == 'update' || $action == 'upd') {
-            return $this->update($dto);
+             $this->update($dto);
         } else if ($action == 'add') {
-            return $this->add($dto);
+             $this->add($dto);
+        } else {
+            // $action == 'fetch' || $action == 'list' por default
+            $this->fetch($dto);
         }
     }
 
@@ -94,18 +94,21 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * @see \TSLBasicRecordDAO
      *
      */
-    private function fetch(\TSLIDataTransferObj $dto) {
+    private function fetch(\TSLIDataTransferObj $dto) : void {
+
+        $tmg = NULL;
+        // Obtengo la referencia al mensaje de salida.
+        $outMessage = &$dto->getOutMessage();
+
         // Obtengo referencia a los constraints
         $constraints = &$dto->getConstraints();
         // Obtengo la sub operacion si existe
-        $subOperation = &$dto->getSubOperation();
+        $subOperation = $dto->getSubOperation();
 
         $model = &$this->getEmptyModel();
 
-        // Obtengo la referencia al mensaje de salida.
-        $outMessage = &$dto->getOutMessage();
-        $tmg = NULL;
         try {
+
             $tmg = \TSLTrxFactoryManager::instance()->getTrxManager();
             $tmg->init();
 
@@ -113,10 +116,10 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
             $dao = \TSLDAOLoaderHelper::loadDAO($this->IdDAOName);
             $ret = $dao->fetch($model, $constraints, $subOperation);
 
-            /* @var $outMessage TSLOutMessage */
+            /* @var $outMessage \TSLOutMessage */
             $outMessage->setSuccess(true);
             $outMessage->setResultData($ret);
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Coloco la excepcion en el DTO.
             // TODO: Internacionalizar.
             $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
@@ -142,7 +145,8 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * @see \TSLIBasicRecordDAO
      * @see \TSLBasicRecordDAO
      */
-    private function read(\TSLIDataTransferObj $dto) {
+    private function read(\TSLIDataTransferObj $dto) : void {
+        /* var TSLDataModel */
         $model = &$this->getEmptyModel();
 
         // Obtengo referencia a los constraints
@@ -152,10 +156,10 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
         $id = $dto->getParameterValue('id');
         $verifyExist = $dto->getParameterValue('verifyExist');
 
-        /* @var $outMessage TSLOutMessage */
+        /* @var $outMessage \TSLOutMessage */
         $outMessage = &$dto->getOutMessage();
         // Obtengo la sub operacion si existe
-        $subOperation = &$dto->getSubOperation();
+        $subOperation = $dto->getSubOperation();
 
         $tmg = NULL;
 
@@ -166,7 +170,6 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
             /* @var $dao \TSLIBasicRecordDAO */
             $dao = \TSLDAOLoaderHelper::loadDAO($this->IdDAOName);
 
-            /* @var $ret CommonBaseModel */
             $ret = $dao->get($id,$model, $constraints,$subOperation);
 
             if ($ret === DB_ERR_ALLOK) {
@@ -191,7 +194,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
                     } else {
                         $outMessage->setSuccess(TRUE);
                         // Ponemos el codigo enviado como lo unico encontrado.
-                        $model->setCodigo($id);
+                        $model->setId($id);
                         $outMessage->setResultData($model);
                     }
                 } else {
@@ -204,7 +207,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
                     }
                 }
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Coloco la excepcion en el DTO.
             // TODO: Internacionalizar.
             $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
@@ -232,23 +235,24 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * @see \TSLIBasicRecordDAO
      * @see \TSLBasicRecordDAO
      */
-    private function delete(\TSLIDataTransferObj $dto) {
-        $model = &$this->getModelToDelete($dto);
+    private function delete(\TSLIDataTransferObj $dto) : void {
 
-        // Opcional solo si se desea chequear si ya estaba previamente eliminado.
-        $verifiedDeleted = $dto->getParameterValue('verifiedDeleted');
-
-        // Si no se indica por default se verificara si realmente fue eliminado.
-        if (!isset($verifiedDeleted) || !is_bool($verifiedDeleted)) {
-            $verifiedDeleted = true;
-        }
-
-        /* @var $outMessage TSLOutMessage */
+        /* @var $outMessage \TSLOutMessage */
         $outMessage = &$dto->getOutMessage();
 
         $tmg = NULL;
 
         try {
+            $model = &$this->getModelToDelete($dto);
+
+            // Opcional solo si se desea chequear si ya estaba previamente eliminado.
+            $verifiedDeleted = $dto->getParameterValue('verifiedDeleted');
+
+            // Si no se indica por default se verificara si realmente fue eliminado.
+            if (!isset($verifiedDeleted) || !is_bool($verifiedDeleted)) {
+                $verifiedDeleted = true;
+            }
+
             $tmg = \TSLTrxFactoryManager::instance()->getTrxManager();
             $tmg->init();
 
@@ -275,8 +279,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
                     $outMessage->setAnswerMessage($CI->lang->line($ret == DB_ERR_RECORDNOTFOUND ? $this->msgPrefix . '_delnotexist' : $this->msgPrefix . '_servererror'), $ret);
                 }
             }
-            $tmg->end();
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Coloco la excepcion en el DTO.
             // TODO: Internacionalizar.
             $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
@@ -299,14 +302,14 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * @see \TSLIBasicRecordDAO
      * @see \TSLBasicRecordDAO
      */
-    private function update(\TSLIDataTransferObj $dto) {
+    private function update(\TSLIDataTransferObj $dto) : void {
 
         $model = &$this->getModelToUpdate($dto);
 
-        /* @var $outMessage TSLOutMessage */
+        /* @var $outMessage \TSLOutMessage */
         $outMessage = &$dto->getOutMessage();
         // Obtengo la sub operacion si existe
-        $subOperation = &$dto->getSubOperation();
+        $subOperation = $dto->getSubOperation();
 
         $tmg = NULL;
         try {
@@ -348,7 +351,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
                     $outMessage->setAnswerMessage($CI->lang->line($ret == DB_ERR_RECORDNOTFOUND ? $this->msgPrefix . '_recdeleted' : $this->msgPrefix . '_servererror'), $ret);
                 }
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Coloco la excepcion en el DTO.
             // TODO: Internacionalizar.
             $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
@@ -371,17 +374,17 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      * @see \TSLIBasicRecordDAO
      * @see \TSLBasicRecordDAO
      */
-    private function add(\TSLIDataTransferObj $dto) {
+    private function add(\TSLIDataTransferObj $dto) : void {
         // Obtengo referencia a los constraints
         $constraints = &$dto->getConstraints();
 
         // el modelo
         $model = &$this->getModelToAdd($dto);
 
-        /* @var $outMessage TSLOutMessage */
+        /* @var $outMessage \TSLOutMessage */
         $outMessage = &$dto->getOutMessage();
         // Obtengo la sub operacion si existe
-        $subOperation = &$dto->getSubOperation();
+        $subOperation = $dto->getSubOperation();
 
         $tmg = NULL;
 
@@ -421,7 +424,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
                     $outMessage->setAnswerMessage($CI->lang->line($this->msgPrefix . '_servererror'), $ret);
                 }
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             // Coloco la excepcion en el DTO.
             // TODO: Internacionalizar.
             $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
@@ -442,7 +445,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      *
      * @return \TSLDataModel Some especific model to work with it.
      */
-    abstract protected function &getModelToUpdate(\TSLIDataTransferObj $dto);
+    abstract protected function &getModelToUpdate(\TSLIDataTransferObj $dto) : \TSLDataModel;
 
     /**
      * Metodo a ser implementado por las clases especificas que basicamente debera
@@ -454,14 +457,14 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      *
      * @return \TSLDataModel Some especific model to work with it.
      */
-    abstract protected function &getModelToAdd(\TSLIDataTransferObj $dto);
+    abstract protected function &getModelToAdd(\TSLIDataTransferObj $dto) : \TSLDataModel;
 
     /**
      * return an instance of the model to work.
      *
      * @return \TSLDataModel Some especific model to work with it.
      */
-    abstract protected function &getEmptyModel();
+    abstract protected function &getEmptyModel() : \TSLDataModel;
 
     /**
      * Retorna una instancia del modelo para eliminar.
@@ -471,7 +474,7 @@ abstract class TSLAppCRUDBussinessService extends \TSLStandardBussinessService {
      *
      * @return \TSLDataModel el modelo especifico a usar.
      */
-    abstract protected function &getModelToDelete(\TSLIDataTransferObj $dto);
+    abstract protected function &getModelToDelete(\TSLIDataTransferObj $dto) : \TSLDataModel;
 }
 
 ?>

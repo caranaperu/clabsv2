@@ -17,9 +17,8 @@ interface TSLIResponseProcessor {
      * @param TSLIDataTransferObj &$DTO objeto data transfer object procesado
      * conteniendo las respuestas.
      *
-     * @return Object con los resultados
+     * @return mixed Object con los resultados
      */
     public function &process(TSLIDataTransferObj &$DTO);
-}
 
-?>
+}

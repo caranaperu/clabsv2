@@ -13,22 +13,26 @@ class TSLSorterProcessorJson implements TSLIParametersProcessor {
      * Parseara el parametor el cual debera tener la forma siguiente :
      * [{"property":"nombre_campo1","value":"ASC | DESC"},
      *  {"property":"nombre_campo2","value":"ASC | DESC"}]
-     * 
+     *
      * Donde cada elemento del arreglo representa el campo y su el tipo
      * de filto a aplicar.
-     * 
-     * @param type $sorterData un texto que representa un arreglo de elementos 
+     *
+     * @param mixed                 $processData un texto que representa un arreglo de elementos
      * JSON de acuerdo a la documentacion.
+     *
+     * @param TSLRequestConstraints $constraints
+     *
+     * @return array|Object
      */
-    public function process($sorterData) {
+    public function &process($processData, \TSLRequestConstraints &$constraints = NULL) {
         $answer = array();
         // Si el parametro no es valido retornamos un arreglo en blanco
-        if (!isset($sorterData) || is_null($sorterData)) {
+        if (!isset($processData) || is_null($processData)) {
             return $answer;
         }
 
         // Decodificamos
-        $fltconvert = json_decode($sorterData, true);
+        $fltconvert = json_decode($processData, true);
 
         //var_dump(json_last_error());
         //
@@ -54,4 +58,3 @@ class TSLSorterProcessorJson implements TSLIParametersProcessor {
 
 }
 
-?>

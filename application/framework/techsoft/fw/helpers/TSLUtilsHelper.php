@@ -23,7 +23,7 @@ class TSLUtilsHelper {
      *
      * @return string el driver default o null
      */
-    public static function getDefaultDatabaseDriver() {
+    public static function getDefaultDatabaseDriver() : string {
         if (!isset(self::$defaultDbDriver)) {
             require (APPPATH . '/config/database.php');
             // Si se ha definido el active_group
@@ -44,7 +44,7 @@ class TSLUtilsHelper {
      *
      * @return string el driver default o null
      */
-    public static function getDefaultDatabase() {
+    public static function getDefaultDatabase() : string {
         if (!isset(self::$defaultDb)) {
             require (APPPATH . '/config/database.php');
             // Si se ha definido el active_group
@@ -66,16 +66,16 @@ class TSLUtilsHelper {
             return array_map('TSLUtilsHelper::array_ut8_encode_recursive', $new);
         if (is_object($new))
             foreach (get_object_vars($new) as $key => $value)
-                $new->$key = array_ut8_encode_recursive($new->$key);
+                $new->$key = TSLUtilsHelper::array_ut8_encode_recursive($new->$key);
         return $new;
     }
 
     /**
      * Esta funcion sanitiza la salida desde  la variable del servidor PHP_SELF server .
      * @param string $url la URL a sanitizar
-     * @return El url limpio.
+     * @return string con El url limpio.
      */
-    function esc_url($url) {
+    function esc_url(string $url) : string {
 
         if ('' == $url) {
             return $url;
@@ -107,5 +107,3 @@ class TSLUtilsHelper {
     }
 
 }
-
-?>

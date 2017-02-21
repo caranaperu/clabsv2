@@ -36,11 +36,12 @@ class TSLResponseProcessorLoaderHelper {
      * , de definirse este parametro este filtor debera existir en la libreria default.
      * Si se ha creado un caso especifico no soportado bastara indicar el primer parametro.
      *
-     * @return El objeto final a enviar al cliente segun el formato indicado y  libreria indicada
-     * segun indiquen los parametros.
+     * @return  \TSLIResponseProcessor processor response processor que corresponda.
+     *
+     * @throws TSLProgrammingException en caso de error
      *
      */
-    public static function loadResponseProcessor($processor_name = NULL, $format_type = NULL, $library_id = NULL) {
+    public static function loadResponseProcessor(string $processor_name = NULL, string $format_type = NULL, string $library_id = NULL) : \TSLIResponseProcessor {
 
         $isUserProcessor = true;
 
@@ -71,7 +72,7 @@ class TSLResponseProcessorLoaderHelper {
             // base seguido del tipo de Filtro  con la primera letra capitalizada.
             // Ejemplo : MiFiltroJson, MiSuperFiltroCsv , etc.
             if ($isUserProcessor) {
-                require_once(APPPATH . 'response/processor/' . $processor_name . ucfirst($format_type) . EXT);
+                require_once(APPPATH . 'response/processor/' . $processor_name . ucfirst($format_type) . '.php');
                 $processor_name .= ucfirst($format_type);
             } else {
                 $processor_name .= ucfirst(strtolower($library_id)).ucfirst($format_type);
@@ -81,5 +82,3 @@ class TSLResponseProcessorLoaderHelper {
     }
 
 }
-
-?>

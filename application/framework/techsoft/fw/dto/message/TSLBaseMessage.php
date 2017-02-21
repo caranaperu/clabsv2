@@ -45,7 +45,7 @@ class TSLBaseMessage {
      *
      * @param string $errorMessage , mensaje de error
      */
-    public function setErrorMessage($errorMessage) {
+    public function setErrorMessage(string $errorMessage) : void {
         $this->m_errorMessage = str_replace(array("\"","\r","\n","\r\n"), ' ',$errorMessage);
     }
 
@@ -56,11 +56,10 @@ class TSLBaseMessage {
      *
      * @return string retorna el mensaje de error
      */
-    public function getErrorMessage() {
+    public function getErrorMessage() : string  {
         return $this->m_errorMessage;
     }
 
 }
 
-?>
 

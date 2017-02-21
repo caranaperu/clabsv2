@@ -14,15 +14,12 @@ interface TSLIParametersProcessor {
      * Funcion a implementar para procesar los datos del filtro
      * de acuerdo a los diversos formatos.
      *
-     * @param filterData mixed objeto , string, etc que representa
+     * @param mixed $processData , string, objeto ,etc que representa
      * los datos del filtro.
-     * @param Object reference donde se colocara la data procesada, puede ser null
-     * en cuyo caso podra devolverse un arreglo con los valores u otro tipo de objeto
-     * segun la necesidad.
+     * @param \TSLRequestConstraints constraints del request para procesar si fuera necesario.
      *
-     * @return Object con los resultados
+     * @return mixed Object con los resultados
      */
-    public function &process($filterData,  &$processedObject = NULL);
+    public function &process($processData,  \TSLRequestConstraints &$constraints = NULL);
 }
 
-?>

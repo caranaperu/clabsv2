@@ -28,7 +28,7 @@ interface TSLIBasicRecordDAO {
      * Busca un basado en su id, util basicamente si no se tiene un codigo
      * unico o en el caso de un update donde ya se conoce el id de existir.
      *
-     * @param int $id con el unique id del registro
+     * @param mixed $id con el unique id del registro
      * @param \TSLDataModel  $model, repositorio de la respuesta.
      * @param \TSLRequestConstraints $constraints conteniendo el numero de registros
      * elementos para el order by , filtro etc de la lista.
@@ -36,7 +36,8 @@ interface TSLIBasicRecordDAO {
      * fisico en un get, aqui se puede indicar que sub operacion de lectura deberemos
      * hacer , por ejemplo leer haciendo un join para normalizar datos al cliente.
      *
-     * @return string
+     * @return int
+     *
      * DB_ERR_ALL_OK no hay errores
      * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
      * DB_ERR_CANTEXECUTE Error ejecutando el query.
@@ -44,7 +45,7 @@ interface TSLIBasicRecordDAO {
      *
      * @expectedException \TSLDbException si existe un error no recuperable
      */
-    public function get($id, \TSLDataModel &$model, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    public function get($id, \TSLDataModel &$model, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : int ;
 
     /**
      * Busca basado en un codigo para el caso exista codigo
@@ -59,7 +60,7 @@ interface TSLIBasicRecordDAO {
      * fisico en un get, aqui se puede indicar que sub operacion de lectura deberemos
      * hacer , por ejemplo leer haciendo un join para normalizar datos al cliente.
      *
-     * @return string
+     * @return int
      * DB_ERR_ALL_OK no hay errores
      * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
      * DB_ERR_CANTEXECUTE Error ejecutando el query.
@@ -67,41 +68,38 @@ interface TSLIBasicRecordDAO {
      *
      * @expectedException \TSLDbException si existe un error no recuperable
      */
-    public function getByCode($code,\TSLDataModel &$model,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    public function getByCode($code,\TSLDataModel &$model,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : int;
 
     /**
      * Funcion que lee la lista de todos los registros del modelo
      * que el DAO este manejando, basado en los constraits y los datos
      * del modelo.
      *
-     * @param \TSLDataModel  $model, con los datos base para generar la condicion de
+     * @param \TSLDataModel  $record, con los datos base para generar la condicion de
      * busqueda.
      * @param \TSLRequestConstraints $constraints conteniendo el numero de registros
      * elementos para el order by , filtro etc de la lista.
      * @param string $subOperation si el caso de fetch de datos tiene sub operaciones
      *  que realizar, es comun en el fetch que existan variantes para una misma entidad
      *
-     * @return string con el Codigo de Error , estos pueden ser :
-     * DB_ERR_ALL_OK no hay errores
-     * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
-     * DB_ERR_CANTEXECUTE Error ejecutando el query.
+     * @return array con los registros de salida.
      *
      * @expectedException \TSLDbException si existe un error no recuperable
      */
-    public function fetch(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    public function fetch(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : array ;
 
     /**
      * Funcion que elimina un registro de la persistencia.
      *
      * @param mixed $id , representa el valor unico del registro dentro de la base de datos.
-     * @param long  $versionid el cual representa la version del registro en la persistencia,
+     * @param int  $versionId el cual representa la version del registro en la persistencia,
      * debemos recordar que toda base de datos al menos es capaz de mantener un codigo
      * de version de un registro el cual cambia en cada update.
-     * @param  boolean $verifiedDeletedCheck , si es true verficara si no pudo eliminar por ya estar
+     * @param  bool $verifiedDeletedCheck , si es true verficara si no pudo eliminar por ya estar
      * eliminado el registro. Es usualmente util para el caso de bases de datos que no soporten
      * versionamiento.
      *
-     * @return string
+     * @return int
      * DB_ERR_ALL_OK no hay errores
      * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
      * DB_ERR_CANTEXECUTE Error ejecutando el query.
@@ -110,19 +108,19 @@ interface TSLIBasicRecordDAO {
      * @expectedException \TSLDbException si existe un error no recuperable
      *
      */
-    public function remove($id, $versionId, $verifiedDeletedCheck);
+    public function remove($id, int $versionId, bool $verifiedDeletedCheck) : int;
 
     /**
      * Funcion que actualiza un registro en la persistencia.
      * Debe verificar si el registro ha sido modificado o ya no existe, si estuviera modificado
      * el parametro model debe retornar el registro modificado.
      *
-     * @param \TSLDataModel  $model, datos a actualizar , en el caso haya
+     * @param \TSLDataModel  $record, datos a actualizar , en el caso haya
      * sido modificado previo a grabar contendra el registro modificado.
      * @param string $subOperation esto puede usarse para indicar que clase de relectura
      * de registro luego del update debe hacerse (llamada a get()).
      *     *
-     * @return string
+     * @return int
      * DB_ERR_ALL_OK no hay errores
      * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
      * DB_ERR_CANTEXECUTE Error ejecutando el query.
@@ -132,21 +130,21 @@ interface TSLIBasicRecordDAO {
      * @expectedException \TSLDbException si existe un error no recuperable
      *
      */
-    public function update(\TSLDataModel &$record, $subOperation = NULL);
+    public function update(\TSLDataModel &$record, string $subOperation = NULL) : int;
 
     /**
      * Funcion que agrega un registro a  la persistencia.
      * Debe verificar que el registro no haya sido modificado externamente.
      * De estar modificado , el parametro model debera contener el registro encontrado.
      *
-     * @param \TSLDataModel  $model, datos a agregar , en el caso ya
+     * @param \TSLDataModel  $record, datos a agregar , en el caso ya
      * se encuentre el registro contendra el registro agregado externamente.
      * @param \TSLRequestConstraints $constraints que para este caso podria ser
      * por ejemplo un valor que puedamodificar la forma de agregar o cualquier otro uso.
      * @param string $subOperation esto puede usarse para indicar que clase de relectura
      * de registro luego del add debe hacerse (llamada a get()).
      *
-     * @return string
+     * @return int
      * DB_ERR_ALL_OK no hay errores
      * DB_ERR_SERVERNOTFOUND el servidor de base de datos no se ha encontrado.
      * DB_ERR_CANTEXECUTE Error ejecutando el query.
@@ -155,7 +153,7 @@ interface TSLIBasicRecordDAO {
      * @expectedException  \TSLDbException si existe un error no recuperable
      *
      */
-    public function add(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    public function add(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : int;
 
     /**
      * Dado que no existe una manera comun entre las bases de datos para
@@ -165,9 +163,9 @@ interface TSLIBasicRecordDAO {
      *
      * @param int $errorCode , El error retornado al ejecutar el query
      * @param string $errorMsg , el mensaje de error
-     * @return boolean TRUE si es llave diuplicada, FALSE de lo contrario
+     * @return bool TRUE si es llave diuplicada, FALSE de lo contrario
      */
-    public function isDuplicateKeyError($errorCode, $errorMsg);
+    public function isDuplicateKeyError(int $errorCode, string $errorMsg) : bool ;
 
     /**
      * Dado que no existe una manera comun entre las bases de datos para
@@ -177,9 +175,9 @@ interface TSLIBasicRecordDAO {
      *
      * @param int $errorCode , El error retornado al ejecutar el query
      * @param string $errorMsg , el mensaje de error
-     * @return boolean TRUE si es error de foreign key, FALSE de lo contrario
+     * @return bool TRUE si es error de foreign key, FALSE de lo contrario
      */
-    public function isForeignKeyError($errorCode, $errorMsg);
+    public function isForeignKeyError(int $errorCode, string $errorMsg) : bool;
 
     /**
      * Dado que no existe una manera comun entre las bases de datos para
@@ -190,9 +188,7 @@ interface TSLIBasicRecordDAO {
      *
      * @param int $errorCode , El error retornado al ejecutar el query
      * @param string $errorMsg , el mensaje de error
-     * @return boolean TRUE si es error de registro modificado, FALSE de lo contrario
+     * @return bool TRUE si es error de registro modificado, FALSE de lo contrario
      */
-    public function isRecordModifiedError($errorCode, $errorMsg);
+    public function isRecordModifiedError(int $errorCode, string $errorMsg) : bool;
 }
-
-?>

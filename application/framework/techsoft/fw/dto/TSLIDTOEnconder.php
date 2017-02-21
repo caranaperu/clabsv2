@@ -15,11 +15,9 @@ interface TSLIDTOEnconder {
      * Metodo a implementar para generar la salida del DTO,
      * podria ser salida a XML,JSON,etc
      * 
-     * @param TSLIDataTransferObj con el Data Transfer Object a procesar
-     * @return un Objeto con el formato de salida , un String con el JSON por 
+     * @param TSLIDataTransferObj $DTO con el Data Transfer Object a procesar
+     * @return mixed Objeto con el formato de salida , un String con el JSON por
      * ejemplo.
      */
     public function encode(TSLIDataTransferObj $DTO);
 }
-
-?>

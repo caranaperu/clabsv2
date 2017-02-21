@@ -32,7 +32,7 @@ class TSLTransactionManager implements TSLITransactionManager {
 
     /**
      * Pointer a la base de datos
-     * @var DB $DB
+     * @var CI_DB $DB
      */
     private $DB;
 
@@ -41,7 +41,7 @@ class TSLTransactionManager implements TSLITransactionManager {
      * Si el paramero es null o no esta definido se tomara el rl aactive_group
      * definido en database.php
      *
-     * @param type $idDb String que identifica a la db en database.php
+     * @param string $idDb que identifica a la db en database.php
      */
     public function __construct($idDb = null) {
         $defaultDB = TSLUtilsHelper::getDefaultDatabase();
@@ -62,9 +62,9 @@ class TSLTransactionManager implements TSLITransactionManager {
     /**
      * Si es TRUE las transacciones seran automaticamente manejadas,
      *
-     * @param boolean $enableAutoTransactions
+     * @param bool $enableAutoTransactions
      */
-    public function init($enableAutoTransactions = TRUE) {
+    public function init(bool $enableAutoTransactions = TRUE) : void  {
         if ($this->isAlreadyOpened == FALSE) {
             $CI = & get_instance();
             
@@ -96,13 +96,13 @@ class TSLTransactionManager implements TSLITransactionManager {
         }
     }
 
-    public function startTransaction() {
+    public function startTransaction() : void {
         if ($this->isAutoTransactionEnabled) {
             $this->DB->trans_begin();
         }
     }
 
-    public function endTransaction() {
+    public function endTransaction() : void {
         if ($this->isAutoTransactionEnabled) {
             if ($this->DB->trans_status() === FALSE) {
                 $this->rollback();
@@ -112,15 +112,15 @@ class TSLTransactionManager implements TSLITransactionManager {
         }
     }
 
-    public function commit() {
+    public function commit() : void {
         $this->DB->trans_commit();
     }
 
-    public function rollback() {
+    public function rollback() : void {
         $this->DB->trans_rollback();
     }
 
-    public function end() {
+    public function end() : void {
         if ($this->isAlreadyOpened === TRUE) {
             $this->endTransaction();
             $this->DB->close();
@@ -129,17 +129,16 @@ class TSLTransactionManager implements TSLITransactionManager {
         $this->isAlreadyOpened = FALSE;
     }
 
-    public function &getDB() {
+    public function &getDB() : CI_DB {
         return $this->DB;
     }
 
-    public function isAlreadyOpened() {
+    public function isAlreadyOpened() : bool {
         return $this->isAlreadyOpened;
     }
 
-    public function enableTransactionMode($enable) {
+    public function enableTransactionMode(bool $enable) : void {
         $this->isAutoTransactionEnabled = $enable;
     }
 
 }
-?>

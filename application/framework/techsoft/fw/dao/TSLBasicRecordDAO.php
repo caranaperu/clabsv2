@@ -52,10 +52,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
     /**
      * Busca un record basado en su id.
      *
-     * @see \shared\dao\defs\ITipoContribuyenteDAO::get()
+     * @inheritdoc
      */
-    public function get($id,\TSLDataModel &$model, \TSLRequestConstraints &$constraints = NULL,$subOperation = NULL) {
-        $localTrans = FALSE;
+    public function get($id,\TSLDataModel &$model, \TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : int {
+     //   $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
 
         $tmg = \TSLTrxFactoryManager::instance()->getTrxManager();
@@ -63,9 +63,9 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
             $tmg->init();
             if ($tmg->isAlreadyOpened() == FALSE) {
                 $ret = DB_ERR_SERVERNOTFOUND;
-            } else {
+            } /*else {
                 $localTrans = TRUE;
-            }
+            }*/
         }
 
         if ($ret == DB_ERR_ALLOK) {
@@ -97,7 +97,12 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
         }
 
         if ($ret != DB_ERR_ALLOK && $ret != DB_ERR_RECORDNOTFOUND && $ret != DB_ERR_RECORDINACTIVE) {
-            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() : null, $ret);
+            if (isset($DB)) {
+                $error = $DB->error();
+            } else {
+                $error = '????';
+            }
+            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] : null, $ret);
         }
 
         return $ret;
@@ -106,9 +111,9 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
     /**
      * Busca un record basado en su codigo unico.
      *
-     * @see \TSLIBasicRecordDAO::getByCode()
+     * @inheritdoc
      */
-    public function getByCode($code,\TSLDataModel &$model,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    public function getByCode($code,\TSLDataModel &$model,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : int {
         $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
 
@@ -154,7 +159,12 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
             $tmg->end();
         }
         if ($ret != DB_ERR_ALLOK && $ret != DB_ERR_RECORDNOTFOUND && $ret != DB_ERR_RECORDINACTIVE) {
-            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() : null, $ret);
+            if (isset($DB)) {
+                $error = $DB->error();
+            } else {
+                $error = '????';
+            }
+            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] : null, $ret);
         }
 
         return $ret;
@@ -164,10 +174,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * Funcion que lee la lista de todos los modelos que implemente la clase
      * final.
      *
-     * @see TSLIBasicRecordDAO::fetch()
+     * @inheritdoc
      *
      */
-    public function fetch(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    public function fetch(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : array  {
         $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
         $results = array();
@@ -207,7 +217,12 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
         }
 
         if ($ret != DB_ERR_ALLOK) {
-            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() : null, $ret);
+            if (isset($DB)) {
+                $error = $DB->error();
+            } else {
+                $error = '????';
+            }
+            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] : null, $ret);
         }
         return $results;
     }
@@ -215,10 +230,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
     /**
      * Elimina un modelo de la persistencia.
      *
-     * @see TSLIBasicRecordDAO::remove()
+     * @inheritdoc
      *
      */
-    public function remove($id, $versionId, $verifiedDeletedCheck) {
+    public function remove($id, int $versionId, bool $verifiedDeletedCheck) : int {
         $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
 
@@ -239,7 +254,9 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
             $query = $DB->query($this->getDeleteRecordQuery($id, $versionId));
 
             if (!$query) {
-                if ($this->isForeignKeyError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                $error = $DB->error();
+
+                if ($this->isForeignKeyError($error['code'], $error['message']) == TRUE) {
                     $ret = DB_ERR_FOREIGNKEY;
                 } else {
                     $ret = DB_ERR_CANTEXECUTE;
@@ -262,7 +279,12 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
         }
 
         if ($ret != DB_ERR_ALLOK && $ret != DB_ERR_RECORDNOTFOUND && $ret != DB_ERR_FOREIGNKEY) {
-            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() : null, $ret);
+            if (isset($DB)) {
+                $error = $DB->error();
+            } else {
+                $error = '????';
+            }
+            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] : null, $ret);
         }
 
         return $ret;
@@ -271,10 +293,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
     /**
      * Ipdate un registro a la persistencia.
      *
-     * @see TSLIBasicRecordDAO::update()
+     * @inheritdoc
      *
      */
-    public function update(\TSLDataModel &$record, $subOperation = NULL) {
+    public function update(\TSLDataModel &$record, string $subOperation = NULL) : int {
         $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
 
@@ -294,13 +316,15 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
             // Trata de hacer update .
             $query = $DB->query($this->getUpdateRecordQuery($record));
             if (!$query) {
-                // Se busca si es llave duplicada en el caso que otros campos no la llave (ya que es un update)
+                $error = $DB->error();
+
+                    // Se busca si es llave duplicada en el caso que otros campos no la llave (ya que es un update)
                 // que tengan unique constraint han rechazado el update.
-                if ($this->isDuplicateKeyError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                if ($this->isDuplicateKeyError($error['code'], $error['message']) == TRUE) {
                     $ret = DB_ERR_DUPLICATEKEY;
-                } else if ($this->isForeignKeyError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                } else if ($this->isForeignKeyError($error['code'], $error['message']) == TRUE) {
                     $ret = DB_ERR_FOREIGNKEY;
-                } else if ($this->isRecordModifiedError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                } else if ($this->isRecordModifiedError($error['code'], $error['message']) == TRUE) {
                     $ret = DB_ERR_RECORD_MODIFIED;
                 } else {
                     $ret = DB_ERR_CANTEXECUTE;
@@ -316,7 +340,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
                         if ($ret == DB_ERR_ALLOK) {
                             $ret = DB_ERR_RECORD_MODIFIED;
                         }
-                    } catch (\Exception $ex) {
+                    } catch (\Throwable $ex) {
                         $ret = $ex->getCode();
                     }
                 } else {
@@ -329,7 +353,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
                         // Aqui leemos de no exister recibiremos DB_ERR_RECORDNOTFOUND
                         // de lo contrario DB_ERR_ALLOK
                         $ret = $this->get($record->getId(), $record, $constraints,$subOperation );
-                    } catch (\Exception $ex) {
+                    } catch (\Throwable $ex) {
                         $ret = $ex->getCode();
                     }
                 }
@@ -343,7 +367,12 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
         }
 
         if ($ret != DB_ERR_ALLOK && $ret != DB_ERR_RECORD_MODIFIED && $ret != DB_ERR_RECORDNOTFOUND && $ret != DB_ERR_RECORDINACTIVE && $ret != DB_ERR_FOREIGNKEY && $ret != DB_ERR_DUPLICATEKEY) {
-            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() : null, $ret);
+            if (isset($DB)) {
+                $error = $DB->error();
+            } else {
+                $error = '????';
+            }
+            throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] : null, $ret);
         }
 
         return $ret;
@@ -352,10 +381,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
     /**
      * Agrega un registro a la persistencia.
      *
-     * @see TSLIBasicRecordDAO::add()
+     * @inheritdoc
      *
      */
-    public function add(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    public function add(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : int {
         $localTrans = FALSE;
         $ret = DB_ERR_ALLOK;
         $needRereadRecord = FALSE;
@@ -389,7 +418,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
                 } else {
                     $ret = DB_ERR_RECORDNOTFOUND;
                 }
-            } catch (\Exception $ex) {
+            } catch (\Throwable $ex) {
                 $ret = $ex->getCode();
             }
             // Aqui para el caso exista una excepcion
@@ -404,17 +433,19 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
                     // Trata de hacer update.
                     $query = $DB->query($this->getAddRecordQuery($record,$constraints));
                     if (!$query) {
-                        if ($this->isDuplicateKeyError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                        $error = $DB->error();
+
+                        if ($this->isDuplicateKeyError($error['code'], $error['message']) == TRUE) {
                             $ret = DB_ERR_RECORDEXIST;
                             //    $needRereadRecord = TRUE;
-                        } else if ($this->isForeignKeyError($DB->_error_number(), $DB->_error_message()) == TRUE) {
+                        } else if ($this->isForeignKeyError($error['code'], $error['message']) == TRUE) {
                             $ret = DB_ERR_FOREIGNKEY;
                         } else {
                             $ret = DB_ERR_CANTEXECUTE;
                         }
                     }
                     unset($query);
-                } catch (\Exception $ex) {
+                } catch (\Throwable $ex) {
                     $ret = $ex->getCode();
                 }
 
@@ -444,9 +475,9 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
                         }
                         // Aqui leemos de no exister recibiremos DB_ERR_RECORDNOTFOUND
                         // de lo contrario DB_ERR_ALLOK
-                        $constaints = NULL;
-                        $ret = $this->getByCode($uniqueId, $record,$constaints, $subOperation );
-                    } catch (\Exception $ex) {
+                        $constraints = NULL;
+                        $ret = $this->getByCode($uniqueId, $record,$constraints, $subOperation );
+                    } catch (\Throwable $ex) {
                         $ret = $ex->getCode();
                     }
                 }
@@ -457,11 +488,11 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
             }
 
             if ($ret != DB_ERR_ALLOK && $ret != DB_ERR_RECORDEXIST && $ret != DB_ERR_RECORDINACTIVE && $ret != DB_ERR_FOREIGNKEY) {
-                throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $DB->_error_message() . '-' . $DB->_error_number() : null, $ret);
+                $error = $DB->error();
+                throw new \TSLDbException($ret == DB_ERR_CANTEXECUTE ? $error['message'] . '-' . $error['code'] : null, $ret);
             }
-
-            return $ret;
         }
+        return $ret;
     }
 
     /**
@@ -478,14 +509,14 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * @return String con el query requerido,
      * @abstract
      */
-    abstract protected function getRecordQuery($id, \TSLRequestConstraints &$constraints = NULL,$subOperation = NULL);
+    abstract protected function getRecordQuery($id, \TSLRequestConstraints &$constraints = NULL,string $subOperation = NULL) : string;
 
     /**
      * Debe retornar el string con el query para leer el registro
      * identificado por su codigo unico , esto es para el caso
      * que el id no sea la llave de busqueda.
      *
-     * @param mixed $id El identificador unico del registro.
+     * @param mixed $code El identificador unico del registro.
      * @param \TSLRequestConstraints $constraints conteniendo el numero de registros
      * elementos para el order by , filtro etc de la lista.
      * @param string $subOperation para el caso que no se requiera la lectura directa del modelo
@@ -495,7 +526,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * @return String con el query requerido,
      * @abstract
      */
-    abstract protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    abstract protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string;
 
     /**
      * Debe retornar el query para recibir todos los registros, si el miembor
@@ -514,7 +545,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * @return string String con el query requerido
      * @abstract
      */
-    abstract protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL);
+    abstract protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string;
 
     /**
      * Debe retornar el query para eliminar un registro.
@@ -526,7 +557,7 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * @return string Un string con el query requerido.
      * @abstract
      */
-    abstract protected function getDeleteRecordQuery($id, $versionId);
+    abstract protected function getDeleteRecordQuery($id, int $versionId) : string ;
 
     /**
      * Debe retornar el query requerido para actualizar un registro.
@@ -536,18 +567,19 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * @return string Un string con el query requerido.
      * @abstract
      */
-    abstract protected function getUpdateRecordQuery(\TSLDataModel &$record);
+    abstract protected function getUpdateRecordQuery(\TSLDataModel &$record) : string;
 
     /**
      * Retorna el query para agregar un registro.
      *
      * @param \TSLDataModel $record El modelo de datos que representa al registro
      *  a agregar
+     * @param  \TSLRequestConstraints $constraints
      *
      * @return string Un string con el query requerido.
      * @abstract
      */
-    abstract protected function getAddRecordQuery(\TSLDataModel &$record);
+    abstract protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string ;
 
     /**
      * Si el modelo usara una pk o id que es secuencia o identidad
@@ -569,11 +601,10 @@ abstract class TSLBasicRecordDAO implements TSLIBasicRecordDAO {
      * a grabar , usado para los casos que sea conveniente obtener un identity a partir de los datos
      * de entrada , como se explica en la ultima parte de los comentarios.
      *
-     * @return null
+     * @return string por default retornamos null
      */
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string {
         return NULL;
     }
 
 }
-?>

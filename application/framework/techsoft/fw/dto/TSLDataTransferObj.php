@@ -30,7 +30,7 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
     /**
      * Contiene los constraints de paginacion si se requirieran
      *
-     * @var TLSDbConstraints
+     * @var TSLRequestConstraints
      */
     private $m_Constraints = null;
 
@@ -42,13 +42,20 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
     private $m_sessionUser = null;
 
     /**
+     * El arreglo de parametros que asocia nombre y valor.
+     *
+     * @var mixed[]
+     */
+    private $m_Parameters = null;
+
+    /**
      * Se agrega un model el cual sera usado para el proceso del bussiness
      * object.
      *
      * @param string $modelId el identificador unico del modelo a usar
-     * @param TSLDataModel $model  lainstancia del modelo
+     * @param TSLDataModel $model  lai nstancia del modelo
      */
-    public function addModel($modelId, TSLDataModel &$model) {
+    public function addModel(string $modelId, TSLDataModel &$model) : void  {
         if (isset($modelId)) {
             $this->m_Models[$modelId] = $model;
         }
@@ -61,7 +68,7 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
      * @param string $modelId con el identificador unico de un modelo de trabajo.
      * @return TSLDataModel la instancia del modelo.
      */
-    public function &getModel($modelId) {
+    public function &getModel(string $modelId) : TSLDataModel {
         // Retorna el modelo asociado al model Id , null
         // si no existe.
         return $this->m_Models[$modelId];
@@ -69,21 +76,21 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
 
     /**
      *
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function addParameter($parameterId, $parameterData) {
+    public function addParameter(string $parameterId, $parameterData) : void {
         if (isset($parameterId)) {
-            $this->m_parameters[$parameterId] = $parameterData;
+            $this->m_Parameters[$parameterId] = $parameterData;
         }
     }
 
     /**
      *
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function getParameterValue($parameterId) {
-        if (isset($this->m_parameters[$parameterId]))
-            return $this->m_parameters[$parameterId];
+    public function getParameterValue(string $parameterId) {
+        if (isset($this->m_Parameters[$parameterId]))
+            return $this->m_Parameters[$parameterId];
         else
             return NULL;
     }
@@ -92,9 +99,9 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
      * Retorna la instancia del objeto de salida.
      * @return TSLOutMessage la intancia del mensaje de salida.
      *
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function &getOutMessage() {
+    public function &getOutMessage() : TSLOutMessage {
         // Si no esta creado lo creamos y retornamos el nuevo objeto,
         // de lo contrario retornamos la instancia existente.
         if (!isset($this->m_OutMessage) || is_null($this->m_OutMessage)) {
@@ -112,7 +119,7 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
      *
      * @see TSLRequestConstraints
      */
-    public function &getConstraints() {
+    public function &getConstraints() : TSLRequestConstraints {
         // Si no esta creado lo creamos y retornamos el nuevo objeto,
         // de lo contrario retornamos la instancia existente.
         if (!isset($this->m_Constraints) || is_null($this->m_Constraints))
@@ -121,50 +128,46 @@ class TSLDataTransferObj implements \TSLIDataTransferObj {
     }
 
     /**
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function setOperation($operation) {
+    public function setOperation(string $operation) : void {
         $this->addParameter("operation", $operation);
     }
 
     /**
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function getOperation() {
+    public function getOperation() : string {
         return $this->getParameterValue("operation");
     }
 
     /**
      *
-     * @return string con el usuario de la sesion
+     * @inheritdoc
      */
-    public function getSessionUser() {
+    public function getSessionUser() : string  {
         return $this->m_sessionUser;
     }
 
     /**
-     * Retorna el nombre del usuario de la sesion.
-     *
-     * @param string $m_sessionUser
+     * @inheritdoc
      */
-    public function setSessionUser($m_sessionUser) {
+    public function setSessionUser(string $m_sessionUser) : void {
         $this->m_sessionUser = $m_sessionUser;
     }
 
     /**
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function setSubOperationId($suboperation) {
+    public function setSubOperationId(string $suboperation) : void {
         $this->addParameter("suboperation", $suboperation);
     }
 
     /**
-     * @see TSLIDataTransferObj
+     * @inheritdoc
      */
-    public function getSubOperation() {
+    public function getSubOperation() : ?string {
         return $this->getParameterValue("suboperation");
     }
 
 }
-
-?>

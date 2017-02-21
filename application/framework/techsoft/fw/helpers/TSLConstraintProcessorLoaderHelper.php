@@ -40,8 +40,10 @@ class TSLConstraintProcessorLoaderHelper {
      * @return \TSLIParametersProcessor una referencia al Procesador de Constraints o una
      * excepcion de programacion si el tipo de formato no esta soportado soportada
      *
+     * @throws TSLProgrammingException en caso de error
+     *
      */
-    public static function loadConstraintProcessor($processor_name = NULL, $format_type = NULL, $library_id = NULL) {
+    public static function loadConstraintProcessor(string $processor_name = NULL, string $format_type = NULL, string $library_id = NULL) : \TSLIParametersProcessor {
 
         $isUserProcessor = true;
 
@@ -72,7 +74,7 @@ class TSLConstraintProcessorLoaderHelper {
             // base seguido del tipo de Filtro  con la primera letra capitalizada.
             // Ejemplo : MiFiltroJson, MiSuperFiltroCsv , etc.
             if ($isUserProcessor) {
-                require_once(APPPATH . 'request/processor/' . $processor_name . ucfirst($format_type) . EXT);
+                require_once(APPPATH . 'request/processor/' . $processor_name . ucfirst($format_type) . '.php');
                 $processor_name .= ucfirst($format_type);
             } else {
                 $processor_name .= ucfirst(strtolower($library_id)).ucfirst($format_type);
@@ -82,5 +84,3 @@ class TSLConstraintProcessorLoaderHelper {
     }
 
 }
-
-?>

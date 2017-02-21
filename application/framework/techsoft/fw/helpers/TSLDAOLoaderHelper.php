@@ -36,20 +36,20 @@ class TSLDAOLoaderHelper {
      * 3) LEER !!! , el parametro dao base name debera tener indicado el namespace en el caso
      * que su namespace  no sea el default
      *
-     * @param dao_basename , El nombre base del DAO , por ejemplo "Login" e incluira el namespace de
+     * @param string $dao_basename , El nombre base del DAO , por ejemplo "Login" e incluira el namespace de
      * tenerlo.
      *
-     * @param db_id , el identificador de la base de datos,los valores permitidos son : 'postgre',
+     * @param string $db_id , el identificador de la base de datos,los valores permitidos son : 'postgre',
      * 'mysql','mssql','oci8','sqllite' or 'odbc'. De no indicarse se tratara de cargar
      * la generica , luego la default.
      *
-     * @return una referencia al DAO o una excepcion de programacion si se ha solicitado
+     * @return \TSLBasicRecordDAO una referencia al DAO o una excepcion de programacion si se ha solicitado
      * un tipo de base de datos no soportada o alguna precondicion no se cumple.
      *
-     *
+     * @throws TSLProgrammingException en caso de error
      *
      */
-    public static function loadDAO($dao_basename, $db_id = null) {
+    public static function loadDAO(string $dao_basename, string $db_id = null) : \TSLBasicRecordDAO {
         global $G_DAOPATHS;
         $found = false;
         $dao_class = $dao_basename;
@@ -155,5 +155,3 @@ class TSLDAOLoaderHelper {
     }
 
 }
-
-?>

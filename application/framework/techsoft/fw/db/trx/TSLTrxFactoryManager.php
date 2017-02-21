@@ -26,7 +26,7 @@ class TSLTrxFactoryManager {
     private $m_trxManagers = array();
 
     // The singleton method
-    public static function instance() {
+    public static function instance() : TSLTrxFactoryManager {
         if (!isset(self::$instance)) {
             $c = __CLASS__;
             self::$instance = new $c;
@@ -35,7 +35,7 @@ class TSLTrxFactoryManager {
         return self::$instance;
     }
 
-    public function &getTrxManager($idDb=null) {
+    public function &getTrxManager(string $idDb=null) : TSLITransactionManager{
         $defaultDB = TSLUtilsHelper::getDefaultDatabase();
         // Si el parametros es null o no esta seteado tratamos de usar el active group.
         if (isset($idDb) == FALSE and isset($defaultDB)) {
@@ -55,5 +55,3 @@ class TSLTrxFactoryManager {
     }
 
 }
-
-?>

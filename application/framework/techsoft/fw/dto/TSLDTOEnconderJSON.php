@@ -17,8 +17,8 @@ class TSLDTOEnconderJSON implements TSLIDTOEnconder {
     /**
      * Genera la salida en JSON.
      *
-     * @param TSLIDataTransferObj con el Data Transfer Object a procesar
-     * @return un String con el DTO en formato JSON
+     * @param TSLIDataTransferObj $DTO con el Data Transfer Object a procesar
+     * @return  String con el DTO en formato JSON
      */
     public function encode(TSLIDataTransferObj $DTO) {
         if (isset($DTO)) {
@@ -106,7 +106,10 @@ class TSLDTOEnconderJSON implements TSLIDTOEnconder {
         }
     }
 
-    protected function _processExtraData(&$p_extdata) {
+    /**
+     * @param mixed | TSLDataModel $p_extdata
+     */
+    private function _processExtraData(&$p_extdata) {
         if (isset($p_extdata)) {
             $extdata = $p_extdata;
             // IF not an array
@@ -124,5 +127,3 @@ class TSLDTOEnconderJSON implements TSLIDTOEnconder {
     }
 
 }
-
-?>

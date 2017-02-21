@@ -2,6 +2,8 @@
 
 namespace app\common\controller;
 
+use app\common\bussiness\TSLAppCRUDBussinessService;
+
 if (!defined('BASEPATH'))
     exit('No direct script access allowed');
 
@@ -106,13 +108,27 @@ abstract class TSLAppDefaultCRUDController extends TSLAppDefaultController {
         $this->setupData();
     }
 
-    abstract protected function getBussinessService();
+    /**
+     * @return TSLAppCRUDBussinessService con la instancia del bussiness class
+     */
+    abstract protected function getBussinessService() : TSLAppCRUDBussinessService ;
 
-    abstract protected function setupData();
+    /**
+     * Funcion que debe inicializar y setear los datos en $this->setupOpts
+     * Las clases que implementan deberan hacerlo para que todo funcione.
+     * @see $setupOpts
+     */
+    abstract protected function setupData() : void ;
 
-    protected function preExecuteOperation($operationCode) {}
+    /**
+     * Por default este metodo no hace nada , las clases que requieran deberan
+     * hacer el override.
+     *
+     * @param string $operationCode con la operacion a realizar por ejemplo 'add','delete'.
+     */
+    protected function preExecuteOperation(string $operationCode) : void {}
 
-    private function executeCrudOperation($operationCode) {
+    private function executeCrudOperation(string $operationCode) : void {
 
         try {
             // Validamos
@@ -155,10 +171,10 @@ abstract class TSLAppDefaultCRUDController extends TSLAppDefaultController {
                 //$service = $this->getBussinessService();
                 $this->getBussinessService()->executeService($operationCode, $this->DTO);
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $outMessage = &$this->DTO->getOutMessage();
             // TODO: Internacionalizar.
-            $processError = new TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
+            $processError = new \TSLProcessErrorMessage($ex->getCode(), 'Error Interno', $ex);
             $outMessage->addProcessError($processError);
         }
     }

@@ -61,6 +61,7 @@ class TSLDataModel implements \TSLJsonAble {
     protected $versionId;
     protected $usuario;
     protected $usuario_mod;
+    protected $activo = TRUE;
 
     /**
      *
@@ -88,8 +89,8 @@ class TSLDataModel implements \TSLJsonAble {
      * debera tener como atributos protegidos $field1 and $field2.
      *
      * @access public
-     * @return void
      *
+     * @param array $options
      */
     public function __construct(array $options = null) {
         if (is_array($options)) {
@@ -110,12 +111,12 @@ class TSLDataModel implements \TSLJsonAble {
      * Si el metodo no existe tratara de accesar el atributo , por eso estos deben ser protected.
      *
      * @access public
-     * @param name string con el nombre del attribute
-     * @param value mixed , El valor a asigna al atributo
+     * @param string $name con el nombre del attribute
+     * @param mixed $value  , El valor a asigna al atributo
      * @return void
      *
      */
-    public function __set($name, $value) {
+    public function __set(string $name, $value) : void {
         $method = 'set_' . ucfirst($name);
         /* log_message('info', 'The method __set called for '.$method); */
         if (!method_exists($this, $method)) {
@@ -137,11 +138,11 @@ class TSLDataModel implements \TSLJsonAble {
      * Si el metodo no existe tratara de accesar el atributo , por eso estos deben ser protected.
      *
      * @access public
-     * @param name string con el nombre del attribute
-     * @return void
+     * @param string $name string con el nombre del attribute
+     * @return mixed
      *
      */
-    public function __get($name) {
+    public function __get(string $name) {
         $method = 'get' . ucfirst($name);
         /* log_message('info', 'The method __get called for '.$method); */
         if (!method_exists($this, $method)) {
@@ -159,11 +160,10 @@ class TSLDataModel implements \TSLJsonAble {
      *
      *
      * @access public
-     * @param options un arreglo con los emenos conteniendo los pares attr->value .
-     * @return Instancia de la clase
+     * @param array $options un arreglo con los elementos conteniendo los pares attr->value .
      *
      */
-    public function setOptions(array $options) {
+    public function setOptions(array $options) : void  {
         $methods = get_class_methods($this);
         foreach ($options as $key => $value) {
             $method = 'set' . ucfirst($key);
@@ -174,7 +174,7 @@ class TSLDataModel implements \TSLJsonAble {
                 $this->$attr = $value;
             }
         }
-        return $this;
+       // return $this;
     }
 
     /**
@@ -183,9 +183,9 @@ class TSLDataModel implements \TSLJsonAble {
      * Para usos especificos puede hacerse override.
      *
      * @access public
-     * @return an array with the properties.
+     * @return  array with the properties.
      */
-    public function getAsArray() {
+    public function getAsArray() : array {
         $serial = serialize($this);
         $serial = preg_replace('/O:\d+:".+?"/', 'a', $serial);
         if (preg_match_all('/s:\d+:"\\0.+?\\0(.+?)"/', $serial, $ms, PREG_SET_ORDER)) {
@@ -234,10 +234,10 @@ class TSLDataModel implements \TSLJsonAble {
     /**
      * Retorna el numero de version del record que representa este Data Model.
      *
-     * @return entero con la version correspodiente a la version del datamodel
+     * @return int con la version correspodiente a la version del datamodel
      * en la persistencia.
      */
-    public function getVersionId() {
+    public function getVersionId() :  int {
         return $this->versionId;
     }
 
@@ -245,9 +245,9 @@ class TSLDataModel implements \TSLJsonAble {
      * Setea la version del record que represnta el data model, este solo debe
      * ser seteado desde la persistencia nunca desde el cliente.
      *
-     * @param entero $versionId con el valor de la version del registor
+     * @param int $versionId con el valor de la version del registor
      */
-    public function setVersionId($versionId) {
+    public function setVersionId(int $versionId) : void {
         $this->versionId = $versionId;
     }
 
@@ -255,7 +255,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @return string con el identificador del usuario
      */
-    public function getUsuario() {
+    public function getUsuario() : string {
         return $this->usuario;
     }
 
@@ -264,7 +264,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @param string $usuario
      */
-    public function setUsuario($usuario) {
+    public function setUsuario(string $usuario) : void {
         $this->usuario = $usuario;
     }
 
@@ -272,7 +272,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @return DateTime con la fecha de creacion del registor
      */
-    public function get_Fecha_creacion() {
+    public function get_Fecha_creacion() : DateTime {
         return $this->fecha_creacion;
     }
 
@@ -281,7 +281,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @param DateTime $fecha_creacion
      */
-    public function set_Fecha_creacion(DateTime $fecha_creacion) {
+    public function set_Fecha_creacion(DateTime $fecha_creacion) : void {
         $this->fecha_creacion = $fecha_creacion;
     }
 
@@ -289,7 +289,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @return string con el identificador de usuario que modifica
      */
-    public function get_Usuario_mod() {
+    public function get_Usuario_mod() : string  {
         return $this->usuario_mod;
     }
 
@@ -298,7 +298,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @param string $usuario_mod
      */
-    public function set_Usuario_mod($usuario_mod) {
+    public function set_Usuario_mod(string $usuario_mod) : void {
         $this->usuario_mod = $usuario_mod;
     }
 
@@ -306,7 +306,7 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @return DateTime con la fecha de modificacion del registro.
      */
-    public function get_Fecha_modificacion() {
+    public function get_Fecha_modificacion() : DateTime {
         return $this->fecha_modificacion;
     }
 
@@ -315,16 +315,38 @@ class TSLDataModel implements \TSLJsonAble {
      *
      * @param DateTime $fecha_modificacion
      */
-    public function set_Fecha_modificacion(DateTime $fecha_modificacion) {
+    public function set_Fecha_modificacion(DateTime $fecha_modificacion) : void {
         $this->fecha_modificacion = $fecha_modificacion;
     }
 
+    /**
+     * Si se desea que un modelo este inactivo pero no eliminado
+     * este campos era util para eso.
+     *
+     * @param bool $activo , 1 o true , 0 o false
+     */
+    public function setActivo(bool $activo) : void {
+        if ($activo !== 1 && $activo !== TRUE && strtoupper($activo) !== 'TRUE' && strtoupper($activo) != 'T') {
+            $this->activo = FALSE;
+        } else {
+            $this->activo = TRUE;
+        }
+    }
+
+    /**
+     * Retorna TRUE si esta activo.
+     *
+     * @return bool TRUE verdadero FALSE falso
+     */
+    public function getActivo() : bool {
+        return $this->activo;
+    }
     /**
      * Retorna un arreglo con las llaves primarias del modelo.
      * Implementacion default.
      * @return array con las llaves primarias del modelo
      */
-    public function &getPKAsArray() {
+    public function &getPKAsArray() : array {
         $pk['id'] = $this->getId();
         return $pk;
     }
@@ -347,9 +369,9 @@ class TSLDataModel implements \TSLJsonAble {
      * Por default retornara null suponiendo que el id es un campo digamos digitado
      * y no automatico, el modelo final debera hacer un override a este metodo de no ser asi.
      *
-     * @return boolean true si el id es secuencia o identity o false si o lo es
+     * @return bool true si el id es secuencia o identity o false si o lo es
      */
-    public function isPKSequenceOrIdentity() {
+    public function isPKSequenceOrIdentity() : bool {
         return false;
     }
 
@@ -359,7 +381,7 @@ class TSLDataModel implements \TSLJsonAble {
      * @return string conteniendo la represemtacion de data model en
      * JSON
      */
-    public function toJSON() {
+    public function toJSON() : string {
         return json_encode($this->getAsArray());
     }
 
@@ -370,9 +392,9 @@ class TSLDataModel implements \TSLJsonAble {
      * un booleano en la base de datos.
      * s
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
-    protected static function getAsBool($value) {
+    protected static function getAsBool($value) : bool {
         if (is_bool($value)) {
             return $value;
         } else {
@@ -385,5 +407,3 @@ class TSLDataModel implements \TSLJsonAble {
     }
 
 }
-
-?>

@@ -33,12 +33,12 @@ class TSLSorterProcessorLoaderHelper {
      * @param $sorter_id , el identificador del tipo de sorter tales como  : 'json',
      * 'csv','xml'. De no indicarse se tratara de cargar la generica para json, 
      *
-     * @return TSLIFilterProcessor una referencia al Procesador de Filtros o una 
-     * excepcion de programacion si el untipo de filtro no esta soportado soportada
+     * @return \TSLIParametersProcessor una referencia al Procesador de Sort
+     *
+     * @throws TSLProgrammingException en caso de error
      *
      */
-    public static function loadSorterProcessor($sorter_basename = null, $sorter_id = null) {
-        //$defaultDBDriver = TSLUtilsHelper::getDefaultDatabaseDriver();
+    public static function loadSorterProcessor(string $sorter_basename = null, string $sorter_id = null) : \TSLIParametersProcessor{
 
         $isUserFilter = true;
 
@@ -66,7 +66,7 @@ class TSLSorterProcessorLoaderHelper {
             // base seguido del tipo de Filtro  con la primera letra capitalizada.
             // Ejemplo : MiFiltroJson, MiSuperFiltroCsv , etc.
             if ($isUserFilter) {
-                require_once(APPPATH . 'request/sorters/' . $sorter_basename . ucfirst($sorter_id) . EXT);
+                require_once(APPPATH . 'request/sorters/' . $sorter_basename . ucfirst($sorter_id) . '.php');
             }
             // Creamos la instancia del filtro.
             $sorter_basename .= ucfirst($sorter_id);
@@ -75,5 +75,3 @@ class TSLSorterProcessorLoaderHelper {
     }
 
 }
-
-?>

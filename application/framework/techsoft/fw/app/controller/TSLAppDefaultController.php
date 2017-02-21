@@ -46,10 +46,10 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
      * cada caso en el arreglo , esto es util cuando los parametros
      * de entrada a chequear no tienen un solo prefijo.
      *
-     * @param string o array $beginWith Para los parametros que inician con
+     * @param string | array $beginWith Para los parametros que inician con
      * este valor.
      */
-    protected function parseParameters($beginWith) {
+    protected function parseParameters($beginWith) : void {
 
         if (is_array($beginWith)) {
             foreach ($beginWith as $str) {
@@ -72,11 +72,11 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
         }
     }
 
-    public function getView() {
+    public function getView() : string  {
         return 'TSLDefaultDataResponseView';
     }
 
-    public function getResponseProcessor() {
+    public function getResponseProcessor() : \TSLIResponseProcessor {
         $responseProcessor = \TSLResponseProcessorLoaderHelper::loadResponseProcessor($this->getUserResponseProcessor(), isset($_REQUEST['filterformat']) ? $_REQUEST['filterformat'] : $this->getDefaultFilterType(), isset($_REQUEST['libid']) ? $_REQUEST['libid'] : NULL);
         return $responseProcessor;
     }
@@ -85,23 +85,23 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
      * De la interace para constrained controller
      */
 
-    public function getDefaultFilterType() {
+    public function getDefaultFilterType() : string {
         return 'json';
     }
 
-    public function getDefaultSorterType() {
+    public function getDefaultSorterType() : string {
         return 'json';
     }
 
-    public function getFilterProcessor() {
+    public function getFilterProcessor() : ?\TSLIParametersProcessor{
         return NULL;
     }
 
-    public function getSorterProcessor() {
+    public function getSorterProcessor() : ?\TSLIParametersProcessor {
         return NULL;
     }
 
-    public function getConstraintProcessor() {
+    public function getConstraintProcessor() : \TSLIParametersProcessor {
         $constraintProcessor = \TSLConstraintProcessorLoaderHelper::loadConstraintProcessor($this->getFilterProcessor(), isset($_REQUEST['filterformat']) ? $_REQUEST['filterformat'] : $this->getDefaultFilterType(), isset($_REQUEST['libid']) ? $_REQUEST['libid'] : NULL);
         return $constraintProcessor;
     }
@@ -113,7 +113,7 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
     /**
      * @inheritDoc
      */
-    public function getUserCode() {
+    public function getUserCode() : string {
         if ($this->session->userdata('usuario_code') !== FALSE) {
             return $this->session->userdata('usuario_code');
         } else {
@@ -124,7 +124,7 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
     /**
      * @inheritDoc
      */
-    public function getUserId() {
+    public function getUserId() : int {
         if ($this->session->userdata('usuario_id') !== FALSE) {
             return $this->session->userdata('usuario_id');
         } else {
@@ -135,9 +135,9 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
     /**
      * @inheritDoc
      */
-    public function isLoggedIn() {
+    public function isLoggedIn() : bool {
         if ($this->session->userdata('isLoggedIn') !== FALSE) {
-            return $this->session->userdata('isLoggedIn');
+            return $this->session->userdata('isLoggedIn') ?? false;
         } else {
             return false;
         }
@@ -146,42 +146,42 @@ class TSLAppDefaultController extends \TSLBaseController implements \TSLISession
     /**
      * @inheritDoc
      */
-    public function getSessionData($name) {
+    public function getSessionData(string $name) {
         return $this->session->userdata($name);
     }
 
     /**
      * @inheritDoc
      */
-    public function setUserCode($userCode) {
+    public function setUserCode(string $userCode) : void {
         $this->session->set_userdata('usuario_code',$userCode);
     }
 
     /**
      * @inheritDoc
      */
-    public function setUserId($userId) {
+    public function setUserId(int $userId) : void {
         $this->session->set_userdata('usuario_id',$userId);
     }
 
     /**
      * @inheritDoc
      */
-    public function setLoggedIn($isLoggedIn) {
+    public function setLoggedIn(bool $isLoggedIn) : void {
         $this->session->set_userdata('isLoggedIn',$isLoggedIn);
     }
 
     /**
      * @inheritDoc
      */
-    public function setSessionData($name, $data) {
+    public function setSessionData(string $name, $data) : void {
         $this->session->set_userdata($name,$data);
     }
 
     /**
      * @inheritDoc
      */
-    public function unsetSessionData($name) {
+    public function unsetSessionData(string $name) : void {
         $this->session->unset_userdata($name);
     }
 

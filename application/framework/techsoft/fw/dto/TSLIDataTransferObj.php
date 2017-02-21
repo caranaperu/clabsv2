@@ -16,41 +16,47 @@ interface TSLIDataTransferObj {
     // pero estas seran de interpretacion para la clase que implemeta , solo estas
     // se encuentran directamente soportadas en el framework.
 
-    const OP_FETCH = 'fetch';
-    const OP_READ = 'read';
+    const OP_FETCH  = 'fetch';
+    const OP_READ   = 'read';
     const OP_UPDATE = 'upd';
     const OP_DELETE = 'del';
-    const OP_ADD = 'add';
+    const OP_ADD    = 'add';
 
     /**
      * Agrega parametros a usarse durante el desarrollo del bussines object.
      *
-     * @param String que identifica al parametro , por ejemplo "orderby"
-     * @param Mixed que identifica el valor del parametro , pj "username"
+     * @param String $parameterId que identifica al parametro , por ejemplo "orderby"
+     * @param Mixed  $parameterData que identifica el valor del parametro , pj "username"
      */
-    public function addParameter($parameterId, $parameterData);
+    public function addParameter(string $parameterId, $parameterData): void;
 
     /**
      * Retorna el valor del parametro identificado por
      * $parameterId
      *
      * @param String $parameterId con el valor que idetifica al parametro
+     *
      * @return Mixed el objeto o valor del parametro.
      */
-    public function getParameterValue($parameterId);
+    public function getParameterValue(string $parameterId);
 
     /**
      * Setea el modelo de datos , habitualmente de entrada a procesar.
+     *
+     * @param string       $modelId
      * @param TSLDataModel $model , referencia al  modelo de datos a procesar.
      */
-    public function addModel($modelId, TSLDataModel &$model);
+    public function addModel(string $modelId, TSLDataModel &$model): void;
 
     /**
      * Retorna el modelo identificado por $modelId
-     * @return un TLSDataModel el cual es identificado por $modelId o
+     *
+     * @param string $modelId
+     *
+     * @return TSLDataModel el cual es identificado por $modelId o
      * null si no existe.
      */
-    public function &getModel($modelId);
+    public function &getModel(string $modelId): TSLDataModel;
 
     /**
      * Retorna el mensaje de salida..
@@ -58,7 +64,7 @@ interface TSLIDataTransferObj {
      * @return TSLOutMessage conteniendo la data de respuesta con errores
      * o data , dependiendo del tipo de retorno , osea con o sin error..
      */
-    public function &getOutMessage();
+    public function &getOutMessage(): TSLOutMessage;
 
     /**
      * Retorna el onjeto de constraints para su llenado.
@@ -66,7 +72,7 @@ interface TSLIDataTransferObj {
      * @return TSLRequestConstraints conteniendo los datos de entrada para ser
      * usadops como constraints en la capa de datos.
      */
-    public function &getConstraints();
+    public function &getConstraints(): TSLRequestConstraints;
 
     /**
      * Setea el tipo de operacion a realizar por el request , estas
@@ -74,16 +80,16 @@ interface TSLIDataTransferObj {
      * por ahora no sera interpretado adecuadamente por la libreria
      * pero podria ser usado por implementaciones propias.
      *
-     * @param string Tipo de operacion a realizar por el request
+     * @param string $operation Tipo de operacion a realizar por el request
      */
-    public function setOperation($operation);
+    public function setOperation(string $operation): void;
 
     /**
      * Retorna el tio de operacion a efectua . se deja la interpretacion
      * a la clase que requiera estaa informacion.
      * @return string con el tipo de operacion a efectuar
      */
-    public function getOperation();
+    public function getOperation(): string;
 
 
     /**
@@ -93,31 +99,30 @@ interface TSLIDataTransferObj {
      * que el bussiness object pueda determinar si una operacion tiene
      * alguna sub opcion a ejecutar.
      *
-     * @param string subtipo de operacion a realizar por el request
+     * @param string $suboperation subtipo de operacion a realizar por el request
      */
-    public function setSubOperationId($suboperation);
+    public function setSubOperationId(string $suboperation): void;
 
     /**
      * Retorna el tio de suboperacion a efectua . se deja la interpretacion
      * a la clase que requiera estaa informacion.
      *
-     * @return string con el tipo de suboperacion a efectuar
+     * @return string | null con el tipo de suboperacion a efectuar
      */
-    public function getSubOperation();
+    public function getSubOperation(): ?string;
 
 
     /**
      *
      * @return string con el usuario de la sesion
      */
-    public function getSessionUser();
+    public function getSessionUser(): string;
 
     /**
      * Retorna el nombre del usuario de la sesion.
      *
      * @param string $m_sessionUser
      */
-    public function setSessionUser($m_sessionUser);
+    public function setSessionUser(string $m_sessionUser): void;
 }
 
-?>

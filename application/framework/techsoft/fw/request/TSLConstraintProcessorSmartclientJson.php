@@ -20,30 +20,31 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
      * @todo  Agregar el resto conforme se vayan implementando.
      *
      *
-     * @param Object $constraintData para el caso de este processor basado en
+     * @param mixed $processData para el caso de este processor basado en
      * JSON , el string que contiene el objeto Json con los valores requeridos.
      * @param \TSLRequestConstraints $constraints referencia a un objeto constraints
      * si a existe uno creado.
      *
-     * @return \TSLRequestConstraints la estructura de los constraints a procesar.
+     * @return mixed en este caso una instancia \TSLRequestConstraints con la estructura de los
+     * constraints a procesar.
      */
-    public function &process($constraintData, &$constraints = NULL) {
+    public function &process($processData, \TSLRequestConstraints &$constraints = NULL) {
         $startRow = 0;
         $endRow = 0;
 
 
         // Si el parametro no es valido retornamos un arreglo en blanco
-        if (!isset($constraintData) || is_null($constraintData)) {
+        if (!isset($processData) || is_null($processData)) {
             return NULL;
         }
 
 
-        if (isset($constraintData['_startRow'])) {
-            $startRow = $constraintData['_startRow'];
+        if (isset($processData['_startRow'])) {
+            $startRow = $processData['_startRow'];
         }
 
-        if (isset($constraintData['_endRow'])) {
-            $endRow = $constraintData['_endRow'];
+        if (isset($processData['_endRow'])) {
+            $endRow = $processData['_endRow'];
         }
 
         // Creamos si no se envia uno para usar.
@@ -53,12 +54,12 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
 
         // Campos de sort (primer intento un solo campo).
         // El sort viene con un negativo adelante si es descendente
-        if (isset($constraintData['_sortBy'])) {
-            $pos = strpos($constraintData['_sortBy'], '-');
+        if (isset($processData['_sortBy'])) {
+            $pos = strpos($processData['_sortBy'], '-');
             if ($pos !== FALSE) {
-                $constraints->addSortField(substr($constraintData['_sortBy'], 1), 'DESC');
+                $constraints->addSortField(substr($processData['_sortBy'], 1), 'DESC');
             } else {
-                $constraints->addSortField($constraintData['_sortBy'], 'ASC');
+                $constraints->addSortField($processData['_sortBy'], 'ASC');
             }
         }
 
@@ -68,8 +69,8 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
 
         // Vemos si tenemos que procesar un advanced filter
         // De lo contrario solo efectuamos un filtro normal.
-        if (isset($constraintData['_acriteria'])) {
-            $afilter = json_decode($constraintData['_acriteria']);
+        if (isset($processData['_acriteria'])) {
+            $afilter = json_decode($processData['_acriteria']);
 
             foreach ($afilter->criteria as $elem) {
                 $constraints->addFilterField($elem->fieldName, $elem->value, $elem->operator);
@@ -78,7 +79,7 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
 
             // Los campos de filtro , para el smartClient son todos aquellos que
             // no tienen el underscore delante.
-            foreach ($constraintData as $key => $value) {
+            foreach ($processData as $key => $value) {
                 // Si empieza con op o libid o parentId son parametros para otors usos no
                 // son campos.
                 if (!strcmp($key, "op") || !strcmp($key, "libid") || !strcmp($key, "parentId")) {
@@ -89,10 +90,10 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
                 $pos = strpos($key, '_');
                 $pos2 = strpos($key, 'isc_');
                 if (!($pos === 0 || $pos2 === 0)) {
-                    if (isset($constraintData['_textMatchStyle'])) {
-                        $constraints->addFilterField($key, $value, $constraintData['_textMatchStyle']);
+                    if (isset($processData['_textMatchStyle'])) {
+                        $constraints->addFilterField($key, $value, $processData['_textMatchStyle']);
                     } else {
-                        $constraints->addFilterField($key, $value, $constraintData[$key]);
+                        $constraints->addFilterField($key, $value, $processData[$key]);
                     }
                 }
             }
@@ -101,5 +102,3 @@ class TSLConstraintProcessorSmartclientJson implements TSLIParametersProcessor {
     }
 
 }
-
-?>

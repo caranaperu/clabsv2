@@ -17,7 +17,6 @@ interface TSLJsonAble {
      * 
      * @return string con el objeto convertido a json.
      */
-    public function toJSON();
+    public function toJSON() : string ;
 }
 
-?>

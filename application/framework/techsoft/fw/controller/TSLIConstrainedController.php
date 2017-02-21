@@ -18,13 +18,12 @@ interface TSLIConstrainedController  {
      * Si se desea uno diferente hacer override , de lo contrario retorna
      * null , que es lo mismo que indicar usese el default.
      *
-     * @return string null el default del sistema , != null nombre base de la clase
-     * que se usara como filtro default.
+     * @return null|TSLIParametersProcessor : \TSLIParametersProcessor con la instancia del filter processor
      *
      * @see TSLFilterProcessorLoaderHelper
      * @see TSLFilterProcessorJson
      */
-    public function getFilterProcessor();
+    public function getFilterProcessor(): ?\TSLIParametersProcessor;
 
     /**
      * Metodo hook que se usara si se desea utilizar por default
@@ -32,13 +31,12 @@ interface TSLIConstrainedController  {
      * Si se desea uno diferente hacer override , de lo contrario retorna
      * null , que es lo mismo que indicar usese el default.
      *
-     * @return string null el default del sistema , != null nombre base de la clase
-     * que se usara como sorter default.
+     * @return null|TSLIParametersProcessor : \TSLIParametersProcessor con la instancia del sorter processor
      *
      * @see TSLSorterProcessorLoaderHelper
      * @see TSLSorterProcessorJson
      */
-    public function getSorterProcessor() ;
+    public function getSorterProcessor() : ?\TSLIParametersProcessor ;
 
     /**
      * Metodo hook que se usara si se desea utilizar por default
@@ -46,12 +44,11 @@ interface TSLIConstrainedController  {
      * Si se desea uno diferente hacer override , de lo contrario retorna
      * null , que es lo mismo que indicar usese el default.
      *
-     * @return string null el default del sistema , != null nombre base de la clase
-     * que se usara como constraint processor default.
+     * @return \TSLIParametersProcessor instancia de un constraint processor
      *
      * @see \TSLConstraintProcessorLoaderHelper
      */
-    public function getConstraintProcessor();
+    public function getConstraintProcessor() : \TSLIParametersProcessor ;
 
     /**
      * Define el tipo de parser default para el filtro el cual
@@ -59,7 +56,7 @@ interface TSLIConstrainedController  {
      *
      * @return string con el tipo de datos que componen el filtro json,csv o xml
      */
-    public function getDefaultFilterType() ;
+    public function getDefaultFilterType() : string ;
 
     /**
      * Define el tipo de parser default para los campos de sort el cual
@@ -67,10 +64,9 @@ interface TSLIConstrainedController  {
      *
      * @return string con el tipo de datos que componen el sorter json,csv o xml
      */
-    public function getDefaultSorterType();
+    public function getDefaultSorterType() : string ;
 
 
 }
-?>
 
 

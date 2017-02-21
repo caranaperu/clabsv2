@@ -11,16 +11,15 @@
  */
 abstract class TSLStandardBussinessService extends TSLBussinessService {
 
-     protected function validateData(TSLIDataTransferObj $dto) {
+     protected function validateData(TSLIDataTransferObj $dto) : bool {
          return TRUE;
      }
 
-     protected function preExecuteService($action,TSLIDataTransferObj $dto){
+     protected function preExecuteService(string $action,TSLIDataTransferObj $dto) : void {
      }
 
-     protected function postExecuteService($action,TSLIDataTransferObj $dto){
+     protected function postExecuteService(string $action,TSLIDataTransferObj $dto) : void {
      }
 
 }
 
-?>

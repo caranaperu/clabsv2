@@ -7,7 +7,7 @@
  */
 abstract class TSLBussinessService implements TSLIBussinessService {
 
-    public function executeService($action, TSLIDataTransferObj $dto) {
+    public function executeService($action, TSLIDataTransferObj $dto) : void {
         if ($this->validateData($dto) === TRUE) {
             $this->preExecuteService($action, $dto);
             $this->doService($action, $dto);
@@ -15,11 +15,10 @@ abstract class TSLBussinessService implements TSLIBussinessService {
         }
     }
 
-    abstract protected function validateData(TSLIDataTransferObj $dto);
-    abstract protected function preExecuteService($action,TSLIDataTransferObj $dto);
-    abstract protected function doService($action,TSLIDataTransferObj $dto);
-    abstract protected function postExecuteService($action,TSLIDataTransferObj $dto);
+    abstract protected function validateData(TSLIDataTransferObj $dto) : bool;
+    abstract protected function preExecuteService(string $action,TSLIDataTransferObj $dto) : void ;
+    abstract protected function doService(string $action,TSLIDataTransferObj $dto) : void ;
+    abstract protected function postExecuteService(string $action,TSLIDataTransferObj $dto) : void ;
 
 }
 
-?>

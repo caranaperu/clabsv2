@@ -24,22 +24,22 @@ interface TSLISessionController  {
      * @return string con el codigo del usuario conectado a la session
      *
      */
-    public function getUserCode();
+    public function getUserCode() : string ;
 
     /**
      * Retorna el id del usuario logeado , debe ser -1
      * si no existe ninguno.
      *
-     * @return integer con el id del usuario logeado
+     * @return int con el id del usuario logeado
      */
-    public function getUserId();
+    public function getUserId() : int ;
 
     /**
      * Retorna si el usuariop esta conectado al sistema.
      *
-     * @return boolean true si el usuario esta logeado al sistema.
+     * @return bool true si el usuario esta logeado al sistema.
      */
-    public function isLoggedIn();
+    public function isLoggedIn() : bool ;
 
     /**
      * Retorna el valor de un dato de sesion en base a una llave.
@@ -48,49 +48,48 @@ interface TSLISessionController  {
      *
      * @return mixed  retorna el datro guardado en la sesion
      */
-    public function getSessionData($name);
+    public function getSessionData(string $name);
 
     /**
      * Setea el codigo del usuario logeado , este valor tendra sentido
      * ser seteado si isLoggedIn esta seteado.
      *
-     * @param $userCode string con el codigo del usuario a logearse.
+     * @param string $userCode con el codigo del usuario a logearse.
      */
-    public function setUserCode($userCode);
+    public function setUserCode(string $userCode) : void ;
 
     /**
      * Setea el id del usuario logeado , este valor tendra sentido
      * ser seteado si isLoggedIn esta seteado.
      *
-     * @param $userId integer con el id del usario logeado.
+     * @param int $userId con el id del usario logeado.
      *
      */
-    public function setUserId($userId);
+    public function setUserId(int $userId) : void ;
 
     /**
      * Setea si el usuario esta logeado o no al sistema.
      *
-     * @param $isLoggedIn boolean true si el usuario esta logeado.
+     * @param bool $isLoggedIn true si el usuario esta logeado.
      *
      */
-    public function setLoggedIn($isLoggedIn);
+    public function setLoggedIn(bool $isLoggedIn) : void ;
 
     /**
      * Guarda un valor en la sesion.
      *
-     * @param $name string con la llave del dato a agregar a la sesion.
-     * @param $data mixed el valor a guardar en la sesion
+     * @param string $name con la llave del dato a agregar a la sesion.
+     * @param mixed $data el valor a guardar en la sesion
      */
-    public function setSessionData($name,$data);
+    public function setSessionData(string $name,$data) : void ;
 
     /**
      * Remueve un valor en la sesion.
      *
      * @param $name string con la llave del dato a remover a la sesion.
      */
-    public function unsetSessionData($name);
+    public function unsetSessionData(string $name) : void ;
 
 }
-?>
 
 

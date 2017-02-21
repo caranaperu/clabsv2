@@ -26,7 +26,7 @@ abstract class TSLAppBasicRecordDAO_postgre extends \TSLBasicRecordDAO {
      * Constructor se puede indicar si las busquedas solo seran en registros activos.
      * @param boolean $activeSearchOnly
      */
-    public function __construct($activeSearchOnly = TRUE) {
+    public function __construct(bool $activeSearchOnly = TRUE) {
         $this->activeSearchOnly = $activeSearchOnly;
     }
 
@@ -34,11 +34,9 @@ abstract class TSLAppBasicRecordDAO_postgre extends \TSLBasicRecordDAO {
      * IMPORTANTE: Este metodo usado aqui es solo para postgreSQL ya que
      * no envian codigo de error solo mensaje.
      *
-     * @see \TSLBasicRecordDAO::isDuplicateKeError()
-     *
-     * @return boolean
+     * @inheritdoc
      */
-    public function isDuplicateKeyError($errorCode, $errorMsg) {
+    public function isDuplicateKeyError(int $errorCode, string $errorMsg) : bool {
         $pos = stripos($errorMsg, 'duplicate key value violates');
         if ($pos !== FALSE) {
             return TRUE;
@@ -50,11 +48,9 @@ abstract class TSLAppBasicRecordDAO_postgre extends \TSLBasicRecordDAO {
      * IMPORTANTE: Este metodo usado aqui es solo para postgreSQL ya que
      * no envian codigo de error solo mensaje.
      *
-     * @see \TSLBasicRecordDAO::isForeignKeyError()
-     *
-     * @return boolean
+     * @inheritdoc
      */
-    public function isForeignKeyError($errorCode, $errorMsg) {
+    public function isForeignKeyError(int $errorCode, string $errorMsg) : bool {
         $pos = stripos($errorMsg, 'violates foreign key');
         if ($pos !== FALSE) {
             return TRUE;
@@ -70,11 +66,9 @@ abstract class TSLAppBasicRecordDAO_postgre extends \TSLBasicRecordDAO {
      * y enviar el error en caso suceda.
      * Actualmente se espera que el mensaje contenga el texto 'record modified'
      *
-     * @see \TSLBasicRecordDAO::isForeignKeyError()
-     *
-     * @return boolean
+     * @inheritdoc
      */
-    public function isRecordModifiedError($errorCode, $errorMsg) {
+    public function isRecordModifiedError(int $errorCode, string $errorMsg) : bool {
         $pos = stripos($errorMsg, 'record modified');
         if ($pos !== FALSE) {
             return TRUE;

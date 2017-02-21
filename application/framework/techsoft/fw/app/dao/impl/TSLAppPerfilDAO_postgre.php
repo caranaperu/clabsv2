@@ -80,18 +80,18 @@ class TSLAppPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postg
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getDeleteRecordQuery()
+     * @inheritdoc
      */
-    protected function getDeleteRecordQuery($id, $versionId) {
+    protected function getDeleteRecordQuery($id, int $versionId) : string {
     //    return 'delete from tb_sys_perfil where "perfil_id" =' . $id . '  and xmin =' . $versionId;
         return 'select * from ( select sp_perfil_delete_record(' . $id . ',null,' . $versionId . ')  as updins) as ans where updins is not null';
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getAddRecordQuery()
+     * @inheritdoc
      */
-    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) {
-        /* @var $record \app\common\model\TLSAppPerfilModel  */
+    protected function getAddRecordQuery(\TSLDataModel &$record, \TSLRequestConstraints &$constraints = NULL) : string {
+        /* @var $record \app\common\model\impl\TSLAppPerfilModel  */
 
         $copyFromPerfil = $constraints->getParameter('prm_copyFromPerfil');
 
@@ -106,9 +106,9 @@ class TSLAppPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postg
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getFetchQuery()
+     * @inheritdoc
      */
-    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getFetchQuery(\TSLDataModel &$record = NULL, \TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         // Si la busqueda permite buscar solo activos e inactivos
         $sql = 'select perfil_id,sys_systemcode,perfil_codigo,perfil_descripcion,activo,xmin as "versionId" from tb_sys_perfil';
 
@@ -143,16 +143,16 @@ class TSLAppPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postg
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQuery()
+     * @inheritdoc
      */
-    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQuery($id,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return 'select perfil_id,sys_systemcode,perfil_codigo,perfil_descripcion,activo,xmin as "versionId" from tb_sys_perfil where perfil_id =' . $id;
     }
 
     /**
-     * @see \TSLBasicRecordDAO::getRecordQueryByCode()
+     * @inheritdoc
      */
-    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, $subOperation = NULL) {
+    protected function getRecordQueryByCode($code,\TSLRequestConstraints &$constraints = NULL, string $subOperation = NULL) : string {
         return $this->getRecordQuery($code);
     }
 
@@ -160,10 +160,10 @@ class TSLAppPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postg
      * La metodologia para el update es un hack por problemas en el psotgresql cuando un insert
      * es llevado a una function procedure , recomendamos leer el stored procedure.
      *
-     * @see \TSLBasicRecordDAO::getUpdateRecordQuery()
+     * @inheritdoc
      */
-    protected function getUpdateRecordQuery(\TSLDataModel &$record) {
-        /* @var $record \app\common\model\TLSAppPerfilModel */
+    protected function getUpdateRecordQuery(\TSLDataModel &$record) : string {
+        /* @var $record \app\common\model\impl\TSLAppPerfilModel */
         $sql = 'update tb_sys_perfil set ' .
                 'perfil_codigo=\'' . $record->get_perfil_codigo() . '\',' .
                 'perfil_descripcion=\'' . $record->get_perfil_descripcion() . '\',' .
@@ -174,7 +174,7 @@ class TSLAppPerfilDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postg
         return $sql;
     }
 
-    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) {
+    protected function getLastSequenceOrIdentityQuery(\TSLDataModel &$record = NULL) : string {
         return 'SELECT currval(\'tb_sys_perfil_id_seq\')';
     }
 

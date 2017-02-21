@@ -27,21 +27,23 @@ class TSLFilterProcessorLoaderHelper {
      * Importante : Se asume que si se usan los filtros default , en el include paht default
      * deben estar la referencia a los mismos. (Por ahora estan en config.php).
      *
-     * @param filter_basename , El nombre base del filtro , por ejemplo "pfilter" que es el defualt
+     * @param string $filter_basename , El nombre base del filtro , por ejemplo "pfilter" que es el defualt
      * para el nombre base de un filtro.
      *
-     * @param filter_id , el identificador del tipo de filtro tales como  : 'json',
+     * @param string $filter_id , el identificador del tipo de filtro tales como  : 'json',
      * 'csv','xml'. De no indicarse se tratara de cargar la generica para json,
      *
      * @param string  $library_id Indica si usa un filtor especifico de libreria soportada
      * , de definirse este parametro este filtor debera existir en la libreria default.
      * Si se ha creado un caso especifico no soportado bastara indicar el primer parametro.
      *
-     * @return TSLIFilterProcessor una referencia al Procesador de Filtros o una
+     * @return \TSLIParametersProcessor una referencia al Procesador de Filtros o una
      * excepcion de programacion si el untipo de filtro no esta soportado soportada
      *
+     * @throws TSLProgrammingException en caso de error
+     *
      */
-    public static function loadFilterProcessor($filter_basename = NULL, $filter_id = NULL, $library_id = NULL) {
+    public static function loadFilterProcessor(string $filter_basename = NULL, string $filter_id = NULL, string $library_id = NULL) : \TSLIParametersProcessor{
         //$defaultDBDriver = TSLUtilsHelper::getDefaultDatabaseDriver();
 
         $isUserFilter = true;
@@ -73,7 +75,7 @@ class TSLFilterProcessorLoaderHelper {
             // base seguido del tipo de Filtro  con la primera letra capitalizada.
             // Ejemplo : MiFiltroJson, MiSuperFiltroCsv , etc.
             if ($isUserFilter) {
-                require_once(APPPATH . 'request/filters/' . $filter_basename . ucfirst($filter_id) . EXT);
+                require_once(APPPATH . 'request/filters/' . $filter_basename . ucfirst($filter_id) . '.php');
                 $filter_basename .= ucfirst($filter_id);
             } else {
                 $filter_basename .= ucfirst(strtolower($library_id)).ucfirst($filter_id);
@@ -83,5 +85,3 @@ class TSLFilterProcessorLoaderHelper {
     }
 
 }
-
-?>

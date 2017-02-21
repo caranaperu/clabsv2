@@ -57,7 +57,7 @@ class TSLOutMessage {
      * Contendra un arreglo de datos extras si fuera necesario
      * tales como numero de registros, ultimo registro , o lo que se requiera.
      * .
-     * @var object $m_outParams
+     * @var array $m_outParams
      */
     private $m_outParams;
 
@@ -65,9 +65,9 @@ class TSLOutMessage {
     /**
      * Setea si este mensaje de salida es de error o no , si el parametro
      * es false , se considerara como error.
-     * @param int $success true si no hay error de lo contrario false
+     * @param bool $success true si no hay error de lo contrario false
      */
-    public function setSuccess($success) {
+    public function setSuccess(bool $success) : void {
         if (is_bool($success) === true) {
             $this->m_success = $success;
         } else {
@@ -80,7 +80,7 @@ class TSLOutMessage {
      *
      * @param TSLProcessErrorMessage $processError un error de proceso
      */
-    public function addProcessError(TSLProcessErrorMessage $processError){
+    public function addProcessError(TSLProcessErrorMessage $processError) : void {
         if (isset ($processError)) {
             // Si hay error ya no es success
             $this->setSuccess(false);
@@ -94,7 +94,7 @@ class TSLOutMessage {
      *
      * @param TSLFieldErrorMessage $fieldError un error de campo o parametro
      */
-    public function addFieldError(TSLFieldErrorMessage $fieldError){
+    public function addFieldError(TSLFieldErrorMessage $fieldError) : void {
         if (isset ($fieldError)) {
             // Si hay error ya no es success
             $this->setSuccess(false);
@@ -108,14 +108,15 @@ class TSLOutMessage {
      * @param string $paramName nombre de parametro.
      * @param mixed $paramValue  valor del parametor
      */
-    public function addOutputParameter($paramName,$paramValue) {
+    public function addOutputParameter(string $paramName,$paramValue) {
         $this->m_outParams[$paramName] = $paramValue;
     }
 
     /**
      * Retorna el arreglo de parametros de salida si es que existen.
+     * @return array con los parametros de salida
      */
-    public function &getOutputparameters() {
+    public function &getOutputparameters() : ?array {
         return $this->m_outParams;
     }
 
@@ -125,9 +126,9 @@ class TSLOutMessage {
      * los datos contenidos seran interpretados por contexto por
      * la fncion que espera los resultados.
      *
-     * @param Object $resultData los datos resultado.
+     * @param mixed $resultData los datos resultado.
      */
-    public function setResultData(&$resultData) {
+    public function setResultData(&$resultData) : void {
         if (isset ($resultData)) {
             $this->m_resultData = $resultData;
         }
@@ -135,7 +136,7 @@ class TSLOutMessage {
 
     /**
      * Retorna los datos resultado.
-     * @return Object con los resultados.
+     * @return mixed con los resultados.
      */
     public function &getResultData() {
         return $this->m_resultData;
@@ -150,9 +151,9 @@ class TSLOutMessage {
      * inidicarse en el segundo pramtero.
      *
      * @param string $errorMessage el mensaje de salida
-     * @param int codigo de error.
+     * @param int $errorCode codigo de error.
      */
-    public function setAnswerMessage($errorMessage,$errorCode) {
+    public function setAnswerMessage(string $errorMessage,int $errorCode) {
         if (isset ($errorMessage)) {
             // Cambio comillas por coma simple ya que en json o xml ocasionan problemas
             $this->m_answerMessage =str_replace(array("\"","\r","\n","\r\n"), ' ',$errorMessage);
@@ -164,7 +165,7 @@ class TSLOutMessage {
      * Retorna el mensaje de salida.
      * @return String con el mensaje de salida.
      */
-    public function getAnswerMesage() {
+    public function getAnswerMesage() : string  {
         if (isset($this->m_answerMessage) && empty($this->m_answerMessage) == FALSE)
             return $this->m_answerMessage;
         else
@@ -175,25 +176,25 @@ class TSLOutMessage {
      * Retorna el codigo de error global.
      * @return int con el codigo de error
      */
-    public function getErrorCode() {
+    public function getErrorCode() : int {
         return $this->m_errorCode;
     }
 
     /**
      * Retorna los errores de proceso.
      *
-     * @return array con los mensajes de procesos.
+     * @return TSLProcessErrorMessage[] con los mensajes de procesos.
      */
-    public function &getProcessErrors() {
+    public function &getProcessErrors() : array {
         return $this->m_processErrors;
     }
 
     /**
      * Retorna la lista de mensajes de error de validacion de campos
      * o parametros.
-     * @return array con los mensajes de error de campo o parametros
+     * @return TSLFieldErrorMessage[] con los mensajes de error de campo o parametros
      */
-    public function &getFieldErrors() {
+    public function &getFieldErrors() : array {
         return $this->m_fieldErrors;
     }
 
@@ -201,9 +202,9 @@ class TSLOutMessage {
      * Retorna si tiene o no tiene mensajes de error de proceso
      * esta instancia.
      *
-     * @return boolean true tiene mensajes de proceso, false no.
+     * @return bool true tiene mensajes de proceso, false no.
      */
-    public function hasProcessErrors() {
+    public function hasProcessErrors() : bool {
         if (isset($this->m_processErrors) && count($this->m_processErrors) > 0) {
             return true;
         }
@@ -214,9 +215,9 @@ class TSLOutMessage {
      * Retorna si tiene o no tiene mensajes de error de campos
      * esta instancia.
      *
-     * @return boolean true tiene mensajes de campos, false no.
+     * @return bool true tiene mensajes de campos, false no.
      */
-    public function hasFieldErrors() {
+    public function hasFieldErrors() : bool {
         if (isset($this->m_fieldErrors) && count($this->m_fieldErrors) > 0) {
             return true;
         }
@@ -226,13 +227,11 @@ class TSLOutMessage {
     /**
      * Retorna si el resultado de la operacion fue correcta.
      *
-     * @return boolean true si fue exitosa , false si hubo
+     * @return bool true si fue exitosa , false si hubo
      * errores.
      */
-    public function isSuccess() {
+    public function isSuccess() : bool {
         return $this->m_success;
     }
 
 }
-
-?>

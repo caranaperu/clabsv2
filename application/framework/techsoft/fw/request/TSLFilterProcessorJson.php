@@ -13,22 +13,25 @@ class TSLFilterProcessorJson implements TSLIParametersProcessor {
      * Parseara el parametor el cual debera tener la forma siguiente :
      * [{"property":"nombre_campo1","value":"valor_campo_1"},
      *  {"property":"nombre_campo2","value":"valor_campo_2"}]
-     * 
-     * Donde cada elemento del arreglo representa el campo y su valor a 
+     *
+     * Donde cada elemento del arreglo representa el campo y su valor a
      * aplicar al fitro.
-     * 
-     * @param type $filterData un texto que representa un arreglo de elementos 
-     * JSON de acuerdo a la documentacion.
+     *
+     * @param mixed                 $processData
+     * @param TSLRequestConstraints $constraints
+     *
+     * @return array|mixed
+     *
      */
-    public function process($filterData) {
+    public function &process($processData, \TSLRequestConstraints &$constraints = NULL) {
         $answer = array();
         // Si el parametro no es valido retornamos un arreglo en blanco
-        if (!isset($filterData) || is_null($filterData)) {
+        if (!isset($processData) || is_null($processData)) {
             return $answer;
         }
 
         // Decodificamos
-        $fltconvert = json_decode($filterData, true);
+        $fltconvert = json_decode($processData, true);
 
         //var_dump(json_last_error());
         //
@@ -54,4 +57,3 @@ class TSLFilterProcessorJson implements TSLIParametersProcessor {
 
 }
 
-?>

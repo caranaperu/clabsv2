@@ -41,7 +41,7 @@ class TSLRequestConstraints {
      * @return int con el numero actual de pagina a leer
      */
 
-    public function getCurrentPage() {
+    public function getCurrentPage() : int {
         return $this->currentPage;
     }
 
@@ -50,7 +50,7 @@ class TSLRequestConstraints {
      *
      * @param int $currentPage
      */
-    public function setCurrentPage($currentPage) {
+    public function setCurrentPage(int $currentPage) : void {
         $this->currentPage = $currentPage;
     }
 
@@ -60,7 +60,7 @@ class TSLRequestConstraints {
      *
      * @return int el numero de registros x pagina.
      */
-    public function getRecordsPerPage() {
+    public function getRecordsPerPage() : int {
         return $this->recordsPerPage;
     }
 
@@ -70,7 +70,7 @@ class TSLRequestConstraints {
      *
      * @param int $recordsPerPage
      */
-    public function setRecordsPerPage($recordsPerPage) {
+    public function setRecordsPerPage(int $recordsPerPage) : void {
         $this->recordsPerPage = $recordsPerPage;
     }
 
@@ -80,7 +80,7 @@ class TSLRequestConstraints {
      *
      * @return array con la lista de campos a uasrse en el sorteo.
      */
-    public function getSortFields() {
+    public function getSortFields() : array {
         return $this->sortFields;
     }
 
@@ -90,7 +90,7 @@ class TSLRequestConstraints {
      *
      * @param array $sortFields
      */
-    public function setSortFields(array $sortFields) {
+    public function setSortFields(array $sortFields) : void {
         $this->sortFields = $sortFields;
     }
 
@@ -100,7 +100,7 @@ class TSLRequestConstraints {
      *
      * @return array con la lista de campos.
      */
-    public function getListFields() {
+    public function getListFields() : array {
         return $this->listFields;
     }
 
@@ -110,7 +110,7 @@ class TSLRequestConstraints {
      *
      * @param array $listFields
      */
-    public function setListFields(array $listFields) {
+    public function setListFields(array $listFields) : void {
         $this->listFields = $listFields;
     }
 
@@ -123,9 +123,9 @@ class TSLRequestConstraints {
      * estos seran interpretados por contexto.
      *
      * @param String $parameterName nombre del parametro
-     * @param mixed valor del parametro.
+     * @param mixed $value valor del parametro.
      */
-    public function addParameter($parameterName, $value) {
+    public function addParameter(string $parameterName, $value) : void {
         if ($this->otherParams == null) {
             $this->otherParams = array();
         }
@@ -139,7 +139,7 @@ class TSLRequestConstraints {
      * @param string $parameterName nombnre del parametor
      * @return mixed valor del parametro o null si no existe.
      */
-    public function getParameter($parameterName) {
+    public function getParameter(string $parameterName) {
         if ($this->otherParams == null) {
             return NULL;
         }
@@ -155,9 +155,9 @@ class TSLRequestConstraints {
      * Retorna la primera fila dentro del resulset total
      * que se tomara en cuenta.
      *
-     * @return long
+     * @return int
      */
-    public function getStartRow() {
+    public function getStartRow() : int {
         return $this->startRow;
     }
 
@@ -165,9 +165,9 @@ class TSLRequestConstraints {
      * Setea la primera fila dentro del resulset total
      * que se tomara en cuenta.
      *
-     * @param long $startRow el numero de fila
+     * @param int $startRow el numero de fila
      */
-    public function setStartRow($startRow) {
+    public function setStartRow(int $startRow) : void {
         $this->startRow = $startRow;
     }
 
@@ -175,9 +175,9 @@ class TSLRequestConstraints {
      * Retorna la ultima fila dentro del resulset total
      * que se tomara en cuenta.
      *
-     * @return long
+     * @return int
      */
-    public function getEndRow() {
+    public function getEndRow() : int {
         return $this->endRow;
     }
 
@@ -185,19 +185,19 @@ class TSLRequestConstraints {
      * Setea la ultima fila dentro del resulset total
      * que se tomara en cuenta.
      *
-     * @param long $endRow el numero de fila
+     * @param int $endRow el numero de fila
      */
-    public function setEndRow($endRow) {
+    public function setEndRow(int $endRow) : void {
         $this->endRow = $endRow;
     }
 
     /**
-     * Retorna un arreglo con los campos a usarse en filtro
+     * Retorna un arreglo con los campos a : void usarse en filtro
      * para el where.
      *
-     * @return array con la lista de campos a uasrse en el filtro.
+     * @return array con la lista de campos a : void uasrse en el filtro.
      */
-    public function getFilterFields() {
+    public function getFilterFields() :  array {
         return $this->filterFields;
     }
 
@@ -205,9 +205,9 @@ class TSLRequestConstraints {
      * Se envia un arreglo de los campos a usarse
      * para filtro del where.
      *
-     * @param array $sortFields
+     * @param array $filterFields
      */
-    public function setFilterFields(array $filterFields) {
+    public function setFilterFields(array $filterFields) : void {
         $this->filterFields = $filterFields;
     }
 
@@ -217,9 +217,11 @@ class TSLRequestConstraints {
      * Esta funcion es util cuando se necesitan los campos para ser
      * usados fuera del filtro.
      *
+     * @param string $fieldName nombre del campo.
+     *
      * @return mixed con el valor del campo de filtro.
      */
-    public function getFilterField($fieldName) {
+    public function getFilterField(string $fieldName) {
         if ($this->filterFields == null || !isset($this->filterFields[$fieldName])) {
             return NULL;
         }
@@ -233,7 +235,7 @@ class TSLRequestConstraints {
      *
      * @param string $fieldName con el nombre del campo
      */
-    public function removeFilterField($fieldName) {
+    public function removeFilterField(string $fieldName) : void {
         if ($this->filterFields != null) {
             if (isset($this->filterFields[$fieldName])) {
                 unset($this->filterFields[$fieldName]);
@@ -250,7 +252,7 @@ class TSLRequestConstraints {
      * @param String $sortField nomnbre del campo
      * @param String $direction ASC o DESC , si no esta definido sera ASC
      */
-    public function addSortField($sortField, $direction) {
+    public function addSortField(string $sortField, string $direction) : void {
         if ($this->sortFields == null) {
             $this->sortFields = array();
         }
@@ -269,7 +271,7 @@ class TSLRequestConstraints {
      *
      * @param String $listField momnbre del campo a agregar
      */
-    public function addListField($listField) {
+    public function addListField(string $listField) {
         if ($this->listFields == null) {
             $this->listFields = array();
         }
@@ -279,8 +281,9 @@ class TSLRequestConstraints {
     /**
      * Devuelve una lista de los campos de sorteo separada por comas incluyendo la direccion
      * del sort.
+     *
      */
-    public function getSortFieldsAsString() {
+    public function getSortFieldsAsString() : ?string {
         if (is_array($this->sortFields) && count($this->sortFields) > 0) {
             $str = '';
             foreach ($this->sortFields as $field => $direction) {
@@ -298,7 +301,7 @@ class TSLRequestConstraints {
     /**
      * Devuelve una lista de los campos a recoger en el select deparados por comas
      */
-    public function getListFieldsAsString() {
+    public function getListFieldsAsString() : string {
         if (is_array($this->listFields) && count($this->listFields) > 0) {
             $str = '';
             foreach ($this->listFields as $value) {
@@ -318,7 +321,7 @@ class TSLRequestConstraints {
      * Esta funcion en esta primera version solo soporta el operador "and"
      * de ser necesario se implementara otros casos
      */
-    public function getFilterFieldsAsString() {
+    public function getFilterFieldsAsString() : string {
         if (is_array($this->filterFields) && count($this->filterFields) > 0) {
             $str = '';
             foreach ($this->filterFields as $field => $value) {
@@ -390,7 +393,7 @@ class TSLRequestConstraints {
      * estos valores son para el SmartClient otras librerias pudieran
      * usar otros casos para lo mismo.
      */
-    public function addFilterField($filterField, $filterValue, $typeFilter='exact') {
+    public function addFilterField(string $filterField, $filterValue, string $typeFilter='exact') : void {
         if ($this->filterFields == null) {
             $this->filterFields = array();
         }
@@ -415,4 +418,3 @@ class TSLRequestConstraints {
 
 }
 
-?>

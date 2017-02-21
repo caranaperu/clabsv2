@@ -8,7 +8,7 @@
  * @license		GPL
  * @since		Version 1.0
  */
-class TSLDAOLoaderHelper {
+class TSLDAOLoaderHelper_old {
 
     private static $supported_dbs = array('postgre', 'mysql', 'mssql', 'oci8', 'sqllite', 'odbc');
 
@@ -26,19 +26,19 @@ class TSLDAOLoaderHelper {
      * Las bases de datos permitidas son:
      * 'pgsql', 'mysql','mssql','oci8','sqllite' or 'odbc'.
      *
-     * @param dao_basename , El nombre base del DAO , por ejemplo "Login"
+     * @param string $dao_basename , El nombre base del DAO , por ejemplo "Login"
      *
-     * @param db_id , el identificador de la base de datos,los valores permitidos son : 'postgre',
+     * @param string $db_id , el identificador de la base de datos,los valores permitidos son : 'postgre',
      * 'mysql','mssql','oci8','sqllite' or 'odbc'. De no indicarse se tratara de cargar
      * la generica , luego la default.
      *
-     * @return una referencia al DAO o una excepcion de programacion si se ha solicitado
+     * @return TSLBasicRecordDAO una referencia al DAO o una excepcion de programacion si se ha solicitado
      * un tipo de base de datos no soportada
      *
-     *
+     * @throws TSLProgrammingException
      *
      */
-    public static function loadDAO($dao_basename, $db_id = null) {
+    public static function loadDAO(string $dao_basename, string $db_id = null) : TSLBasicRecordDAO {
         // Los daos seran buscados en el APPPATH o en el equivalente a APPPATH_shared
         $applpath = substr(APPPATH, 0, strpos(APPPATH, '_')) . '/';
         $apppath_touse = $applpath;
@@ -60,13 +60,13 @@ class TSLDAOLoaderHelper {
         // 2: de lo contrario buscaremos el generico
         if (isset($db_id) == FALSE and isset($defaultDBDriver)) {
 
-            if (file_exists($applpath . 'dao/' . $dao_basename . EXT)) {
+            if (file_exists($applpath . 'dao/' . $dao_basename . '.php')) {
                 $applpath_exist = true;
-            } else if (file_exists($applpath_alt . 'dao/' . $dao_basename . EXT)) {
+            } else if (file_exists($applpath_alt . 'dao/' . $dao_basename . '.php')) {
                 $applpath_alt_exist = true;
                 $apppath_touse = $applpath_alt;
                 $daoclass = 'shared\\dao\\';
-            } else if (file_exists($libdaopath  . $dao_basename . EXT)) {
+            } else if (file_exists($libdaopath  . $dao_basename . '.php')) {
                 $daoclass = 'app\\common\\dao\\impl\\';
                 $applpath_alt_exist = true;
             }
@@ -79,10 +79,10 @@ class TSLDAOLoaderHelper {
 
                 // Verificamos si existe en el directorio shared de la aplicacion
                 // sino se asume en la misma aplicacion
-                if (file_exists($applpath_alt . 'dao/' . $dao_basename . '_' . $db_id . EXT)) {
+                if (file_exists($applpath_alt . 'dao/' . $dao_basename . '_' . $db_id . '.php')) {
                     $apppath_touse = $applpath_alt. 'dao/';
                     $daoclass = 'shared\\dao\\';
-                } else if (file_exists($libdaopath . $dao_basename . '_' . $db_id . EXT)) {
+                } else if (file_exists($libdaopath . $dao_basename . '_' . $db_id . '.php')) {
                     $apppath_touse = $libdaopath;
                     $daoclass = 'app\\common\\dao\\impl\\';
                 }
@@ -103,15 +103,13 @@ class TSLDAOLoaderHelper {
             // Trato de cargar uno especifico o un generico.
             if (isset($db_id)) {
                 $daoclass .= '_' . $db_id;
-                require_once($apppath_touse . $dao_basename . '_' . $db_id . EXT);
+                require_once($apppath_touse . $dao_basename . '_' . $db_id . '.php');
                 return new $daoclass;
             } else {
-                require_once($apppath_touse .  $dao_basename . EXT);
+                require_once($apppath_touse .  $dao_basename . '.php');
                 return new $daoclass;
             }
         }
     }
 
 }
-
-?>
