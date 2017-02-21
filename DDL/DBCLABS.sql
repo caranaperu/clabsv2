@@ -3,8 +3,8 @@
 --
 
 -- Dumped from database version 9.3.15
--- Dumped by pg_dump version 9.3.0
--- Started on 2017-01-31 02:18:22
+-- Dumped by pg_dump version 9.3.16
+-- Started on 2017-02-21 15:56:36 PET
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -14,7 +14,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- TOC entry 224 (class 3079 OID 11829)
+-- TOC entry 1 (class 3079 OID 11829)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner:
 --
 
@@ -23,7 +23,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 --
 -- TOC entry 2562 (class 0 OID 0)
--- Dependencies: 224
+-- Dependencies: 1
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
 
@@ -31,7 +31,7 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- TOC entry 225 (class 3079 OID 109557)
+-- TOC entry 2 (class 3079 OID 109557)
 -- Name: pldbgapi; Type: EXTENSION; Schema: -; Owner:
 --
 
@@ -40,7 +40,7 @@ CREATE EXTENSION IF NOT EXISTS pldbgapi WITH SCHEMA public;
 
 --
 -- TOC entry 2563 (class 0 OID 0)
--- Dependencies: 225
+-- Dependencies: 2
 -- Name: EXTENSION pldbgapi; Type: COMMENT; Schema: -; Owner:
 --
 
@@ -76,8 +76,8 @@ DECLARE v_next_value integer;
 
 BEGIN
 
-	UPDATE tb_cotizacion_counter set cotizacion_counter_last_id = cotizacion_counter_last_id +1 returning cotizacion_counter_last_id into v_next_value;
-	return v_next_value;
+  UPDATE tb_cotizacion_counter set cotizacion_counter_last_id = cotizacion_counter_last_id +1 returning cotizacion_counter_last_id into v_next_value;
+  return v_next_value;
 END;
 
 $$;
@@ -86,7 +86,7 @@ $$;
 ALTER FUNCTION public.fn_get_cotizacion_next_id() OWNER TO clabsuser;
 
 --
--- TOC entry 289 (class 1255 OID 109595)
+-- TOC entry 287 (class 1255 OID 109595)
 -- Name: fn_get_producto_costo(integer, date); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -115,50 +115,50 @@ RETURN:
 Historia : Creado 22-08-2016
 */
 DECLARE v_costo numeric(10,4);
-				DECLARE v_min_costo numeric(10,4);
-				DECLARE v_producto_detalle_id integer;
+  DECLARE v_min_costo numeric(10,4);
+  DECLARE v_producto_detalle_id integer;
 
 BEGIN
 
-	-- Leemos los valoresa trabajar.
-	SELECT SUM(costo),min(costo),min(producto_detalle_id) INTO v_costo,v_min_costo,v_producto_detalle_id
-	FROM (
-				 SELECT
-					 (select fn_get_producto_detalle_costo(producto_detalle_id, p_a_fecha) ) as costo,
-					 pd.producto_detalle_id
-				 FROM   tb_insumo ins
-					 inner join tb_producto_detalle pd
-						 ON pd.insumo_id_origen = ins.insumo_id
-				 --     inner join tb_insumo inso
-				 --       ON inso.insumo_id = pd.insumo_id
-				 WHERE  ins.insumo_id = p_insumo_id
-			 ) res;
+  -- Leemos los valoresa trabajar.
+  SELECT SUM(costo),min(costo),min(producto_detalle_id) INTO v_costo,v_min_costo,v_producto_detalle_id
+  FROM (
+         SELECT
+           (select fn_get_producto_detalle_costo(producto_detalle_id, p_a_fecha) ) as costo,
+           pd.producto_detalle_id
+         FROM   tb_insumo ins
+           inner join tb_producto_detalle pd
+             ON pd.insumo_id_origen = ins.insumo_id
+         --     inner join tb_insumo inso
+         --       ON inso.insumo_id = pd.insumo_id
+         WHERE  ins.insumo_id = p_insumo_id
+       ) res;
 
-	--RAISE NOTICE 'v_costo %',v_costo;
-	--RAISE NOTICE 'v_min_costo %',v_min_costo;
-	--RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
+  --RAISE NOTICE 'v_costo %',v_costo;
+  --RAISE NOTICE 'v_min_costo %',v_min_costo;
+  --RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
 
-	-- Si v_producto_detalle_id es null significa que no hay items y el costo es cero.
-	IF v_producto_detalle_id IS NULL
-	THEN
-		v_costo := 0.0000;
-	END IF;
+  -- Si v_producto_detalle_id es null significa que no hay items y el costo es cero.
+  IF v_producto_detalle_id IS NULL
+  THEN
+    v_costo := 0.0000;
+  END IF;
 
-	-- si en el calculo de los items hubo alguno que no encontro tipo de cambio
-	-- o conversion requerida retornara 0 -1 o -2 segun el caso.
-	IF coalesce(v_min_costo,0) < 0
-	THEN
-		v_costo := v_min_costo;
-	END IF;
+  -- si en el calculo de los items hubo alguno que no encontro tipo de cambio
+  -- o conversion requerida retornara 0 -1 o -2 segun el caso.
+  IF coalesce(v_min_costo,0) < 0
+  THEN
+    v_costo := v_min_costo;
+  END IF;
 
-	--  Este es un ilogico pero si se diera devovemos 3 indicando que hubo problemas de calculo.
-	IF v_costo IS NULL
-	THEN
-		v_costo := -3;
-	END IF;
-	RAISE NOTICE 'v_costo %',v_costo;
+  --  Este es un ilogico pero si se diera devovemos 3 indicando que hubo problemas de calculo.
+  IF v_costo IS NULL
+  THEN
+    v_costo := -3;
+  END IF;
+  RAISE NOTICE 'v_costo %',v_costo;
 
-	RETURN v_costo;
+  RETURN v_costo;
 
 END;
 $$;
@@ -193,164 +193,182 @@ RETURN:
 Historia : Creado 24-08-2016insumo
 */
 DECLARE v_costo  numeric(10,4) = 0.00 ;
-				DECLARE v_producto_detalle_cantidad numeric(20,10);
-				DECLARE v_producto_detalle_merma numeric(10,4);
-				DECLARE v_moneda_codigo_producto character varying(8);
-				DECLARE v_moneda_codigo_costo character varying(8);
-				DECLARE v_producto_detalle_id integer;
-				DECLARE v_insumo_id_origen integer;
-				DECLARE v_insumo_id integer;
-				DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
-				DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
-				DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_unidad_medida_codigo character varying(8);
-				DECLARE v_unidad_medida_conversion_factor numeric(12,5);
-				DECLARE v_insumo_costo numeric(10,4);
-				DECLARE v_tcostos_indirecto boolean;
-				DECLARE v_regla_by_costo boolean;
+  DECLARE v_producto_detalle_cantidad numeric(20,10);
+  DECLARE v_producto_detalle_merma numeric(10,4);
+  DECLARE v_moneda_codigo_producto character varying(8);
+  DECLARE v_moneda_codigo_costo character varying(8);
+  DECLARE v_producto_detalle_id integer;
+  DECLARE v_insumo_id_origen integer;
+  DECLARE v_insumo_id integer;
+  DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
+  DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
+  DECLARE v_unidad_medida_codigo_costo character varying(8);
+  DECLARE v_unidad_medida_codigo character varying(8);
+  DECLARE v_unidad_medida_conversion_factor numeric(12,5);
+  DECLARE v_insumo_costo numeric(10,4);
+  DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_regla_by_costo boolean;
 
 
 BEGIN
 
-	-- Leemos los valoresa trabajar.
-	SELECT     pd.producto_detalle_id,
-		pd.insumo_id,
-		CASE
-		WHEN ins.insumo_tipo = 'IN' THEN
-			CASE WHEN tcostos_indirecto = TRUE
-				THEN
-					-- si es un producto directo se determina el peso sumando el campo cantidad de todos
-					-- los insumos usados por los productos de la empresa que genera el codigo.
-					(pd.producto_detalle_cantidad/(select sum(d2.producto_detalle_cantidad)
-																				 from tb_producto_detalle d2
-																					 inner join tb_insumo ins2 ON ins2.insumo_id = d2.insumo_id_origen
-																				 where d2.insumo_id = pd.insumo_id and d2.empresa_id = ins2.empresa_id))
-			ELSE
-				pd.producto_detalle_cantidad
-			END
-		ELSE
-			pd.producto_detalle_cantidad
-		END AS producto_detalle_cantidad,
-		-- pd.producto_detalle_cantidad,
-		pd.producto_detalle_merma,
-		ins.moneda_codigo_costo,
-		inso.insumo_id,
-		inso.moneda_codigo_costo,
-		unidad_medida_codigo,
-		ins.unidad_medida_codigo_costo,
-		(select fn_get_producto_detalle_costo_base(p_producto_detalle_id,p_a_fecha)) as insumo_costo,
-		tcostos_indirecto,
-		rg.regla_by_costo
-	INTO       v_producto_detalle_id,
-		v_insumo_id,
-		v_producto_detalle_cantidad,
-		v_producto_detalle_merma,
-		v_moneda_codigo_costo,
-		v_insumo_id_origen,
-		v_moneda_codigo_producto,
-		v_unidad_medida_codigo,
-		v_unidad_medida_codigo_costo,
-		v_insumo_costo,
-		v_tcostos_indirecto,
-		v_regla_by_costo
-	FROM       tb_producto_detalle pd
-		inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
-		inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
-		inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-		left join tb_reglas rg on rg.regla_empresa_origen_id = ins.empresa_id and rg.regla_empresa_destino_id = inso.empresa_id
-	WHERE      producto_detalle_id = p_producto_detalle_id;
+  -- Leemos los valoresa trabajar.
+  SELECT     pd.producto_detalle_id,
+    pd.insumo_id,
+    CASE
+    WHEN ins.insumo_tipo = 'IN' THEN
+      CASE WHEN tcostos_indirecto = TRUE
+        THEN
+          -- si es un producto directo se determina el peso sumando el campo cantidad de todos
+          -- los insumos usados por los productos de la empresa que genera el codigo.
+          (pd.producto_detalle_cantidad/(select sum(d2.producto_detalle_cantidad)
+                                         from tb_producto_detalle d2
+                                           inner join tb_insumo ins2 ON ins2.insumo_id = d2.insumo_id_origen
+                                         where d2.insumo_id = pd.insumo_id and d2.empresa_id = ins2.empresa_id))
+      ELSE
+        pd.producto_detalle_cantidad
+      END
+    ELSE
+      pd.producto_detalle_cantidad
+    END AS producto_detalle_cantidad,
+    -- pd.producto_detalle_cantidad,
+    pd.producto_detalle_merma,
+    ins.moneda_codigo_costo,
+    inso.insumo_id,
+    inso.moneda_codigo_costo,
+    unidad_medida_codigo,
+    ins.unidad_medida_codigo_costo,
+    (select fn_get_producto_detalle_costo_base(p_producto_detalle_id,p_a_fecha)) as insumo_costo,
+    tcostos_indirecto,
+    rg.regla_by_costo
+  INTO       v_producto_detalle_id,
+    v_insumo_id,
+    v_producto_detalle_cantidad,
+    v_producto_detalle_merma,
+    v_moneda_codigo_costo,
+    v_insumo_id_origen,
+    v_moneda_codigo_producto,
+    v_unidad_medida_codigo,
+    v_unidad_medida_codigo_costo,
+    v_insumo_costo,
+    v_tcostos_indirecto,
+    v_regla_by_costo
+  FROM       tb_producto_detalle pd
+    inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
+    inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
+    inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+    left join tb_reglas rg on rg.regla_empresa_origen_id = ins.empresa_id and rg.regla_empresa_destino_id = inso.empresa_id
+  WHERE      producto_detalle_id = p_producto_detalle_id;
 
-	IF v_producto_detalle_id  IS NULL
-	THEN
-		RAISE  'No existe el item solicitado a calcular' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_producto_detalle_id  IS NULL
+  THEN
+    RAISE  'No existe el item solicitado a calcular' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	IF v_insumo_id_origen  IS NULL
-	THEN
-		RAISE  'No existe el producto principal a calcular' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_insumo_id_origen  IS NULL
+  THEN
+    RAISE  'No existe el producto principal a calcular' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	-- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
-	-- de ser la misma moneda el tipo de cambio siempre sera 1,
-	IF v_moneda_codigo_costo = v_moneda_codigo_producto
-	THEN
-		v_tipo_cambio_tasa_compra = 1.00;
-		v_tipo_cambio_tasa_venta  = 1.00;
-	ELSE
-		SELECT tipo_cambio_tasa_compra,
-			tipo_cambio_tasa_venta
-		INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
-		FROM   tb_tipo_cambio
-		WHERE  moneda_codigo_origen = v_moneda_codigo_costo
-					 AND moneda_codigo_destino = v_moneda_codigo_producto
-					 AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
-	END IF;
-	--RAISE NOTICE 'v_moneda_codigo_costo %',v_moneda_codigo_costo;
-	--RAISE NOTICE 'v_moneda_codigo_producto %',v_moneda_codigo_producto;
+  -- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
+  -- de ser la misma moneda el tipo de cambio siempre sera 1,
+  IF v_moneda_codigo_costo = v_moneda_codigo_producto
+  THEN
+    v_tipo_cambio_tasa_compra = 1.00;
+    v_tipo_cambio_tasa_venta  = 1.00;
+  ELSE
+    SELECT tipo_cambio_tasa_compra,
+      tipo_cambio_tasa_venta
+    INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
+    FROM   tb_tipo_cambio
+    WHERE  moneda_codigo_origen = v_moneda_codigo_costo
+           AND moneda_codigo_destino = v_moneda_codigo_producto
+           AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
+  END IF;
+  --RAISE NOTICE 'v_moneda_codigo_costo %',v_moneda_codigo_costo;
+  --RAISE NOTICE 'v_moneda_codigo_producto %',v_moneda_codigo_producto;
 
-	--RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
-	--RAISE NOTICE 'v_tipo_cambio_tasa_venta %',v_tipo_cambio_tasa_venta;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_venta %',v_tipo_cambio_tasa_venta;
 
-	-- Si no se ha encotrado tipo de cambio retornamos -1 como costo
-	IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
-	THEN
-		v_costo := -1.0000;
-	ELSE
+  -- Si no se ha encotrado tipo de cambio retornamos -1 como costo
+  IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
+  THEN
+    v_costo := -1.0000;
+  ELSE
 
-		-- Si el producto principal y el insumo son distintos y los costos son directos buscamos la conversiom
-		-- de lo contrario simepre sera 1.
-		IF v_unidad_medida_codigo_costo != v_unidad_medida_codigo AND v_tcostos_indirecto = FALSE
-		THEN
-			select unidad_medida_conversion_factor
-			into v_unidad_medida_conversion_factor
-			from
-				tb_unidad_medida_conversion
-			where unidad_medida_origen = v_unidad_medida_codigo AND
-						unidad_medida_destino = v_unidad_medida_codigo_costo ;
-		ELSE
-			v_unidad_medida_conversion_factor := 1;
-		END IF;
-		RAISE NOTICE 'v_producto_detalle_cantidad %',v_producto_detalle_cantidad;
-		--RAISE NOTICE 'v_unidad_medida_conversion_factor %',v_unidad_medida_conversion_factor;
-		--RAISE NOTICE 'v_producto_detalle_merma %',v_producto_detalle_merma;
-		--RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
-		RAISE NOTICE 'v_insumo_costo %',v_insumo_costo;
+    -- Si el producto principal y el insumo son distintos y los costos son directos buscamos la conversiom
+    -- de lo contrario simepre sera 1.
+    IF v_unidad_medida_codigo_costo != v_unidad_medida_codigo AND v_tcostos_indirecto = FALSE
+    THEN
+      select unidad_medida_conversion_factor
+      into v_unidad_medida_conversion_factor
+      from
+        tb_unidad_medida_conversion
+      where unidad_medida_origen = v_unidad_medida_codigo AND
+            unidad_medida_destino = v_unidad_medida_codigo_costo ;
+    ELSE
+      v_unidad_medida_conversion_factor := 1;
+    END IF;
+    RAISE NOTICE 'v_producto_detalle_cantidad %',v_producto_detalle_cantidad;
+    --RAISE NOTICE 'v_unidad_medida_conversion_factor %',v_unidad_medida_conversion_factor;
+    --RAISE NOTICE 'v_producto_detalle_merma %',v_producto_detalle_merma;
+    --RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
+    --IF v_unidad_medida_conversion_factor IS NULL
+    --THEN
+    --	RAISE NOTICE 'v_insumo_costo %',v_insumo_costo;
+    --	RAISE NOTICE '----------------------------';
+    --	RAISE NOTICE '----------------------------';
+    --	RAISE NOTICE '----------------------------';
+    --	RAISE NOTICE '----------------------------';
+    --	RAISE NOTICE '----------------------------';
+    --	RAISE NOTICE 'v_tcostos_indirecto %',v_tcostos_indirecto;
+    --	RAISE NOTICE 'v_unidad_medida_codigo %',v_unidad_medida_codigo;
+    --	RAISE NOTICE 'v_unidad_medida_codigo_costo %',v_unidad_medida_codigo_costo;
+    --	RAISE NOTICE 'v_insumo_id_origen %',v_insumo_id_origen;
+    --	RAISE NOTICE 'v_insumo_id %',v_insumo_id;
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --	RAISE NOTICE 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    --END IF;
+    -- Si la conversion de medidas no existe retornamos como costo -2
+    IF v_unidad_medida_conversion_factor IS NULL
+    THEN
+      v_costo := -2.0000;
+    ELSE
+      IF v_insumo_costo >= 0
+      THEN
+        -- Si la regla es por costo se aplica merma , si es por precio de mercado
+        -- no se requiere
+        --	IF coalesce(v_regla_by_costo,true) = false
+        --	THEN
+        --		v_producto_detalle_merma = 0;
+        --	END IF;
 
-		-- Si la conversion de medidas no existe retornamos como costo -2
-		IF v_unidad_medida_conversion_factor IS NULL
-		THEN
-			v_costo := -2.0000;
-		ELSE
-			IF v_insumo_costo >= 0
-			THEN
-				-- Si la regla es por costo se aplica merma , si es por precio de mercado
-				-- no se requiere
-				--	IF coalesce(v_regla_by_costo,true) = false
-				--	THEN
-				--		v_producto_detalle_merma = 0;
-				--	END IF;
-
-				-- Calculamos tomando en cuenta el % de merma
-				IF v_unidad_medida_conversion_factor = 1
-				THEN
-					v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_tipo_cambio_tasa_compra*v_insumo_costo;
-				ELSE
-					-- Esto es para ver si se retira todo lo relativo a cambio de unidad ya que parece no ser necesario
-					v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_unidad_medida_conversion_factor*v_tipo_cambio_tasa_compra*v_insumo_costo;
-				END IF;
-			ELSE
-				v_costo:= v_insumo_costo;
-			END IF;
-		END IF;
-	END IF;
+        -- Calculamos tomando en cuenta el % de merma
+        IF v_unidad_medida_conversion_factor = 1
+        THEN
+          v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_tipo_cambio_tasa_compra*v_insumo_costo;
+        ELSE
+          -- Esto es para ver si se retira todo lo relativo a cambio de unidad ya que parece no ser necesario
+          v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_unidad_medida_conversion_factor*v_tipo_cambio_tasa_compra*v_insumo_costo;
+        END IF;
+      ELSE
+        v_costo:= v_insumo_costo;
+      END IF;
+    END IF;
+  END IF;
 
 
 
-	--RAISE NOTICE 'v_costo %',v_costo;
-	-- RAISE NOTICE 'v_insumo_id %',v_insumo_id;
-	-- RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
+  --RAISE NOTICE 'v_costo %',v_costo;
+  -- RAISE NOTICE 'v_insumo_id %',v_insumo_id;
+  -- RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
 
-	RETURN v_costo;
+  RETURN v_costo;
 
 END;
 $$;
@@ -359,7 +377,7 @@ $$;
 ALTER FUNCTION public.fn_get_producto_detalle_costo(p_producto_detalle_id integer, p_a_fecha date) OWNER TO clabsuser;
 
 --
--- TOC entry 284 (class 1255 OID 109600)
+-- TOC entry 282 (class 1255 OID 109600)
 -- Name: fn_get_producto_detalle_costo_base(integer, date); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -395,83 +413,83 @@ RETURN:
 Historia : Creado 24-08-2016insumo
 */
 DECLARE v_insumo_costo numeric(10,4);
-				DECLARE v_empresa_usuaria_id integer;
-				DECLARE v_empresa_propietaria_id integer;
-				DECLARE v_insumo_merma_venta numeric(10,4);
-				DECLARE v_insumo_precio_mercado numeric(10,2);
-				DECLARE v_tcostos_indirecto boolean;
-				DECLARE v_regla_id integer;
-				DECLARE v_regla_by_costo boolean;
-				DECLARE v_regla_porcentaje numeric(6,2);
-				DECLARE v_tipo_cambio_tasa_compra  numeric(8,4);
+  DECLARE v_empresa_usuaria_id integer;
+  DECLARE v_empresa_propietaria_id integer;
+  DECLARE v_insumo_merma_venta numeric(10,4);
+  DECLARE v_insumo_precio_mercado numeric(10,2);
+  DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_regla_id integer;
+  DECLARE v_regla_by_costo boolean;
+  DECLARE v_regla_porcentaje numeric(6,2);
+  DECLARE v_tipo_cambio_tasa_compra  numeric(8,4);
 BEGIN
 
-	-- Leemos los valoresa trabajar.
-	SELECT
-		CASE
-		WHEN ins.insumo_tipo = 'IN' THEN
-			ins.insumo_costo
-		ELSE
-			(select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
-		END AS insumo_costo,
-		ins.insumo_precio_mercado,
-		pd.empresa_id, -- empresa usuaria del insumo.
-		inso.empresa_id, -- empresa que creeo el producto (propietaria)
-		ins.insumo_merma, -- merma de venta del insumo.
-		tcostos_indirecto,
-		regla_id,
-		regla_by_costo,
-		regla_porcentaje
-	INTO
-		v_insumo_costo,
-		v_insumo_precio_mercado,
-		v_empresa_usuaria_id,
-		v_empresa_propietaria_id,
-		v_insumo_merma_venta,
-		v_tcostos_indirecto,
-		v_regla_id,
-		v_regla_by_costo,
-		v_regla_porcentaje
-	FROM   tb_producto_detalle pd
-		inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
-		inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
-		inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-		left join tb_reglas rg on rg.regla_empresa_origen_id = ins.empresa_id and rg.regla_empresa_destino_id = inso.empresa_id
-	WHERE      pd.producto_detalle_id = p_producto_detalle_id;
+  -- Leemos los valoresa trabajar.
+  SELECT
+    CASE
+    WHEN ins.insumo_tipo = 'IN' THEN
+      ins.insumo_costo
+    ELSE
+      (select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
+    END AS insumo_costo,
+    ins.insumo_precio_mercado,
+    pd.empresa_id, -- empresa usuaria del insumo.
+    inso.empresa_id, -- empresa que creeo el producto (propietaria)
+    ins.insumo_merma, -- merma de venta del insumo.
+    tcostos_indirecto,
+    regla_id,
+    regla_by_costo,
+    regla_porcentaje
+  INTO
+    v_insumo_costo,
+    v_insumo_precio_mercado,
+    v_empresa_usuaria_id,
+    v_empresa_propietaria_id,
+    v_insumo_merma_venta,
+    v_tcostos_indirecto,
+    v_regla_id,
+    v_regla_by_costo,
+    v_regla_porcentaje
+  FROM   tb_producto_detalle pd
+    inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
+    inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
+    inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+    left join tb_reglas rg on rg.regla_empresa_origen_id = ins.empresa_id and rg.regla_empresa_destino_id = inso.empresa_id
+  WHERE      pd.producto_detalle_id = p_producto_detalle_id;
 
-	-- Si la empresa uauria no es propietaria del insumo o producto le aplicamos la merma de venta
-	IF v_empresa_usuaria_id != v_empresa_propietaria_id
-	THEN
-		-- Si la regla es por costo se aplica merma , si es por precio de mercado
-		-- no se requiere
-		IF v_insumo_merma_venta != 0.0000 and coalesce(v_regla_by_costo,true) = true
-		THEN
-			v_insumo_costo := v_insumo_costo+(v_insumo_costo*v_insumo_merma_venta/100.000);
-		END IF;
+  -- Si la empresa uauria no es propietaria del insumo o producto le aplicamos la merma de venta
+  IF v_empresa_usuaria_id != v_empresa_propietaria_id
+  THEN
+    -- Si la regla es por costo se aplica merma , si es por precio de mercado
+    -- no se requiere
+    IF v_insumo_merma_venta != 0.0000 and coalesce(v_regla_by_costo,true) = true
+    THEN
+      v_insumo_costo := v_insumo_costo+(v_insumo_costo*v_insumo_merma_venta/100.000);
+    END IF;
 
-		-- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
-		-- exista regla y el costo sea indirecto.
-		IF v_insumo_costo > 0 and v_regla_id IS NOT NULL and v_tcostos_indirecto = FALSE
-		THEN
-			IF v_regla_by_costo = TRUE
-			THEN
-				v_insumo_costo = v_insumo_costo + (v_insumo_costo*v_regla_porcentaje)/100.00;
-			ELSE
-				--	v_tipo_cambio_tasa_compra = 1.000;
-				--	IF v_insumo_precio_mercado*v_tipo_cambio_tasa_compra - v_insumo_costo <= 00
-				--    THEN
-				--    	RAISE  'El precio de mercado es menor que el costo de %',v_insumo_costo USING ERRCODE = 'restrict_violation';
-				--    END IF;
+    -- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
+    -- exista regla y el costo sea indirecto.
+    IF v_insumo_costo > 0 and v_regla_id IS NOT NULL and v_tcostos_indirecto = FALSE
+    THEN
+      IF v_regla_by_costo = TRUE
+      THEN
+        v_insumo_costo = v_insumo_costo + (v_insumo_costo*v_regla_porcentaje)/100.00;
+      ELSE
+        --	v_tipo_cambio_tasa_compra = 1.000;
+        --	IF v_insumo_precio_mercado*v_tipo_cambio_tasa_compra - v_insumo_costo <= 00
+        --    THEN
+        --    	RAISE  'El precio de mercado es menor que el costo de %',v_insumo_costo USING ERRCODE = 'restrict_violation';
+        --    END IF;
 
-				v_insumo_costo = v_insumo_costo+(v_insumo_precio_mercado- v_insumo_costo)*v_regla_porcentaje/100.00;
+        v_insumo_costo = v_insumo_costo+(v_insumo_precio_mercado- v_insumo_costo)*v_regla_porcentaje/100.00;
 
-			END IF;
+      END IF;
 
 
-		END IF;
-	END IF;
+    END IF;
+  END IF;
 
-	RETURN v_insumo_costo;
+  RETURN v_insumo_costo;
 
 END;
 $$;
@@ -480,7 +498,7 @@ $$;
 ALTER FUNCTION public.fn_get_producto_detalle_costo_base(p_producto_detalle_id integer, p_a_fecha date) OWNER TO clabsuser;
 
 --
--- TOC entry 282 (class 1255 OID 92253)
+-- TOC entry 281 (class 1255 OID 92253)
 -- Name: fn_get_producto_detalle_costo_old(integer, date); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -506,155 +524,155 @@ RETURN:
 Historia : Creado 24-08-2016insumo
 */
 DECLARE v_costo  numeric(10,4) = 0.00 ;
-				DECLARE v_producto_detalle_cantidad numeric(10,4);
-				DECLARE v_producto_detalle_merma numeric(10,4);
-				DECLARE v_moneda_codigo_producto character varying(8);
-				DECLARE v_moneda_codigo_costo character varying(8);
-				DECLARE v_producto_detalle_id integer;
-				DECLARE v_insumo_id_origen integer;
-				DECLARE v_insumo_id integer;
-				DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
-				DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
-				DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_unidad_medida_codigo character varying(8);
-				DECLARE v_unidad_medida_conversion_factor numeric(12,5);
-				DECLARE v_insumo_costo numeric(10,4);
-				DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_producto_detalle_cantidad numeric(10,4);
+  DECLARE v_producto_detalle_merma numeric(10,4);
+  DECLARE v_moneda_codigo_producto character varying(8);
+  DECLARE v_moneda_codigo_costo character varying(8);
+  DECLARE v_producto_detalle_id integer;
+  DECLARE v_insumo_id_origen integer;
+  DECLARE v_insumo_id integer;
+  DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
+  DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
+  DECLARE v_unidad_medida_codigo_costo character varying(8);
+  DECLARE v_unidad_medida_codigo character varying(8);
+  DECLARE v_unidad_medida_conversion_factor numeric(12,5);
+  DECLARE v_insumo_costo numeric(10,4);
+  DECLARE v_tcostos_indirecto boolean;
 
 BEGIN
 
-	-- Leemos los valoresa trabajar.
-	SELECT     pd.producto_detalle_id,
-		pd.insumo_id,
-		pd.producto_detalle_cantidad,
-		pd.producto_detalle_merma,
-		ins.moneda_codigo_costo,
-		inso.insumo_id,
-		inso.moneda_codigo_costo,
-		unidad_medida_codigo,
-		ins.unidad_medida_codigo_costo,
-		--   ins.insumo_costo,
-		-- Si es un insumo se tomara como costo el valor de ser indirecto
-		-- de lo contrario su costo indicado en tabla.
-		-- De ser producto se solicita obviamente el costo de sus componentes.
-		CASE
-		WHEN ins.insumo_tipo = 'IN' THEN
-			CASE WHEN tcostos_indirecto = TRUE
-				THEN
-					pd.producto_detalle_valor
-			ELSE
-				ins.insumo_costo
-			END
-		ELSE
-			(select fn_get_producto_costo(pd.insumo_id, p_a_fecha) )
-		END AS insumo_costo,
-		tcostos_indirecto
-	INTO       v_producto_detalle_id,
-		v_insumo_id,
-		v_producto_detalle_cantidad,
-		v_producto_detalle_merma,
-		v_moneda_codigo_costo,
-		v_insumo_id_origen,
-		v_moneda_codigo_producto,
-		v_unidad_medida_codigo,
-		v_unidad_medida_codigo_costo,
-		v_insumo_costo,
-		v_tcostos_indirecto
-	FROM       tb_producto_detalle pd
-		inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
-		inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
-		inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-	WHERE      producto_detalle_id = p_producto_detalle_id;
+  -- Leemos los valoresa trabajar.
+  SELECT     pd.producto_detalle_id,
+    pd.insumo_id,
+    pd.producto_detalle_cantidad,
+    pd.producto_detalle_merma,
+    ins.moneda_codigo_costo,
+    inso.insumo_id,
+    inso.moneda_codigo_costo,
+    unidad_medida_codigo,
+    ins.unidad_medida_codigo_costo,
+    --   ins.insumo_costo,
+    -- Si es un insumo se tomara como costo el valor de ser indirecto
+    -- de lo contrario su costo indicado en tabla.
+    -- De ser producto se solicita obviamente el costo de sus componentes.
+    CASE
+    WHEN ins.insumo_tipo = 'IN' THEN
+      CASE WHEN tcostos_indirecto = TRUE
+        THEN
+          pd.producto_detalle_valor
+      ELSE
+        ins.insumo_costo
+      END
+    ELSE
+      (select fn_get_producto_costo(pd.insumo_id, p_a_fecha) )
+    END AS insumo_costo,
+    tcostos_indirecto
+  INTO       v_producto_detalle_id,
+    v_insumo_id,
+    v_producto_detalle_cantidad,
+    v_producto_detalle_merma,
+    v_moneda_codigo_costo,
+    v_insumo_id_origen,
+    v_moneda_codigo_producto,
+    v_unidad_medida_codigo,
+    v_unidad_medida_codigo_costo,
+    v_insumo_costo,
+    v_tcostos_indirecto
+  FROM       tb_producto_detalle pd
+    inner join tb_insumo ins  ON ins.insumo_id = pd.insumo_id
+    inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
+    inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+  WHERE      producto_detalle_id = p_producto_detalle_id;
 
-	IF v_producto_detalle_id  IS NULL
-	THEN
-		RAISE  'No existe el item solicitado a calcular' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_producto_detalle_id  IS NULL
+  THEN
+    RAISE  'No existe el item solicitado a calcular' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	IF v_insumo_id_origen  IS NULL
-	THEN
-		RAISE  'No existe el producto principal a calcular' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_insumo_id_origen  IS NULL
+  THEN
+    RAISE  'No existe el producto principal a calcular' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	-- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
-	-- de ser la misma moneda el tipo de cambio siempre sera 1,
-	IF v_moneda_codigo_costo = v_moneda_codigo_producto
-	THEN
-		v_tipo_cambio_tasa_compra = 1.00;
-		v_tipo_cambio_tasa_venta  = 1.00;
-	ELSE
-		SELECT tipo_cambio_tasa_compra,
-			tipo_cambio_tasa_venta
-		INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
-		FROM   tb_tipo_cambio
-		WHERE  moneda_codigo_origen = v_moneda_codigo_costo
-					 AND moneda_codigo_destino = v_moneda_codigo_producto
-					 AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
-	END IF;
-	--RAISE NOTICE 'v_moneda_codigo_costo %',v_moneda_codigo_costo;
-	--RAISE NOTICE 'v_moneda_codigo_producto %',v_moneda_codigo_producto;
+  -- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
+  -- de ser la misma moneda el tipo de cambio siempre sera 1,
+  IF v_moneda_codigo_costo = v_moneda_codigo_producto
+  THEN
+    v_tipo_cambio_tasa_compra = 1.00;
+    v_tipo_cambio_tasa_venta  = 1.00;
+  ELSE
+    SELECT tipo_cambio_tasa_compra,
+      tipo_cambio_tasa_venta
+    INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
+    FROM   tb_tipo_cambio
+    WHERE  moneda_codigo_origen = v_moneda_codigo_costo
+           AND moneda_codigo_destino = v_moneda_codigo_producto
+           AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
+  END IF;
+  --RAISE NOTICE 'v_moneda_codigo_costo %',v_moneda_codigo_costo;
+  --RAISE NOTICE 'v_moneda_codigo_producto %',v_moneda_codigo_producto;
 
-	--RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
-	--RAISE NOTICE 'v_tipo_cambio_tasa_venta %',v_tipo_cambio_tasa_venta;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_venta %',v_tipo_cambio_tasa_venta;
 
-	-- Si no se ha encotrado tipo de cambio retornamos -1 como costo
-	IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
-	THEN
-		v_costo := -1.0000;
-	ELSE
-		-- Procedemos a buscar la conversion de unidades entre el insumo o producto original y el especificado
-		-- en el item a grabar.
-		--	SELECT unidad_medida_codigo_costo
-		--		INTO v_unidad_medida_codigo_costo
-		--	FROM
-		--		tb_insumo
-		--	WHERE insumo_id = v_insumo_id_origen;
+  -- Si no se ha encotrado tipo de cambio retornamos -1 como costo
+  IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
+  THEN
+    v_costo := -1.0000;
+  ELSE
+    -- Procedemos a buscar la conversion de unidades entre el insumo o producto original y el especificado
+    -- en el item a grabar.
+    --	SELECT unidad_medida_codigo_costo
+    --		INTO v_unidad_medida_codigo_costo
+    --	FROM
+    --		tb_insumo
+    --	WHERE insumo_id = v_insumo_id_origen;
 
-		-- Si el producto principal y el insumo son distintos y los costos son directos buscamos la conversiom
-		-- de lo contrario simepre sera 1.
-		IF v_unidad_medida_codigo_costo != v_unidad_medida_codigo AND v_tcostos_indirecto = FALSE
-		THEN
-			select unidad_medida_conversion_factor
-			into v_unidad_medida_conversion_factor
-			from
-				tb_unidad_medida_conversion
-			where unidad_medida_origen = v_unidad_medida_codigo AND
-						unidad_medida_destino = v_unidad_medida_codigo_costo ;
-		ELSE
-			v_unidad_medida_conversion_factor := 1;
-		END IF;
-		--RAISE NOTICE 'v_producto_detalle_cantidad %',v_producto_detalle_cantidad;
-		--RAISE NOTICE 'v_unidad_medida_conversion_factor %',v_unidad_medida_conversion_factor;
-		--RAISE NOTICE 'v_producto_detalle_merma %',v_producto_detalle_merma;
-		--RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
-		--RAISE NOTICE 'v_insumo_costo %',v_insumo_costo;
+    -- Si el producto principal y el insumo son distintos y los costos son directos buscamos la conversiom
+    -- de lo contrario simepre sera 1.
+    IF v_unidad_medida_codigo_costo != v_unidad_medida_codigo AND v_tcostos_indirecto = FALSE
+    THEN
+      select unidad_medida_conversion_factor
+      into v_unidad_medida_conversion_factor
+      from
+        tb_unidad_medida_conversion
+      where unidad_medida_origen = v_unidad_medida_codigo AND
+            unidad_medida_destino = v_unidad_medida_codigo_costo ;
+    ELSE
+      v_unidad_medida_conversion_factor := 1;
+    END IF;
+    --RAISE NOTICE 'v_producto_detalle_cantidad %',v_producto_detalle_cantidad;
+    --RAISE NOTICE 'v_unidad_medida_conversion_factor %',v_unidad_medida_conversion_factor;
+    --RAISE NOTICE 'v_producto_detalle_merma %',v_producto_detalle_merma;
+    --RAISE NOTICE 'v_tipo_cambio_tasa_compra %',v_tipo_cambio_tasa_compra;
+    --RAISE NOTICE 'v_insumo_costo %',v_insumo_costo;
 
-		-- Si la conversion de medidas no existe retornamos como costo -2
-		IF v_unidad_medida_conversion_factor IS NULL
-		THEN
-			v_costo := -2.0000;
-		ELSE
-			IF v_insumo_costo >= 0
-			THEN
-				-- Calculamos tomando en cuenta el % de merma
-				IF v_unidad_medida_conversion_factor = 1
-				THEN
-					v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_tipo_cambio_tasa_compra*v_insumo_costo;
-				ELSE
-					-- Esto es para ver si se retira todo lo relativo a cambio de unidad ya que parece no ser necesario
-					v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_unidad_medida_conversion_factor*v_tipo_cambio_tasa_compra*v_insumo_costo;
-				END IF;
-			ELSE
-				v_costo:= v_insumo_costo;
-			END IF;
-		END IF;
-	END IF;
+    -- Si la conversion de medidas no existe retornamos como costo -2
+    IF v_unidad_medida_conversion_factor IS NULL
+    THEN
+      v_costo := -2.0000;
+    ELSE
+      IF v_insumo_costo >= 0
+      THEN
+        -- Calculamos tomando en cuenta el % de merma
+        IF v_unidad_medida_conversion_factor = 1
+        THEN
+          v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_tipo_cambio_tasa_compra*v_insumo_costo;
+        ELSE
+          -- Esto es para ver si se retira todo lo relativo a cambio de unidad ya que parece no ser necesario
+          v_costo := (v_producto_detalle_cantidad*(1+v_producto_detalle_merma/100.00000))*v_unidad_medida_conversion_factor*v_tipo_cambio_tasa_compra*v_insumo_costo;
+        END IF;
+      ELSE
+        v_costo:= v_insumo_costo;
+      END IF;
+    END IF;
+  END IF;
 
-	--RAISE NOTICE 'v_costo %',v_costo;
-	-- RAISE NOTICE 'v_insumo_id %',v_insumo_id;
-	-- RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
+  --RAISE NOTICE 'v_costo %',v_costo;
+  -- RAISE NOTICE 'v_insumo_id %',v_insumo_id;
+  -- RAISE NOTICE 'v_producto_detalle_id %',v_producto_detalle_id;
 
-	RETURN v_costo;
+  RETURN v_costo;
 
 END;
 $$;
@@ -663,11 +681,11 @@ $$;
 ALTER FUNCTION public.fn_get_producto_detalle_costo_old(p_producto_detalle_id integer, p_a_fecha date) OWNER TO clabsuser;
 
 --
--- TOC entry 285 (class 1255 OID 109603)
--- Name: fn_get_producto_precio(integer, integer, integer, boolean, character varying, date); Type: FUNCTION; Schema: public; Owner: clabsuser
+-- TOC entry 302 (class 1255 OID 262833)
+-- Name: fn_get_producto_precio(integer, integer, integer, boolean, character varying, date, boolean); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
-CREATE FUNCTION fn_get_producto_precio(p_insumo_id integer, p_empresa_id integer, p_cliente_id integer, p_es_cliente_real boolean, p_moneda_codigo character varying, p_a_fecha date) RETURNS numeric
+CREATE FUNCTION fn_get_producto_precio(p_insumo_id integer, p_empresa_id integer, p_cliente_id integer, p_es_cliente_real boolean, p_moneda_codigo character varying, p_a_fecha date, p_use_exceptions boolean) RETURNS numeric
 LANGUAGE plpgsql
 AS $$
 /**
@@ -691,188 +709,208 @@ p_moneda_codigo - Moneda en la que representar el precio final , hay que recorda
     moneda de cotizacion.
 p_a_fecha - a que fecha se calculara el costo (necesaria cuando la moneda del producto formulado es diferente
 	al de sus insumos componentes).
+p_use_exceptions - true si en vez de devolver el codigo de error especificados anteriormente debe mandar excepciones.
 
-RETURN:
-	-1.000 si se requiere tipo de cambio y el mismo no existe definido.
-	-2.000 si se requiere conversion de unidades y no existe.
-	-3.000 cualquier otro error no contemplado.
+RETURN: si p_use_exceptions = TRUE retorna
+	-1 si se requiere tipo de cambio y el mismo no existe definido para calcular el costo de un producto.
+	-2 si se requiere conversion de unidades y no existe.
+	-3 cualquier otro error no contemplado.
+	-4 si se requiere tipo de cambio y el mismo no existe definido para calcular el precio de un producto.
+	-5 El precio de mercado es menor que el costo.
 	 0.000 si no tiene items.
 	el precio si todo esta ok.
+
+	si p_use_exceptions = FALSE enviara la excepcion con el mensaje correspondiente.
 
 Historia : Creado 29-11-2016
 */
 DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
-				DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
-				DECLARE v_precio numeric(12,2);
-				DECLARE v_insumo_precio_mercado numeric(10,2);
-				DECLARE v_insumo_id integer;
-				DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_moneda_codigo_costo character varying(8);
-				DECLARE v_tcostos_indirecto boolean;
-				DECLARE v_regla_id integer;
-				DECLARE v_regla_by_costo boolean;
-				DECLARE v_regla_porcentaje numeric(6,2);
-				DECLARE v_insumo_merma numeric(10,4);
+  DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
+  DECLARE v_precio numeric(12,2);
+  DECLARE v_insumo_precio_mercado numeric(10,2);
+  DECLARE v_insumo_id integer;
+  DECLARE v_unidad_medida_codigo_costo character varying(8);
+  DECLARE v_moneda_codigo_costo character varying(8);
+  DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_regla_id integer;
+  DECLARE v_regla_by_costo boolean;
+  DECLARE v_regla_porcentaje numeric(6,2);
+  DECLARE v_insumo_merma numeric(10,4);
 
 
 BEGIN
-	IF p_es_cliente_real = TRUE
-	THEN
-		SELECT
-			ins.insumo_id,
-			ins.insumo_precio_mercado as precio,
-			ins.unidad_medida_codigo_costo,
-			ins.moneda_codigo_costo,
-			tcostos_indirecto
-		INTO  	v_insumo_id,
-			v_precio,
-			v_unidad_medida_codigo_costo,
-			v_moneda_codigo_costo,
-			v_tcostos_indirecto
-		FROM tb_insumo ins
-			inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-			inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
-		WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
+  IF p_es_cliente_real = TRUE
+  THEN
+    SELECT
+      ins.insumo_id,
+      ins.insumo_precio_mercado as precio,
+      ins.unidad_medida_codigo_costo,
+      ins.moneda_codigo_costo,
+      tcostos_indirecto
+    INTO  	v_insumo_id,
+      v_precio,
+      v_unidad_medida_codigo_costo,
+      v_moneda_codigo_costo,
+      v_tcostos_indirecto
+    FROM tb_insumo ins
+      inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+      inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
+    WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
 
-		v_insumo_merma := 0.00;
-	ELSE
-		-- Leemos los valoresa trabajar.
-		SELECT
-			ins.insumo_id,
-			-- obtenemos el costo del producto en la empresa principal.
-			CASE
-			WHEN ins.insumo_tipo = 'IN' THEN
-				ins.insumo_costo
-			ELSE
-				(select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
-			END AS precio,
-			ins.insumo_precio_mercado,
-			ins.unidad_medida_codigo_costo,
-			ins.insumo_merma,
-			ins.moneda_codigo_costo,
-			tcostos_indirecto,
-			regla_id,
-			regla_by_costo,
-			regla_porcentaje
-		INTO  	v_insumo_id,
-			v_precio,
-			v_insumo_precio_mercado,
-			v_unidad_medida_codigo_costo,
-			v_insumo_merma,
-			v_moneda_codigo_costo,
-			v_tcostos_indirecto,
-			v_regla_id,
-			v_regla_by_costo,
-			v_regla_porcentaje
-		FROM tb_insumo ins
-			inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-			inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
-			--inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
-			left  join tb_reglas rg on rg.regla_empresa_origen_id = p_empresa_id and rg.regla_empresa_destino_id = p_cliente_id
-		WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
+    v_insumo_merma := 0.00;
+  ELSE
+    -- Leemos los valoresa trabajar.
+    SELECT
+      ins.insumo_id,
+      -- obtenemos el costo del producto en la empresa principal.
+      CASE
+      WHEN ins.insumo_tipo = 'IN' THEN
+        ins.insumo_costo
+      ELSE
+        (select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
+      END AS precio,
+      ins.insumo_precio_mercado,
+      ins.unidad_medida_codigo_costo,
+      ins.insumo_merma,
+      ins.moneda_codigo_costo,
+      tcostos_indirecto,
+      regla_id,
+      regla_by_costo,
+      regla_porcentaje
+    INTO  	v_insumo_id,
+      v_precio,
+      v_insumo_precio_mercado,
+      v_unidad_medida_codigo_costo,
+      v_insumo_merma,
+      v_moneda_codigo_costo,
+      v_tcostos_indirecto,
+      v_regla_id,
+      v_regla_by_costo,
+      v_regla_porcentaje
+    FROM tb_insumo ins
+      inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+      inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
+      --inner join tb_insumo inso ON inso.insumo_id = pd.insumo_id_origen
+      left  join tb_reglas rg on rg.regla_empresa_origen_id = p_empresa_id and rg.regla_empresa_destino_id = p_cliente_id
+    WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
 
-		RAISE NOTICE 'v_precio = %',v_precio;
-		RAISE NOTICE 'v_insumo_precio_mercado = %',v_insumo_precio_mercado;
-		RAISE NOTICE 'v_tcostos_indirecto = %',v_tcostos_indirecto;
-		RAISE NOTICE 'v_moneda_codigo_costo = %',v_moneda_codigo_costo;
+    RAISE NOTICE 'v_precio = %',v_precio;
+    RAISE NOTICE 'v_insumo_precio_mercado = %',v_insumo_precio_mercado;
+    RAISE NOTICE 'v_tcostos_indirecto = %',v_tcostos_indirecto;
+    RAISE NOTICE 'v_moneda_codigo_costo = %',v_moneda_codigo_costo;
 
-	END IF;
+  END IF;
 
-	IF v_insumo_id IS NULL
-	THEN
-		RAISE  'El insumo/Producto no existe o no pertenece a la empresa que cotiza o es un insumo de costo indirecto' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_insumo_id IS NULL
+  THEN
+    RAISE  'El insumo/Producto no existe o no pertenece a la empresa que cotiza o es un insumo de costo indirecto' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	-- Si no obtenemos el  precio enviamos error.
-	IF v_precio IS NULL or v_precio < 0
-	THEN
-		IF v_precio = -1
-		THEN
-			RAISE  'No existe el tipo de cambio para calcular el precio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
-		ELSIF v_precio = -2
-			THEN
-				-- En este caso no se ha tomado en cuenta que se cotize a diferentes unidades , lo dejo por si a futuro se requiere
-				RAISE  'No existe conversion de unidads entre la unidad del producto y la unidad de cotizacion' USING ERRCODE = 'restrict_violation';
-		ELSIF v_precio = -3
-			THEN
-				RAISE  'Error durante la determinacion del precio' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
+  -- Si no obtenemos el  precio enviamos error.
+  IF v_precio IS NULL or v_precio < 0
+  THEN
+    IF p_use_exceptions = TRUE
+    THEN
+      IF v_precio = -1
+      THEN
+        RAISE  'No existe el tipo de cambio para calcular el costo a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
+      ELSIF v_precio = -2
+        THEN
+          -- En este caso no se ha tomado en cuenta que se cotize a diferentes unidades , lo dejo por si a futuro se requiere
+          RAISE  'No existe conversion de unidads entre la unidad del producto y la unidad de cotizacion' USING ERRCODE = 'restrict_violation';
+      ELSIF v_precio = -3
+        THEN
+          RAISE  'Error durante la determinacion del precio' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSE
+      -- Si no se envia excepciones se retorna el valor negativo indicando un error.
+      return v_precio;
+    END IF;
+  END IF;
 
-	IF p_moneda_codigo IS NULL
-	THEN
-		p_moneda_codigo = v_moneda_codigo_costo;
-	END IF;
+  IF p_moneda_codigo IS NULL
+  THEN
+    p_moneda_codigo = v_moneda_codigo_costo;
+  END IF;
 
-	-- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
-	-- de ser la misma moneda el tipo de cambio siempre sera 1,
-	IF v_moneda_codigo_costo = p_moneda_codigo
-	THEN
-		v_tipo_cambio_tasa_compra = 1.00;
-		v_tipo_cambio_tasa_venta  = 1.00;
-	ELSE
-		SELECT tipo_cambio_tasa_compra,
-			tipo_cambio_tasa_venta
-		INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
-		FROM   tb_tipo_cambio
-		WHERE  moneda_codigo_origen = v_moneda_codigo_costo
-					 AND moneda_codigo_destino = p_moneda_codigo
-					 AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
-	END IF;
+  -- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
+  -- de ser la misma moneda el tipo de cambio siempre sera 1,
+  IF v_moneda_codigo_costo = p_moneda_codigo
+  THEN
+    v_tipo_cambio_tasa_compra = 1.00;
+    v_tipo_cambio_tasa_venta  = 1.00;
+  ELSE
+    SELECT tipo_cambio_tasa_compra,
+      tipo_cambio_tasa_venta
+    INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
+    FROM   tb_tipo_cambio
+    WHERE  moneda_codigo_origen = v_moneda_codigo_costo
+           AND moneda_codigo_destino = p_moneda_codigo
+           AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
+  END IF;
 
-	IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
-	THEN
-		RAISE  'No existe el tipo de cambio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
+  THEN
+    IF p_use_exceptions = TRUE
+    THEN
+      RAISE  'No existe el tipo de cambio para calcular el precio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
+    ELSE
+      return -4;
+    END IF;
+  END IF;
 
-	RAISE NOTICE 'v_precio_inicial = %',v_precio;
+  RAISE NOTICE 'v_precio_inicial = %',v_precio;
 
-	-- Solo se calcula merma si es que la regla existe y es por costo.
-	IF coalesce(v_regla_by_costo,true) = true
-	THEN
-		-- Se aplica al costo el insumo de merma propia del producto en la venta
-		v_precio := (1+v_insumo_merma/100.00)*v_precio;
-	END IF;
+  -- Solo se calcula merma si es que la regla existe y es por costo.
+  IF coalesce(v_regla_by_costo,true) = true
+  THEN
+    -- Se aplica al costo el insumo de merma propia del producto en la venta
+    v_precio := (1+v_insumo_merma/100.00)*v_precio;
+  END IF;
 
-	--RAISE NOTICE 'v_tipo_cambio_tasa_compra = %',v_tipo_cambio_tasa_compra;
-	--RAISE NOTICE 'v_regla_by_costo = %',v_regla_by_costo;
-	--RAISE NOTICE 'v_regla_porcentaje = %',v_regla_porcentaje;
-	--RAISE NOTICE 'v_insumo_merma = %',v_insumo_merma;
-	--RAISE NOTICE 'v_precio = %',v_precio;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_compra = %',v_tipo_cambio_tasa_compra;
+  --RAISE NOTICE 'v_regla_by_costo = %',v_regla_by_costo;
+  --RAISE NOTICE 'v_regla_porcentaje = %',v_regla_porcentaje;
+  --RAISE NOTICE 'v_insumo_merma = %',v_insumo_merma;
+  --RAISE NOTICE 'v_precio = %',v_precio;
 
-	-- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
-	-- exista regla y el costo sea indirecto.
-	IF v_precio > 0 and v_regla_id IS NOT NULL
-	THEN
-		IF v_regla_by_costo = TRUE
-		THEN
-			--v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
-			v_precio = v_precio + round((v_precio*v_regla_porcentaje)/100.00,2);
-			v_precio := v_tipo_cambio_tasa_compra*v_precio;
-		ELSE
-			v_precio := v_tipo_cambio_tasa_compra*v_precio;
+  -- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
+  -- exista regla y el costo sea indirecto.
+  IF v_precio > 0 and v_regla_id IS NOT NULL
+  THEN
+    IF v_regla_by_costo = TRUE
+    THEN
+      --v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
+      v_precio = v_precio + round((v_precio*v_regla_porcentaje)/100.00,2);
+      v_precio := v_tipo_cambio_tasa_compra*v_precio;
+    ELSE
+      v_precio := v_tipo_cambio_tasa_compra*v_precio;
 
-			IF (v_insumo_precio_mercado*v_tipo_cambio_tasa_compra) - v_precio <= 00
-			THEN
-				RAISE  'El precio de mercado es menor que el costo de %',v_precio USING ERRCODE = 'restrict_violation';
-			END IF;
+      IF (v_insumo_precio_mercado*v_tipo_cambio_tasa_compra) - v_precio <= 00
+      THEN
+        IF p_use_exceptions = TRUE
+        THEN
+          RAISE  'El precio de mercado es menor que el costo de %',v_precio USING ERRCODE = 'restrict_violation';
+        ELSE
+          RETURN -5;
+        END IF;
+      END IF;
+      v_precio = v_precio+(v_insumo_precio_mercado*v_tipo_cambio_tasa_compra - v_precio)*v_regla_porcentaje/100.00;
+    END IF;
+  ELSE
+    v_precio := v_tipo_cambio_tasa_compra*v_precio;
+  END IF;
 
-			v_precio = v_precio+(v_insumo_precio_mercado*v_tipo_cambio_tasa_compra - v_precio)*v_regla_porcentaje/100.00;
-		END IF;
-	ELSE
-		v_precio := v_tipo_cambio_tasa_compra*v_precio;
-	END IF;
-
-	RAISE NOTICE 'v_precio = %',v_precio;
-	RETURN v_precio;
+  RAISE NOTICE 'v_precio = %',v_precio;
+  RETURN v_precio;
 END;
 $$;
 
 
-ALTER FUNCTION public.fn_get_producto_precio(p_insumo_id integer, p_empresa_id integer, p_cliente_id integer, p_es_cliente_real boolean, p_moneda_codigo character varying, p_a_fecha date) OWNER TO clabsuser;
+ALTER FUNCTION public.fn_get_producto_precio(p_insumo_id integer, p_empresa_id integer, p_cliente_id integer, p_es_cliente_real boolean, p_moneda_codigo character varying, p_a_fecha date, p_use_exceptions boolean) OWNER TO clabsuser;
 
 --
--- TOC entry 260 (class 1255 OID 109484)
+-- TOC entry 258 (class 1255 OID 109484)
 -- Name: fn_get_producto_precio_old(integer, integer, integer, boolean, character varying, date); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -907,157 +945,157 @@ RETURN:
 Historia : Creado 29-11-2016
 */
 DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
-				DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
-				DECLARE v_precio numeric(12,2);
-				DECLARE v_insumo_id integer;
-				DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_moneda_codigo_costo character varying(8);
-				DECLARE v_tcostos_indirecto boolean;
-				DECLARE v_regla_id integer;
-				DECLARE v_regla_by_costo boolean;
-				DECLARE v_regla_porcentaje numeric(6,2);
-				DECLARE v_insumo_merma numeric(10,4);
+  DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
+  DECLARE v_precio numeric(12,2);
+  DECLARE v_insumo_id integer;
+  DECLARE v_unidad_medida_codigo_costo character varying(8);
+  DECLARE v_moneda_codigo_costo character varying(8);
+  DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_regla_id integer;
+  DECLARE v_regla_by_costo boolean;
+  DECLARE v_regla_porcentaje numeric(6,2);
+  DECLARE v_insumo_merma numeric(10,4);
 
 BEGIN
-	IF p_es_cliente_real = TRUE
-	THEN
-		SELECT
-			ins.insumo_id,
-			ins.insumo_precio_mercado as precio,
-			ins.unidad_medida_codigo_costo,
-			ins.moneda_codigo_costo,
-			tcostos_indirecto
-		INTO  	v_insumo_id,
-			v_precio,
-			v_unidad_medida_codigo_costo,
-			v_moneda_codigo_costo,
-			v_tcostos_indirecto
-		FROM tb_insumo ins
-			inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-			inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
-		WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
+  IF p_es_cliente_real = TRUE
+  THEN
+    SELECT
+      ins.insumo_id,
+      ins.insumo_precio_mercado as precio,
+      ins.unidad_medida_codigo_costo,
+      ins.moneda_codigo_costo,
+      tcostos_indirecto
+    INTO  	v_insumo_id,
+      v_precio,
+      v_unidad_medida_codigo_costo,
+      v_moneda_codigo_costo,
+      v_tcostos_indirecto
+    FROM tb_insumo ins
+      inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+      inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
+    WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
 
-		v_insumo_merma := 0.00;
-	ELSE
-		-- Leemos los valoresa trabajar.
-		SELECT
-			ins.insumo_id,
-			-- obtenemos el costo del producto en la empresa principal.
-			CASE
-			WHEN ins.insumo_tipo = 'IN' THEN
-				CASE WHEN regla_id IS NULL THEN ins.insumo_costo
-				WHEN coalesce(regla_by_costo,true) = false THEN ins.insumo_precio_mercado
-				ELSE
-					ins.insumo_costo
-				END
-			ELSE
-				CASE WHEN regla_id IS NULL THEN (select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
-				WHEN coalesce(regla_by_costo,true) = false THEN ins.insumo_precio_mercado
-				ELSE
-					(select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
-				END
-			END AS precio,
-			ins.unidad_medida_codigo_costo,
-			ins.insumo_merma,
-			ins.moneda_codigo_costo,
-			tcostos_indirecto,
-			regla_id,
-			regla_by_costo,
-			regla_porcentaje
-		INTO  	v_insumo_id,
-			v_precio,
-			v_unidad_medida_codigo_costo,
-			v_insumo_merma,
-			v_moneda_codigo_costo,
-			v_tcostos_indirecto,
-			v_regla_id,
-			v_regla_by_costo,
-			v_regla_porcentaje
-		FROM tb_insumo ins
-			inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-			inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
-			left  join tb_reglas rg on rg.regla_empresa_origen_id = p_empresa_id and rg.regla_empresa_destino_id = p_cliente_id
-		WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
+    v_insumo_merma := 0.00;
+  ELSE
+    -- Leemos los valoresa trabajar.
+    SELECT
+      ins.insumo_id,
+      -- obtenemos el costo del producto en la empresa principal.
+      CASE
+      WHEN ins.insumo_tipo = 'IN' THEN
+        CASE WHEN regla_id IS NULL THEN ins.insumo_costo
+        WHEN coalesce(regla_by_costo,true) = false THEN ins.insumo_precio_mercado
+        ELSE
+          ins.insumo_costo
+        END
+      ELSE
+        CASE WHEN regla_id IS NULL THEN (select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
+        WHEN coalesce(regla_by_costo,true) = false THEN ins.insumo_precio_mercado
+        ELSE
+          (select fn_get_producto_costo(ins.insumo_id, p_a_fecha) )
+        END
+      END AS precio,
+      ins.unidad_medida_codigo_costo,
+      ins.insumo_merma,
+      ins.moneda_codigo_costo,
+      tcostos_indirecto,
+      regla_id,
+      regla_by_costo,
+      regla_porcentaje
+    INTO  	v_insumo_id,
+      v_precio,
+      v_unidad_medida_codigo_costo,
+      v_insumo_merma,
+      v_moneda_codigo_costo,
+      v_tcostos_indirecto,
+      v_regla_id,
+      v_regla_by_costo,
+      v_regla_porcentaje
+    FROM tb_insumo ins
+      inner join tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+      inner join tb_unidad_medida um on um.unidad_medida_codigo = ins.unidad_medida_codigo_costo
+      left  join tb_reglas rg on rg.regla_empresa_origen_id = p_empresa_id and rg.regla_empresa_destino_id = p_cliente_id
+    WHERE ins.empresa_id = p_empresa_id and  ins.insumo_id = p_insumo_id and tcostos_indirecto = false;
 
-		RAISE NOTICE 'v_precio = %',v_precio;
-		RAISE NOTICE 'v_tcostos_indirecto = %',v_tcostos_indirecto;
-		RAISE NOTICE 'v_moneda_codigo_costo = %',v_moneda_codigo_costo;
+    RAISE NOTICE 'v_precio = %',v_precio;
+    RAISE NOTICE 'v_tcostos_indirecto = %',v_tcostos_indirecto;
+    RAISE NOTICE 'v_moneda_codigo_costo = %',v_moneda_codigo_costo;
 
-	END IF;
+  END IF;
 
-	IF v_insumo_id IS NULL
-	THEN
-		RAISE  'El insumo/Producto no existe o no pertenece a la empresa que cotiza o es un insumo de costo indirecto' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_insumo_id IS NULL
+  THEN
+    RAISE  'El insumo/Producto no existe o no pertenece a la empresa que cotiza o es un insumo de costo indirecto' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	-- Si no obtenemos el  precio enviamos error.
-	IF v_precio IS NULL or v_precio < 0
-	THEN
-		IF v_precio = -1
-		THEN
-			RAISE  'No existe el tipo de cambio para calcular el precio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
-		ELSIF v_precio = -2
-			THEN
-				-- En este caso no se ha tomado en cuenta que se cotize a diferentes unidades , lo dejo por si a futuro se requiere
-				RAISE  'No existe conversion de unidads entre la unidad del producto y la unidad de cotizacion' USING ERRCODE = 'restrict_violation';
-		ELSIF v_precio = -3
-			THEN
-				RAISE  'Error durante la determinacion del precio' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
+  -- Si no obtenemos el  precio enviamos error.
+  IF v_precio IS NULL or v_precio < 0
+  THEN
+    IF v_precio = -1
+    THEN
+      RAISE  'No existe el tipo de cambio para calcular el precio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
+    ELSIF v_precio = -2
+      THEN
+        -- En este caso no se ha tomado en cuenta que se cotize a diferentes unidades , lo dejo por si a futuro se requiere
+        RAISE  'No existe conversion de unidads entre la unidad del producto y la unidad de cotizacion' USING ERRCODE = 'restrict_violation';
+    ELSIF v_precio = -3
+      THEN
+        RAISE  'Error durante la determinacion del precio' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
 
-	-- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
-	-- de ser la misma moneda el tipo de cambio siempre sera 1,
-	IF v_moneda_codigo_costo = p_moneda_codigo
-	THEN
-		v_tipo_cambio_tasa_compra = 1.00;
-		v_tipo_cambio_tasa_venta  = 1.00;
-	ELSE
-		SELECT tipo_cambio_tasa_compra,
-			tipo_cambio_tasa_venta
-		INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
-		FROM   tb_tipo_cambio
-		WHERE  moneda_codigo_origen = v_moneda_codigo_costo
-					 AND moneda_codigo_destino = p_moneda_codigo
-					 AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
-	END IF;
+  -- buscamos que exista el tipo de cambio entre las monedas a la fecha solicitada.
+  -- de ser la misma moneda el tipo de cambio siempre sera 1,
+  IF v_moneda_codigo_costo = p_moneda_codigo
+  THEN
+    v_tipo_cambio_tasa_compra = 1.00;
+    v_tipo_cambio_tasa_venta  = 1.00;
+  ELSE
+    SELECT tipo_cambio_tasa_compra,
+      tipo_cambio_tasa_venta
+    INTO   v_tipo_cambio_tasa_compra, v_tipo_cambio_tasa_venta
+    FROM   tb_tipo_cambio
+    WHERE  moneda_codigo_origen = v_moneda_codigo_costo
+           AND moneda_codigo_destino = p_moneda_codigo
+           AND p_a_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta;
+  END IF;
 
-	IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
-	THEN
-		RAISE  'No existe el tipo de cambio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_tipo_cambio_tasa_compra IS NULL or v_tipo_cambio_tasa_venta IS NULL
+  THEN
+    RAISE  'No existe el tipo de cambio a la fecha solicitada, no se puede cotizar' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	-- Solo se calcula merma si es que la regla existe y es por costo.
-	IF coalesce(regla_by_costo,true) = true
-	THEN
-		-- Se aplica al costo el insumo de merma propia del producto en la venta
-		v_precio := (1+v_insumo_merma/100.00000)*v_tipo_cambio_tasa_compra*v_precio;
-	ELSE
-		v_precio := v_tipo_cambio_tasa_compra*v_precio;
-	END IF;
+  -- Solo se calcula merma si es que la regla existe y es por costo.
+  IF coalesce(regla_by_costo,true) = true
+  THEN
+    -- Se aplica al costo el insumo de merma propia del producto en la venta
+    v_precio := (1+v_insumo_merma/100.00000)*v_tipo_cambio_tasa_compra*v_precio;
+  ELSE
+    v_precio := v_tipo_cambio_tasa_compra*v_precio;
+  END IF;
 
-	--RAISE NOTICE 'v_tipo_cambio_tasa_compra = %',v_tipo_cambio_tasa_compra;
-	--RAISE NOTICE 'v_regla_by_costo = %',v_regla_by_costo;
-	--RAISE NOTICE 'v_regla_porcentaje = %',v_regla_porcentaje;
-	--RAISE NOTICE 'v_insumo_merma = %',v_insumo_merma;
+  --RAISE NOTICE 'v_tipo_cambio_tasa_compra = %',v_tipo_cambio_tasa_compra;
+  --RAISE NOTICE 'v_regla_by_costo = %',v_regla_by_costo;
+  --RAISE NOTICE 'v_regla_porcentaje = %',v_regla_porcentaje;
+  --RAISE NOTICE 'v_insumo_merma = %',v_insumo_merma;
 
-	-- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
-	-- exista regla y el costo sea indirecto.
-	IF v_precio > 0 and v_regla_id IS NOT NULL
-	THEN
-		IF v_regla_by_costo = TRUE
-		THEN
-			v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
-		ELSE
-			IF v_regla_porcentaje < 0
-			THEN
-				v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
-			ELSE
-				v_precio = (v_precio*v_regla_porcentaje)/100.00;
-			END IF;
-		END IF;
-	END IF;
-	RETURN v_precio;
+  -- Hacemos el ajuste de costo segun la regla entre empresas de existir, siempre que el costo sea positivo
+  -- exista regla y el costo sea indirecto.
+  IF v_precio > 0 and v_regla_id IS NOT NULL
+  THEN
+    IF v_regla_by_costo = TRUE
+    THEN
+      v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
+    ELSE
+      IF v_regla_porcentaje < 0
+      THEN
+        v_precio = v_precio + (v_precio*v_regla_porcentaje)/100.00;
+      ELSE
+        v_precio = (v_precio*v_regla_porcentaje)/100.00;
+      END IF;
+    END IF;
+  END IF;
+  RETURN v_precio;
 END;
 $$;
 
@@ -1102,36 +1140,36 @@ Historia : Creado 08-10-2013
 */
 BEGIN
 
-	IF p_is_update = '1'
-	THEN
-		UPDATE
-			tb_sys_asigperfiles
-		SET
-			asigperfiles_id=p_asigperfiles_id,
-			perfil_id=p_perfil_id,
-			usuarios_id=p_usuarios_id,
-			activo=p_activo,
-			usuario_mod=p_usuario
-		WHERE asgper_id = p_asgper_id and xmin =p_version_id ;
-		--RAISE NOTICE  'COUNT ID --> %', FOUND;
+  IF p_is_update = '1'
+  THEN
+    UPDATE
+      tb_sys_asigperfiles
+    SET
+      asigperfiles_id=p_asigperfiles_id,
+      perfil_id=p_perfil_id,
+      usuarios_id=p_usuarios_id,
+      activo=p_activo,
+      usuario_mod=p_usuario
+    WHERE asgper_id = p_asgper_id and xmin =p_version_id ;
+    --RAISE NOTICE  'COUNT ID --> %', FOUND;
 
-		IF FOUND THEN
-			RETURN 1;
-		ELSE
-			RETURN null;
-		END IF;
-	ELSE
-		INSERT INTO
-			tb_sys_asigperfiles
-			(perfil_id,usuarios_id,activo,usuario)
-		VALUES(p_perfil_id,
-					 usuarios_id,
-					 p_activo,
-					 p_usuario);
+    IF FOUND THEN
+      RETURN 1;
+    ELSE
+      RETURN null;
+    END IF;
+  ELSE
+    INSERT INTO
+      tb_sys_asigperfiles
+      (perfil_id,usuarios_id,activo,usuario)
+    VALUES(p_perfil_id,
+           usuarios_id,
+           p_activo,
+           p_usuario);
 
-		RETURN 1;
+    RETURN 1;
 
-	END IF;
+  END IF;
 END;
 $$;
 
@@ -1167,14 +1205,14 @@ RETURN:
 BEGIN
 
 
-	return QUERY
-	select 	res.insumo_id,
-		res.insumo_descripcion,
-		res.unidad_medida_codigo_default,
-		sum(producto_total_cantidad) as total_cantidad
-	from sp_get_datos_insumos_for_producto(p_insumo_id) res
-	group by
-		res.insumo_id,res.insumo_descripcion,res.unidad_medida_codigo_default;
+  return QUERY
+  select 	res.insumo_id,
+    res.insumo_descripcion,
+    res.unidad_medida_codigo_default,
+    sum(producto_total_cantidad) as total_cantidad
+  from sp_get_datos_insumos_for_producto(p_insumo_id) res
+  group by
+    res.insumo_id,res.insumo_descripcion,res.unidad_medida_codigo_default;
 
 END;
 $$;
@@ -1183,7 +1221,7 @@ $$;
 ALTER FUNCTION public.sp_get_cantidad_insumos_for_producto(p_insumo_id integer) OWNER TO clabsuser;
 
 --
--- TOC entry 288 (class 1255 OID 101225)
+-- TOC entry 286 (class 1255 OID 101225)
 -- Name: sp_get_clientes_for_cotizacion(integer, character varying, integer, boolean, integer, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1225,72 +1263,72 @@ RETURN:
 Historia : 13-06-2014
 */
 DECLARE v_empresa_id integer;
-				DECLARE v_tipo_empresa_codigo character varying(3);
-				DECLARE v_insumo_tipo character varying(2);
+  DECLARE v_tipo_empresa_codigo character varying(3);
+  DECLARE v_insumo_tipo character varying(2);
 BEGIN
-	-- Si pc_cliente_id esta definido solo buscaremos dicho cliente/empresa
-	IF pc_cliente_id  IS NOT NULL
-	THEN
-		IF pc_es_cliente_real = FALSE
-		THEN
-			return QUERY
-			select 	e.empresa_id as cliente_id,
-							e.empresa_razon_social as cliente_razon_social,
-				e.tipo_empresa_codigo
-			from  tb_empresa e
-			where e.empresa_id = pc_cliente_id;
-		ELSE
-			return QUERY
-			select 	e.cliente_id as cliente_id,
-				e.cliente_razon_social,
-							'CLI'::character varying as tipo_empresa_codigo
-			from  tb_cliente e
-			where e.cliente_id = pc_cliente_id;
-		END IF;
-	ELSE
-		-- Determinamos el tipo de empresa ara decidir luego que empresas deben ser posibles de cotizar.
-		select e.tipo_empresa_codigo
-		into v_tipo_empresa_codigo
-		from tb_empresa e
-		where e.empresa_id = p_empresa_origen_id;
+  -- Si pc_cliente_id esta definido solo buscaremos dicho cliente/empresa
+  IF pc_cliente_id  IS NOT NULL
+  THEN
+    IF pc_es_cliente_real = FALSE
+    THEN
+      return QUERY
+      select 	e.empresa_id as cliente_id,
+              e.empresa_razon_social as cliente_razon_social,
+        e.tipo_empresa_codigo
+      from  tb_empresa e
+      where e.empresa_id = pc_cliente_id;
+    ELSE
+      return QUERY
+      select 	e.cliente_id as cliente_id,
+        e.cliente_razon_social,
+              'CLI'::character varying as tipo_empresa_codigo
+      from  tb_cliente e
+      where e.cliente_id = pc_cliente_id;
+    END IF;
+  ELSE
+    -- Determinamos el tipo de empresa ara decidir luego que empresas deben ser posibles de cotizar.
+    select e.tipo_empresa_codigo
+    into v_tipo_empresa_codigo
+    from tb_empresa e
+    where e.empresa_id = p_empresa_origen_id;
 
-		-- Si no existe la empresa (v_tipo_empresa_codigo sera null) o existe pero no es del tipo soportado.
-		IF coalesce(v_tipo_empresa_codigo,'') = '' OR
-			 v_tipo_empresa_codigo NOT IN('FAB','IMP','DIS')
-		THEN
-			RAISE 'Debe existir la empresa de origen' USING ERRCODE = 'restrict_violation';
-		END IF;
+    -- Si no existe la empresa (v_tipo_empresa_codigo sera null) o existe pero no es del tipo soportado.
+    IF coalesce(v_tipo_empresa_codigo,'') = '' OR
+       v_tipo_empresa_codigo NOT IN('FAB','IMP','DIS')
+    THEN
+      RAISE 'Debe existir la empresa de origen' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF v_tipo_empresa_codigo='IMP'
-		THEN
-			return QUERY
-			EXECUTE format(
-					'select e.empresa_id as cliente_id,
-						e.empresa_razon_social as cliente_razon_social,
-						e.tipo_empresa_codigo
-					from  tb_empresa e
-					where e.empresa_id in (
-						select em.empresa_id from tb_empresa em where em.tipo_empresa_codigo != ''IMP''
-							and em.activo = true
-					)
-					and (case when %2$L IS NOT NULL then e.empresa_razon_social ilike  ''%%%2$s%%'' else TRUE end)
-					UNION ALL
-					select 	e.cliente_id as empresa_id,
-						e.cliente_razon_social,
-						''CLI'' as tipo_empresa_codigo
-					from  tb_cliente e
-					where e.empresa_id = %1$s
-					and (case when %2$L IS NOT NULL then e.cliente_razon_social ilike  ''%%%2$s%%'' else TRUE end)
-					ORDER BY cliente_razon_social
-					LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0);',
-					p_empresa_origen_id,p_cliente_razon_social
-			)
-			USING p_max_results,p_offset;
-		ELSIF v_tipo_empresa_codigo='FAB'
-			THEN
-				return QUERY
-				EXECUTE format(
-						'select e.empresa_id as cliente_id,
+    IF v_tipo_empresa_codigo='IMP'
+    THEN
+      return QUERY
+      EXECUTE format(
+          'select e.empresa_id as cliente_id,
+            e.empresa_razon_social as cliente_razon_social,
+            e.tipo_empresa_codigo
+          from  tb_empresa e
+          where e.empresa_id in (
+            select em.empresa_id from tb_empresa em where em.tipo_empresa_codigo != ''IMP''
+              and em.activo = true
+          )
+          and (case when %2$L IS NOT NULL then e.empresa_razon_social ilike  ''%%%2$s%%'' else TRUE end)
+          UNION ALL
+          select 	e.cliente_id as empresa_id,
+            e.cliente_razon_social,
+            ''CLI'' as tipo_empresa_codigo
+          from  tb_cliente e
+          where e.empresa_id = %1$s
+          and (case when %2$L IS NOT NULL then e.cliente_razon_social ilike  ''%%%2$s%%'' else TRUE end)
+          ORDER BY cliente_razon_social
+          LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0);',
+          p_empresa_origen_id,p_cliente_razon_social
+      )
+      USING p_max_results,p_offset;
+    ELSIF v_tipo_empresa_codigo='FAB'
+      THEN
+        return QUERY
+        EXECUTE format(
+            'select e.empresa_id as cliente_id,
               e.empresa_razon_social as cliente_razon_social,
               e.tipo_empresa_codigo
             from  tb_empresa e
@@ -1309,14 +1347,14 @@ BEGIN
               and (case when %2$L IS NOT NULL then e.cliente_razon_social ilike  ''%%%2$s%%'' else TRUE end)
             ORDER BY cliente_razon_social
             LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0);',
-						p_empresa_origen_id,p_cliente_razon_social
-				)
-				USING p_max_results,p_offset;
-		ELSIF v_tipo_empresa_codigo='DIS'
-			THEN
-				return QUERY
-				EXECUTE format(
-						'select e.cliente_id as empresa_id,
+            p_empresa_origen_id,p_cliente_razon_social
+        )
+        USING p_max_results,p_offset;
+    ELSIF v_tipo_empresa_codigo='DIS'
+      THEN
+        return QUERY
+        EXECUTE format(
+            'select e.cliente_id as empresa_id,
               e.cliente_razon_social,
               ''CLI''::character varying as tipo_empresa_codigo
             from  tb_cliente e
@@ -1324,11 +1362,11 @@ BEGIN
               and (case when %2$L IS NOT NULL then e.cliente_razon_social ilike  ''%%%2$s%%'' else TRUE end)
             ORDER BY cliente_razon_social
             LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0);',
-						p_empresa_origen_id,p_cliente_razon_social
-				)
-				USING p_max_results,p_offset;
-		END IF;
-	END IF;
+            p_empresa_origen_id,p_cliente_razon_social
+        )
+        USING p_max_results,p_offset;
+    END IF;
+  END IF;
 END;
 $_$;
 
@@ -1336,7 +1374,7 @@ $_$;
 ALTER FUNCTION public.sp_get_clientes_for_cotizacion(p_empresa_origen_id integer, p_cliente_razon_social character varying, pc_cliente_id integer, pc_es_cliente_real boolean, p_max_results integer, p_offset integer) OWNER TO clabsuser;
 
 --
--- TOC entry 287 (class 1255 OID 100639)
+-- TOC entry 285 (class 1255 OID 100639)
 -- Name: sp_get_datos_insumos_for_producto(integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1369,72 +1407,72 @@ RETURN:
 		producto_total_cantidad  numeric)
 */
 DECLARE v_empresa_id integer;
-				DECLARE v_insumo_tipo character varying(2);
+  DECLARE v_insumo_tipo character varying(2);
 BEGIN
-	-- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
-	-- y obtenemos ademas el tipo de insumo.
-	select i.empresa_id,i.insumo_tipo
-	into v_empresa_id,v_insumo_tipo
-	from tb_insumo i
-		inner join tb_empresa e on e.empresa_id = i.empresa_id
-	where i.insumo_id = p_insumo_id;
+  -- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
+  -- y obtenemos ademas el tipo de insumo.
+  select i.empresa_id,i.insumo_tipo
+  into v_empresa_id,v_insumo_tipo
+  from tb_insumo i
+    inner join tb_empresa e on e.empresa_id = i.empresa_id
+  where i.insumo_id = p_insumo_id;
 
-	-- El id del insumo del header debera ser siempre un producto.
-	IF coalesce(v_insumo_tipo,'') != 'PR'
-	THEN
-		RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
-	END IF;
+  -- El id del insumo del header debera ser siempre un producto.
+  IF coalesce(v_insumo_tipo,'') != 'PR'
+  THEN
+    RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	return QUERY
-	select
+  return QUERY
+  select
 
-		ins.insumo_id as insumo_id,
-		ins.insumo_descripcion as insumo_descripcion,
-		pd.producto_detalle_cantidad as producto_detalle_cantidad,
-		pd.unidad_medida_codigo as unidad_medida_codigo,
-		pd.producto_detalle_merma  as producto_detalle_merma,
-		ins.insumo_tipo as insumo_tipo,
-		tc.tcostos_indirecto as tcostos_indirecto,
-		CASE WHEN um.unidad_medida_codigo = 'NING'
-			THEN 'NING'
-		ELSE
-			um2.unidad_medida_codigo
-		END as unida_medida_codigo_default,
-		umc.unidad_medida_conversion_factor,
-		ROUND(CASE WHEN tc.tcostos_indirecto = TRUE
-			THEN
-				pd.producto_detalle_cantidad
-					ELSE
-						CASE WHEN um2.unidad_medida_codigo IS NULL OR (umc.unidad_medida_conversion_factor IS NULL AND um2.unidad_medida_codigo != um.unidad_medida_codigo)
-							THEN
-								-1
-						ELSE
-							CASE WHEN um2.unidad_medida_codigo != um.unidad_medida_codigo
-								THEN
-									(pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))*umc.unidad_medida_conversion_factor
-							ELSE
-								(pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))
-							END
-						END
-					END,4)
-			as producto_total_cantidad
-	from tb_producto_detalle pd
-		inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
-		inner join tb_tcostos  tc on tc.tcostos_codigo = ins.tcostos_codigo
-		inner join tb_unidad_medida um on um.unidad_medida_codigo = pd.unidad_medida_codigo
-		left  join tb_unidad_medida um2 on um2.unidad_medida_tipo = um.unidad_medida_tipo and um2.unidad_medida_default = true
-		left  join tb_unidad_medida_conversion umc on umc.unidad_medida_origen = pd.unidad_medida_codigo and umc.unidad_medida_destino = um2.unidad_medida_codigo
-	where insumo_id_origen = p_insumo_id
+    ins.insumo_id as insumo_id,
+    ins.insumo_descripcion as insumo_descripcion,
+    pd.producto_detalle_cantidad as producto_detalle_cantidad,
+    pd.unidad_medida_codigo as unidad_medida_codigo,
+    pd.producto_detalle_merma  as producto_detalle_merma,
+    ins.insumo_tipo as insumo_tipo,
+    tc.tcostos_indirecto as tcostos_indirecto,
+    CASE WHEN um.unidad_medida_codigo = 'NING'
+      THEN 'NING'
+    ELSE
+      um2.unidad_medida_codigo
+    END as unida_medida_codigo_default,
+    umc.unidad_medida_conversion_factor,
+    ROUND(CASE WHEN tc.tcostos_indirecto = TRUE
+      THEN
+        pd.producto_detalle_cantidad
+          ELSE
+            CASE WHEN um2.unidad_medida_codigo IS NULL OR (umc.unidad_medida_conversion_factor IS NULL AND um2.unidad_medida_codigo != um.unidad_medida_codigo)
+              THEN
+                -1
+            ELSE
+              CASE WHEN um2.unidad_medida_codigo != um.unidad_medida_codigo
+                THEN
+                  (pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))*umc.unidad_medida_conversion_factor
+              ELSE
+                (pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))
+              END
+            END
+          END,4)
+      as producto_total_cantidad
+  from tb_producto_detalle pd
+    inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
+    inner join tb_tcostos  tc on tc.tcostos_codigo = ins.tcostos_codigo
+    inner join tb_unidad_medida um on um.unidad_medida_codigo = pd.unidad_medida_codigo
+    left  join tb_unidad_medida um2 on um2.unidad_medida_tipo = um.unidad_medida_tipo and um2.unidad_medida_default = true
+    left  join tb_unidad_medida_conversion umc on umc.unidad_medida_origen = pd.unidad_medida_codigo and umc.unidad_medida_destino = um2.unidad_medida_codigo
+  where insumo_id_origen = p_insumo_id
 
-	union all
+  union all
 
-	select
-		res.*
-	from tb_producto_detalle pd
-		inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
-		inner join sp_get_insumos_for_producto(ins.insumo_id) as res on res.insumo_id = res.insumo_id
-	where insumo_id_origen = p_insumo_id and ins.insumo_tipo='PR' and
-				ins.empresa_id = v_empresa_id;
+  select
+    res.*
+  from tb_producto_detalle pd
+    inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
+    inner join sp_get_insumos_for_producto(ins.insumo_id) as res on res.insumo_id = res.insumo_id
+  where insumo_id_origen = p_insumo_id and ins.insumo_tipo='PR' and
+        ins.empresa_id = v_empresa_id;
 END;
 $$;
 
@@ -1442,7 +1480,7 @@ $$;
 ALTER FUNCTION public.sp_get_datos_insumos_for_producto(p_insumo_id integer) OWNER TO clabsuser;
 
 --
--- TOC entry 301 (class 1255 OID 254645)
+-- TOC entry 298 (class 1255 OID 254645)
 -- Name: sp_get_historico_costos_for_insumo(integer, date, date, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -1491,61 +1529,61 @@ RETURN:
 Historia : 13-06-2014
 */
 DECLARE v_date_from DATE;
-				DECLARE v_date_to DATE;
+  DECLARE v_date_to DATE;
 
 BEGIN
-	-- si las fechas de parametros no null se ajustan a 1999 y como maximo la fecha actual.
-	IF p_date_from IS NULL
-	THEN
-		v_date_from := '1999-01-01';
-	ELSE
-		v_date_from := p_date_from;
-	END IF;
+  -- si las fechas de parametros no null se ajustan a 1999 y como maximo la fecha actual.
+  IF p_date_from IS NULL
+  THEN
+    v_date_from := '1999-01-01';
+  ELSE
+    v_date_from := p_date_from;
+  END IF;
 
-	IF p_date_to IS NULL
-	THEN
-		v_date_to := now();
-	ELSE
-		v_date_to := p_date_to;
-	END IF;
+  IF p_date_to IS NULL
+  THEN
+    v_date_to := now();
+  ELSE
+    v_date_to := p_date_to;
+  END IF;
 
-	-- truncamos las fechas hasta el dia , quitamos la parte de la hora.
-	v_date_from := date_trunc('day',v_date_from);
-	v_date_to := date_trunc('day',v_date_to);
+  -- truncamos las fechas hasta el dia , quitamos la parte de la hora.
+  v_date_from := date_trunc('day',v_date_from);
+  v_date_to := date_trunc('day',v_date_to);
 
-	return QUERY
-	select i.insumo_codigo,
-		i.insumo_descripcion,
-		ih.insumo_history_fecha,
-		ih.insumo_history_id,
-		case when ih.insumo_tipo != 'PR' then
-			ti.tinsumo_descripcion
-		else 'Producto'
-		end as tinsumo_descripcion,
-		case when ih.insumo_tipo != 'PR' then
-			tc.tcostos_descripcion
-		else NULL
-		end as tcostos_descripcion,
-		um.unidad_medida_descripcion,
-		case when tc.tcostos_indirecto = TRUE then
-			null
-		else ih.insumo_merma
-		end as insumo_merma,
-		ih.insumo_costo,
-		mo.moneda_descripcion as moneda_costo_descripcion,
-		case when  tc.tcostos_indirecto = TRUE then
-			null
-		else ih.insumo_precio_mercado
-		end as insumo_precio_mercado
-	from tb_insumo_history ih
-		inner join tb_insumo i on i.insumo_id = ih.insumo_id
-		inner join tb_tinsumo ti on ti.tinsumo_codigo = ih.tinsumo_codigo
-		inner join tb_tcostos tc on tc.tcostos_codigo = ih.tcostos_codigo
-		inner join tb_unidad_medida um on um.unidad_medida_codigo = ih.unidad_medida_codigo_costo
-		inner join tb_moneda mo on mo.moneda_codigo = ih.moneda_codigo_costo
-	where ih.insumo_id = p_insumo_id and ih.insumo_history_fecha::date between  v_date_from  and  v_date_to
-	order by ih.insumo_id,ih.insumo_history_fecha desc,ih.insumo_history_id desc
-	limit COALESCE(p_max_results, 1000000 ) offset coalesce(p_offset,0);
+  return QUERY
+  select i.insumo_codigo,
+    i.insumo_descripcion,
+    ih.insumo_history_fecha,
+    ih.insumo_history_id,
+    case when ih.insumo_tipo != 'PR' then
+      ti.tinsumo_descripcion
+    else 'Producto'
+    end as tinsumo_descripcion,
+    case when ih.insumo_tipo != 'PR' then
+      tc.tcostos_descripcion
+    else NULL
+    end as tcostos_descripcion,
+    um.unidad_medida_descripcion,
+    case when tc.tcostos_indirecto = TRUE then
+      null
+    else ih.insumo_merma
+    end as insumo_merma,
+    ih.insumo_costo,
+    mo.moneda_descripcion as moneda_costo_descripcion,
+    case when  tc.tcostos_indirecto = TRUE then
+      null
+    else ih.insumo_precio_mercado
+    end as insumo_precio_mercado
+  from tb_insumo_history ih
+    inner join tb_insumo i on i.insumo_id = ih.insumo_id
+    inner join tb_tinsumo ti on ti.tinsumo_codigo = ih.tinsumo_codigo
+    inner join tb_tcostos tc on tc.tcostos_codigo = ih.tcostos_codigo
+    inner join tb_unidad_medida um on um.unidad_medida_codigo = ih.unidad_medida_codigo_costo
+    inner join tb_moneda mo on mo.moneda_codigo = ih.moneda_codigo_costo
+  where ih.insumo_id = p_insumo_id and ih.insumo_history_fecha::date between  v_date_from  and  v_date_to
+  order by ih.insumo_id,ih.insumo_history_fecha desc,ih.insumo_history_id desc
+  limit COALESCE(p_max_results, 1000000 ) offset coalesce(p_offset,0);
 
 END;
 $$;
@@ -1554,7 +1592,7 @@ $$;
 ALTER FUNCTION public.sp_get_historico_costos_for_insumo(p_insumo_id integer, p_date_from date, p_date_to date, p_max_results integer, p_offset integer) OWNER TO postgres;
 
 --
--- TOC entry 295 (class 1255 OID 100637)
+-- TOC entry 291 (class 1255 OID 100637)
 -- Name: sp_get_insumos_for_producto(integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1587,72 +1625,72 @@ RETURN:
 		producto_total_cantidad  numeric)
 */
 DECLARE v_empresa_id integer;
-				DECLARE v_insumo_tipo character varying(2);
+  DECLARE v_insumo_tipo character varying(2);
 BEGIN
-	-- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
-	-- y obtenemos ademas el tipo de insumo.
-	select i.empresa_id,i.insumo_tipo
-	into v_empresa_id,v_insumo_tipo
-	from tb_insumo i
-		inner join tb_empresa e on e.empresa_id = i.empresa_id
-	where i.insumo_id = p_insumo_id;
+  -- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
+  -- y obtenemos ademas el tipo de insumo.
+  select i.empresa_id,i.insumo_tipo
+  into v_empresa_id,v_insumo_tipo
+  from tb_insumo i
+    inner join tb_empresa e on e.empresa_id = i.empresa_id
+  where i.insumo_id = p_insumo_id;
 
-	-- El id del insumo del header debera ser siempre un producto.
-	IF coalesce(v_insumo_tipo,'') != 'PR'
-	THEN
-		RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
-	END IF;
+  -- El id del insumo del header debera ser siempre un producto.
+  IF coalesce(v_insumo_tipo,'') != 'PR'
+  THEN
+    RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	return QUERY
-	select
+  return QUERY
+  select
 
-		ins.insumo_id as insumo_id,
-		ins.insumo_descripcion as insumo_descripcion,
-		pd.producto_detalle_cantidad as producto_detalle_cantidad,
-		pd.unidad_medida_codigo as unidad_medida_codigo,
-		pd.producto_detalle_merma  as producto_detalle_merma,
-		ins.insumo_tipo as insumo_tipo,
-		tc.tcostos_indirecto as tcostos_indirecto,
-		CASE WHEN um.unidad_medida_codigo = 'NING'
-			THEN 'NING'
-		ELSE
-			um2.unidad_medida_codigo
-		END as unida_medida_codigo_default,
-		umc.unidad_medida_conversion_factor,
-		ROUND(CASE WHEN tc.tcostos_indirecto = TRUE
-			THEN
-				pd.producto_detalle_cantidad
-					ELSE
-						CASE WHEN um2.unidad_medida_codigo IS NULL OR (umc.unidad_medida_conversion_factor IS NULL AND um2.unidad_medida_codigo != um.unidad_medida_codigo)
-							THEN
-								-1
-						ELSE
-							CASE WHEN um2.unidad_medida_codigo != um.unidad_medida_codigo
-								THEN
-									(pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))*umc.unidad_medida_conversion_factor
-							ELSE
-								(pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))
-							END
-						END
-					END,4)
-			as producto_total_cantidad
-	from tb_producto_detalle pd
-		inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
-		inner join tb_tcostos  tc on tc.tcostos_codigo = ins.tcostos_codigo
-		inner join tb_unidad_medida um on um.unidad_medida_codigo = pd.unidad_medida_codigo
-		left  join tb_unidad_medida um2 on um2.unidad_medida_tipo = um.unidad_medida_tipo and um2.unidad_medida_default = true
-		left  join tb_unidad_medida_conversion umc on umc.unidad_medida_origen = pd.unidad_medida_codigo and umc.unidad_medida_destino = um2.unidad_medida_codigo
-	where insumo_id_origen = p_insumo_id
+    ins.insumo_id as insumo_id,
+    ins.insumo_descripcion as insumo_descripcion,
+    pd.producto_detalle_cantidad as producto_detalle_cantidad,
+    pd.unidad_medida_codigo as unidad_medida_codigo,
+    pd.producto_detalle_merma  as producto_detalle_merma,
+    ins.insumo_tipo as insumo_tipo,
+    tc.tcostos_indirecto as tcostos_indirecto,
+    CASE WHEN um.unidad_medida_codigo = 'NING'
+      THEN 'NING'
+    ELSE
+      um2.unidad_medida_codigo
+    END as unida_medida_codigo_default,
+    umc.unidad_medida_conversion_factor,
+    ROUND(CASE WHEN tc.tcostos_indirecto = TRUE
+      THEN
+        pd.producto_detalle_cantidad
+          ELSE
+            CASE WHEN um2.unidad_medida_codigo IS NULL OR (umc.unidad_medida_conversion_factor IS NULL AND um2.unidad_medida_codigo != um.unidad_medida_codigo)
+              THEN
+                -1
+            ELSE
+              CASE WHEN um2.unidad_medida_codigo != um.unidad_medida_codigo
+                THEN
+                  (pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))*umc.unidad_medida_conversion_factor
+              ELSE
+                (pd.producto_detalle_cantidad+(pd.producto_detalle_merma*pd.producto_detalle_cantidad/100.0000))
+              END
+            END
+          END,4)
+      as producto_total_cantidad
+  from tb_producto_detalle pd
+    inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
+    inner join tb_tcostos  tc on tc.tcostos_codigo = ins.tcostos_codigo
+    inner join tb_unidad_medida um on um.unidad_medida_codigo = pd.unidad_medida_codigo
+    left  join tb_unidad_medida um2 on um2.unidad_medida_tipo = um.unidad_medida_tipo and um2.unidad_medida_default = true
+    left  join tb_unidad_medida_conversion umc on umc.unidad_medida_origen = pd.unidad_medida_codigo and umc.unidad_medida_destino = um2.unidad_medida_codigo
+  where insumo_id_origen = p_insumo_id
 
-	union all
+  union all
 
-	select
-		res.*
-	from tb_producto_detalle pd
-		inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
-		inner join sp_get_insumos_for_producto(ins.insumo_id) as res on res.insumo_id = res.insumo_id
-	where insumo_id_origen = p_insumo_id and ins.insumo_tipo='PR' and
-				ins.empresa_id = v_empresa_id;
+  select
+    res.*
+  from tb_producto_detalle pd
+    inner join tb_insumo ins on ins.insumo_id = pd.insumo_id
+    inner join sp_get_insumos_for_producto(ins.insumo_id) as res on res.insumo_id = res.insumo_id
+  where insumo_id_origen = p_insumo_id and ins.insumo_tipo='PR' and
+        ins.empresa_id = v_empresa_id;
 END;
 $$;
 
@@ -1660,7 +1698,7 @@ $$;
 ALTER FUNCTION public.sp_get_insumos_for_producto(p_insumo_id integer) OWNER TO clabsuser;
 
 --
--- TOC entry 258 (class 1255 OID 101230)
+-- TOC entry 256 (class 1255 OID 101230)
 -- Name: sp_get_insumos_for_producto_detalle(integer, integer, character varying, integer, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1712,86 +1750,86 @@ RETURN:
 Historia : 13-06-2014
 */
 DECLARE v_empresa_id integer;
-				DECLARE v_tipo_empresa_codigo character varying(3);
-				DECLARE v_insumo_tipo character varying(2);
+  DECLARE v_tipo_empresa_codigo character varying(3);
+  DECLARE v_insumo_tipo character varying(2);
 BEGIN
-	IF pc_insumo_id IS NOT NULL
-	THEN
-		return QUERY
-		select ins.empresa_id as empesa_id,
-					 e.empresa_razon_social as empresa_razon_social,
-					 ins.insumo_id as insumo_id,
-					 ins.insumo_tipo as insumo_tipo,
-					 ins.insumo_codigo as insumo_codigo,
-					 ins.insumo_descripcion as insumo_descripcion,
-					 ins.unidad_medida_codigo_costo as unidad_medida_codigo_costo,
-					 ins.insumo_merma as insumo_merma,
-					 case when ins.insumo_tipo = 'PR'
-						 then (select fn_get_producto_costo(ins.insumo_id, now()::date))
-					 else ins.insumo_costo
-					 end as insumo_costo,
-					 ins.insumo_precio_mercado as insumo_precio_mercado,
-					 mn.moneda_simbolo as moneda_simbolo,
-					 tc.tcostos_indirecto as tcostos_indirecto
-		from  tb_insumo ins
-			inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
-			inner join tb_empresa e on e.empresa_id = ins.empresa_id
-			inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
-		where ins.insumo_id = pc_insumo_id;
-	ELSE
-		-- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
-		-- y obtenemos ademas el tipo de empresa.
-		select i.empresa_id,tipo_empresa_codigo,i.insumo_tipo
-		into v_empresa_id,v_tipo_empresa_codigo,v_insumo_tipo
-		from tb_insumo i
-			inner join tb_empresa e on e.empresa_id = i.empresa_id
-		where i.insumo_id = p_product_header_id;
+  IF pc_insumo_id IS NOT NULL
+  THEN
+    return QUERY
+    select ins.empresa_id as empesa_id,
+           e.empresa_razon_social as empresa_razon_social,
+           ins.insumo_id as insumo_id,
+           ins.insumo_tipo as insumo_tipo,
+           ins.insumo_codigo as insumo_codigo,
+           ins.insumo_descripcion as insumo_descripcion,
+           ins.unidad_medida_codigo_costo as unidad_medida_codigo_costo,
+           ins.insumo_merma as insumo_merma,
+           case when ins.insumo_tipo = 'PR'
+             then (select fn_get_producto_costo(ins.insumo_id, now()::date))
+           else ins.insumo_costo
+           end as insumo_costo,
+           ins.insumo_precio_mercado as insumo_precio_mercado,
+           mn.moneda_simbolo as moneda_simbolo,
+           tc.tcostos_indirecto as tcostos_indirecto
+    from  tb_insumo ins
+      inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
+      inner join tb_empresa e on e.empresa_id = ins.empresa_id
+      inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
+    where ins.insumo_id = pc_insumo_id;
+  ELSE
+    -- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
+    -- y obtenemos ademas el tipo de empresa.
+    select i.empresa_id,tipo_empresa_codigo,i.insumo_tipo
+    into v_empresa_id,v_tipo_empresa_codigo,v_insumo_tipo
+    from tb_insumo i
+      inner join tb_empresa e on e.empresa_id = i.empresa_id
+    where i.insumo_id = p_product_header_id;
 
-		-- El id del insumo del header debera ser siempre un producto.
-		IF coalesce(v_insumo_tipo,'') != 'PR'
-		THEN
-			RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
-		END IF;
+    -- El id del insumo del header debera ser siempre un producto.
+    IF coalesce(v_insumo_tipo,'') != 'PR'
+    THEN
+      RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		return QUERY
-		EXECUTE
-		format(
-				'select ins.empresa_id as empesa_id,
-						e.empresa_razon_social as empresa_razon_social,
-						ins.insumo_id as insumo_id,
-						ins.insumo_tipo as insumo_tipo,
-						ins.insumo_codigo as insumo_codigo,
-						ins.insumo_descripcion as insumo_descripcion,
-						ins.unidad_medida_codigo_costo as unidad_medida_codigo_costo,
-						ins.insumo_merma as insumo_merma,
-						case when ins.insumo_tipo = ''PR''
-							then (select fn_get_producto_costo(ins.insumo_id, now()::date))
-							else ins.insumo_costo
-						end as insumo_costo,
-						ins.insumo_precio_mercado as insumo_precio_mercado,
-						mn.moneda_simbolo as moneda_simbolo,
-						tc.tcostos_indirecto as tcostos_indirecto
-					from  tb_insumo ins
-						inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
-						inner join tb_empresa e on e.empresa_id = ins.empresa_id
-						inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
-					where ins.activo = true
-						and ins.insumo_id != %1$s
-						and (case when %2$L=''IMP'' then ins.empresa_id = %3$s
-							when %2$L=''FAB'' then ins.empresa_id IN ((select em.empresa_id from tb_empresa em where tipo_empresa_codigo = ''IMP''
-															OR (tipo_empresa_codigo = ''FAB'' and em.empresa_id = %3$s)))
-							when %2$L=''DIS'' then true -- todos lods demas insumos ya quew el distribuidor compra de los demas
-							else null
-							end)
-						and ins.activo = true
-						and ins.insumo_id not in (select pd.insumo_id from tb_producto_detalle pd where pd.insumo_id_origen = %1$s)
-						and (case when %4$L IS NOT NULL then ins.insumo_descripcion ilike  ''%%%4$s%%'' else TRUE end)
-					ORDER BY ins.insumo_descripcion
-					LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0)
-				',p_product_header_id,v_tipo_empresa_codigo,v_empresa_id,p_insumo_descripcion
-		)
-		USING p_max_results,p_offset;
-	END IF;
+    return QUERY
+    EXECUTE
+    format(
+        'select ins.empresa_id as empesa_id,
+            e.empresa_razon_social as empresa_razon_social,
+            ins.insumo_id as insumo_id,
+            ins.insumo_tipo as insumo_tipo,
+            ins.insumo_codigo as insumo_codigo,
+            ins.insumo_descripcion as insumo_descripcion,
+            ins.unidad_medida_codigo_costo as unidad_medida_codigo_costo,
+            ins.insumo_merma as insumo_merma,
+            case when ins.insumo_tipo = ''PR''
+              then (select fn_get_producto_costo(ins.insumo_id, now()::date))
+              else ins.insumo_costo
+            end as insumo_costo,
+            ins.insumo_precio_mercado as insumo_precio_mercado,
+            mn.moneda_simbolo as moneda_simbolo,
+            tc.tcostos_indirecto as tcostos_indirecto
+          from  tb_insumo ins
+            inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
+            inner join tb_empresa e on e.empresa_id = ins.empresa_id
+            inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
+          where ins.activo = true
+            and ins.insumo_id != %1$s
+            and (case when %2$L=''IMP'' then ins.empresa_id = %3$s
+              when %2$L=''FAB'' then ins.empresa_id IN ((select em.empresa_id from tb_empresa em where tipo_empresa_codigo = ''IMP''
+                              OR (tipo_empresa_codigo = ''FAB'' and em.empresa_id = %3$s)))
+              when %2$L=''DIS'' then true -- todos lods demas insumos ya quew el distribuidor compra de los demas
+              else null
+              end)
+            and ins.activo = true
+            and ins.insumo_id not in (select pd.insumo_id from tb_producto_detalle pd where pd.insumo_id_origen = %1$s)
+            and (case when %4$L IS NOT NULL then ins.insumo_descripcion ilike  ''%%%4$s%%'' else TRUE end)
+          ORDER BY ins.insumo_descripcion
+          LIMIT COALESCE($1, 1000 ) OFFSET coalesce($2,0)
+        ',p_product_header_id,v_tipo_empresa_codigo,v_empresa_id,p_insumo_descripcion
+    )
+    USING p_max_results,p_offset;
+  END IF;
 
 END;
 $_$;
@@ -1800,7 +1838,7 @@ $_$;
 ALTER FUNCTION public.sp_get_insumos_for_producto_detalle(p_product_header_id integer, pc_insumo_id integer, p_insumo_descripcion character varying, p_max_results integer, p_offset integer) OWNER TO clabsuser;
 
 --
--- TOC entry 257 (class 1255 OID 101145)
+-- TOC entry 255 (class 1255 OID 101145)
 -- Name: sp_get_insumos_for_producto_detalle_old(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1845,69 +1883,69 @@ RETURN:
 Historia : 13-06-2014
 */
 DECLARE v_empresa_id integer;
-				DECLARE v_tipo_empresa_codigo character varying(3);
-				DECLARE v_insumo_tipo character varying(2);
+  DECLARE v_tipo_empresa_codigo character varying(3);
+  DECLARE v_insumo_tipo character varying(2);
 BEGIN
-	-- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
-	-- y obtenemos ademas el tipo de empresa.
-	select i.empresa_id,tipo_empresa_codigo,i.insumo_tipo
-	into v_empresa_id,v_tipo_empresa_codigo,v_insumo_tipo
-	from tb_insumo i
-		inner join tb_empresa e on e.empresa_id = i.empresa_id
-	where i.insumo_id = p_product_header_id;
+  -- Determinamos a que empresa corresponde este producto principal (representado por insumo_id)
+  -- y obtenemos ademas el tipo de empresa.
+  select i.empresa_id,tipo_empresa_codigo,i.insumo_tipo
+  into v_empresa_id,v_tipo_empresa_codigo,v_insumo_tipo
+  from tb_insumo i
+    inner join tb_empresa e on e.empresa_id = i.empresa_id
+  where i.insumo_id = p_product_header_id;
 
-	-- El id del insumo del header debera ser siempre un producto.
-	IF coalesce(v_insumo_tipo,'') != 'PR'
-	THEN
-		RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
-	END IF;
+  -- El id del insumo del header debera ser siempre un producto.
+  IF coalesce(v_insumo_tipo,'') != 'PR'
+  THEN
+    RAISE 'Para la lista de items elegibles se requiere un codigo de producto no de insumo' USING ERRCODE = 'restrict_violation';
+  END IF;
 
-	return QUERY
-	select
-		data.empresa_id,
-		data.empresa_razon_social,
-		data.insumo_id,
-		data.insumo_tipo,
-		data.insumo_codigo,
-		data.insumo_descripcion,
-		data.unidad_medida_codigo_costo,
-		data.insumo_merma,
-		data.insumo_costo,
-		data.insumo_precio_mercado,
-		data.moneda_simbolo,
-		data.tcostos_indirecto
-	from (
-				 select 	ins.empresa_id,
-					 e.empresa_razon_social,
-					 ins.insumo_id,
-					 ins.insumo_tipo,
-					 ins.insumo_codigo,
-					 ins.insumo_descripcion,
-					 ins.unidad_medida_codigo_costo,
-					 ins.insumo_merma,
-					 case when ins.insumo_tipo = 'PR'
-						 then (select fn_get_producto_costo(ins.insumo_id, now()::date))
-					 else ins.insumo_costo
-					 end as insumo_costo,
-					 ins.insumo_precio_mercado,
-					 mn.moneda_simbolo,
-					 tc.tcostos_indirecto
-				 from  tb_insumo ins
-					 inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
-					 inner join tb_empresa e on e.empresa_id = ins.empresa_id
-					 inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
-				 where ins.activo = true
-							 and ins.insumo_id != p_product_header_id
-							 and (case when v_tipo_empresa_codigo='IMP' then ins.empresa_id = v_empresa_id
-										when v_tipo_empresa_codigo='FAB' then ins.empresa_id IN ((select em.empresa_id from tb_empresa em where tipo_empresa_codigo = 'IMP'
-																																																														OR (tipo_empresa_codigo = 'FAB' and em.empresa_id = v_empresa_id)))
-										when v_tipo_empresa_codigo='DIS' then true -- todos lods demas insumos ya quew el distribuidor compra de los demas
-										else null
-										end)
-							 and ins.activo = true
-							 and ins.insumo_id not in (select pd.insumo_id from tb_producto_detalle pd where pd.insumo_id_origen = p_product_header_id)
-				 LIMIT COALESCE(p_max_results, 1000 ) OFFSET coalesce(p_offset,0)
-			 ) data;
+  return QUERY
+  select
+    data.empresa_id,
+    data.empresa_razon_social,
+    data.insumo_id,
+    data.insumo_tipo,
+    data.insumo_codigo,
+    data.insumo_descripcion,
+    data.unidad_medida_codigo_costo,
+    data.insumo_merma,
+    data.insumo_costo,
+    data.insumo_precio_mercado,
+    data.moneda_simbolo,
+    data.tcostos_indirecto
+  from (
+         select 	ins.empresa_id,
+           e.empresa_razon_social,
+           ins.insumo_id,
+           ins.insumo_tipo,
+           ins.insumo_codigo,
+           ins.insumo_descripcion,
+           ins.unidad_medida_codigo_costo,
+           ins.insumo_merma,
+           case when ins.insumo_tipo = 'PR'
+             then (select fn_get_producto_costo(ins.insumo_id, now()::date))
+           else ins.insumo_costo
+           end as insumo_costo,
+           ins.insumo_precio_mercado,
+           mn.moneda_simbolo,
+           tc.tcostos_indirecto
+         from  tb_insumo ins
+           inner join tb_moneda mn on mn.moneda_codigo = ins.moneda_codigo_costo
+           inner join tb_empresa e on e.empresa_id = ins.empresa_id
+           inner join tb_tcostos tc on tc.tcostos_codigo = ins.tcostos_codigo
+         where ins.activo = true
+               and ins.insumo_id != p_product_header_id
+               and (case when v_tipo_empresa_codigo='IMP' then ins.empresa_id = v_empresa_id
+                    when v_tipo_empresa_codigo='FAB' then ins.empresa_id IN ((select em.empresa_id from tb_empresa em where tipo_empresa_codigo = 'IMP'
+                                                                                                                            OR (tipo_empresa_codigo = 'FAB' and em.empresa_id = v_empresa_id)))
+                    when v_tipo_empresa_codigo='DIS' then true -- todos lods demas insumos ya quew el distribuidor compra de los demas
+                    else null
+                    end)
+               and ins.activo = true
+               and ins.insumo_id not in (select pd.insumo_id from tb_producto_detalle pd where pd.insumo_id_origen = p_product_header_id)
+         LIMIT COALESCE(p_max_results, 1000 ) OFFSET coalesce(p_offset,0)
+       ) data;
 
 END;
 $$;
@@ -1916,7 +1954,7 @@ $$;
 ALTER FUNCTION public.sp_get_insumos_for_producto_detalle_old(p_product_header_id integer, p_max_results integer, p_offset integer) OWNER TO clabsuser;
 
 --
--- TOC entry 293 (class 1255 OID 109739)
+-- TOC entry 301 (class 1255 OID 109739)
 -- Name: sp_get_productos_for_cotizacion(integer, integer, character varying, integer, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1955,101 +1993,101 @@ RETURN:
 Historia : Creado 03-12-2016
 */
 DECLARE v_moneda_codigo character varying(8);
-				DECLARE v_empresa_id integer;
-				DECLARE v_cotizacion_id integer;
-				DECLARE v_cliente_id integer;
-				DECLARE v_cotizacion_es_cliente_real boolean;
-				DECLARE v_cotizacion_fecha date;
+  DECLARE v_empresa_id integer;
+  DECLARE v_cotizacion_id integer;
+  DECLARE v_cliente_id integer;
+  DECLARE v_cotizacion_es_cliente_real boolean;
+  DECLARE v_cotizacion_fecha date;
 
 
 BEGIN
 
-	-- Leemos los valoresa trabajar desde la cotizacion
-	SELECT
-		c.cotizacion_id,
-		c.empresa_id,
-		c.cliente_id,
-		c.cotizacion_es_cliente_real,
-		c.moneda_codigo,
-		c.cotizacion_fecha
-	INTO
-		v_cotizacion_id,
-		v_empresa_id,
-		v_cliente_id,
-		v_cotizacion_es_cliente_real,
-		v_moneda_codigo,
-		v_cotizacion_fecha
-	FROM tb_cotizacion c
-	WHERE cotizacion_id =  p_cotizacion_id;
+  -- Leemos los valoresa trabajar desde la cotizacion
+  SELECT
+    c.cotizacion_id,
+    c.empresa_id,
+    c.cliente_id,
+    c.cotizacion_es_cliente_real,
+    c.moneda_codigo,
+    c.cotizacion_fecha
+  INTO
+    v_cotizacion_id,
+    v_empresa_id,
+    v_cliente_id,
+    v_cotizacion_es_cliente_real,
+    v_moneda_codigo,
+    v_cotizacion_fecha
+  FROM tb_cotizacion c
+  WHERE cotizacion_id =  p_cotizacion_id;
 
-	IF v_cotizacion_id  IS NULL
-	THEN
-		RAISE  'No existe la cotizacion solicitada' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_cotizacion_id  IS NULL
+  THEN
+    RAISE  'No existe la cotizacion solicitada' USING ERRCODE = 'restrict_violation';
+  END IF;
 
 
-	-- Leemos los datos de salida
+  -- Leemos los datos de salida
 
-	IF pc_insumo_descripcion IS NOT NULL
-	THEN
-		return QUERY
-		SELECT
-			i.insumo_id,
-			i.insumo_codigo,
-			i.insumo_descripcion,
-			i.unidad_medida_codigo_costo,
-			u.unidad_medida_descripcion,
-			m.moneda_simbolo,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as precio_original,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as precio_cotizar
-		FROM tb_insumo i
-			INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
-			INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
-			INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
-		WHERE i.insumo_descripcion ilike ('%' || pc_insumo_descripcion || '%')
-					and t.tcostos_indirecto =  FALSE
-					and i.insumo_tipo ='PR'
-		LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
+  IF pc_insumo_descripcion IS NOT NULL
+  THEN
+    return QUERY
+    SELECT
+      i.insumo_id,
+      i.insumo_codigo,
+      i.insumo_descripcion,
+      i.unidad_medida_codigo_costo,
+      u.unidad_medida_descripcion,
+      m.moneda_simbolo,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha,false) as precio_original,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha,false) as precio_cotizar
+    FROM tb_insumo i
+      INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
+      INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
+      INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
+    WHERE i.insumo_descripcion ilike ('%' || pc_insumo_descripcion || '%')
+          and t.tcostos_indirecto =  FALSE
+          and i.insumo_tipo ='PR'
+    LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
 
-		-- Si se indica el insumo , solo buscamos ese insumo
-	ELSIF pc_insumo_id IS NOT NULL
-		THEN
-			return QUERY
-			SELECT
-				i.insumo_id,
-				i.insumo_codigo,
-				i.insumo_descripcion,
-				i.unidad_medida_codigo_costo,
-				u.unidad_medida_descripcion,
-				m.moneda_simbolo,
-				fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as precio_original,
-				fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as precio_cotizar
-			FROM tb_insumo i
-				INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
-				INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
-				INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
-			WHERE i.insumo_id = pc_insumo_id
-						and i.insumo_tipo ='PR';
-	ELSE
-		return QUERY
-		SELECT
-			i.insumo_id,
-			i.insumo_codigo,
-			i.insumo_descripcion,
-			i.unidad_medida_codigo_costo,
-			u.unidad_medida_descripcion,
-			m.moneda_simbolo,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as precio_original,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as precio_cotizar
-		FROM tb_insumo i
-			INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
-			INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
-			INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
-		WHERE empresa_id = v_empresa_id
-					and t.tcostos_indirecto =  FALSE
-					and i.insumo_tipo ='PR'
-		LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
-	END IF;
+    -- Si se indica el insumo , solo buscamos ese insumo
+  ELSIF pc_insumo_id IS NOT NULL
+    THEN
+      return QUERY
+      SELECT
+        i.insumo_id,
+        i.insumo_codigo,
+        i.insumo_descripcion,
+        i.unidad_medida_codigo_costo,
+        u.unidad_medida_descripcion,
+        m.moneda_simbolo,
+        fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha,false) as precio_original,
+        fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha,false) as precio_cotizar
+      FROM tb_insumo i
+        INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
+        INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
+        INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
+      WHERE i.insumo_id = pc_insumo_id
+            and i.insumo_tipo ='PR';
+  ELSE
+    return QUERY
+    SELECT
+      i.insumo_id,
+      i.insumo_codigo,
+      i.insumo_descripcion,
+      i.unidad_medida_codigo_costo,
+      u.unidad_medida_descripcion,
+      m.moneda_simbolo,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha,false) as precio_original,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha,false) as precio_cotizar
+    FROM tb_insumo i
+      INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
+      INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
+      INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
+    WHERE empresa_id = v_empresa_id
+          and t.tcostos_indirecto =  FALSE
+          and i.insumo_tipo ='PR'
+    LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
+  END IF;
 END;
 $$;
 
@@ -2057,7 +2095,7 @@ $$;
 ALTER FUNCTION public.sp_get_productos_for_cotizacion(p_cotizacion_id integer, pc_insumo_id integer, pc_insumo_descripcion character varying, p_max_results integer, p_offset integer) OWNER TO clabsuser;
 
 --
--- TOC entry 290 (class 1255 OID 109698)
+-- TOC entry 288 (class 1255 OID 109698)
 -- Name: sp_get_productos_for_cotizacion_old(integer, integer, integer); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2091,58 +2129,58 @@ RETURN:
 Historia : Creado 03-12-2016
 */
 DECLARE v_moneda_codigo character varying(8);
-				DECLARE v_empresa_id integer;
-				DECLARE v_cotizacion_id integer;
-				DECLARE v_cliente_id integer;
-				DECLARE v_cotizacion_es_cliente_real boolean;
-				DECLARE v_cotizacion_fecha date;
+  DECLARE v_empresa_id integer;
+  DECLARE v_cotizacion_id integer;
+  DECLARE v_cliente_id integer;
+  DECLARE v_cotizacion_es_cliente_real boolean;
+  DECLARE v_cotizacion_fecha date;
 
 
 BEGIN
 
-	-- Leemos los valoresa trabajar desde la cotizacion
-	SELECT
-		c.cotizacion_id,
-		c.empresa_id,
-		c.cliente_id,
-		c.cotizacion_es_cliente_real,
-		c.moneda_codigo,
-		c.cotizacion_fecha
-	INTO
-		v_cotizacion_id,
-		v_empresa_id,
-		v_cliente_id,
-		v_cotizacion_es_cliente_real,
-		v_moneda_codigo,
-		v_cotizacion_fecha
-	FROM tb_cotizacion c
-	WHERE cotizacion_id =  p_cotizacion_id;
+  -- Leemos los valoresa trabajar desde la cotizacion
+  SELECT
+    c.cotizacion_id,
+    c.empresa_id,
+    c.cliente_id,
+    c.cotizacion_es_cliente_real,
+    c.moneda_codigo,
+    c.cotizacion_fecha
+  INTO
+    v_cotizacion_id,
+    v_empresa_id,
+    v_cliente_id,
+    v_cotizacion_es_cliente_real,
+    v_moneda_codigo,
+    v_cotizacion_fecha
+  FROM tb_cotizacion c
+  WHERE cotizacion_id =  p_cotizacion_id;
 
-	IF v_cotizacion_id  IS NULL
-	THEN
-		RAISE  'No existe la cotizacion solicitada' USING ERRCODE = 'restrict_violation';
-	END IF;
+  IF v_cotizacion_id  IS NULL
+  THEN
+    RAISE  'No existe la cotizacion solicitada' USING ERRCODE = 'restrict_violation';
+  END IF;
 
 
-	-- Leemos los datos de salida
-	return QUERY
-	SELECT
-		i.insumo_id,
-		i.insumo_codigo,
-		i.insumo_descripcion,
-		i.unidad_medida_codigo_costo,
-		u.unidad_medida_descripcion,
-		m.moneda_simbolo,
-		fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as precio_original,
-		fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as precio_cotizar
-	FROM tb_insumo i
-		INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
-		INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
-		INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
-	WHERE empresa_id = v_empresa_id
-				and t.tcostos_indirecto =  FALSE
-				and i.insumo_tipo ='PR'
-	LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
+  -- Leemos los datos de salida
+  return QUERY
+  SELECT
+    i.insumo_id,
+    i.insumo_codigo,
+    i.insumo_descripcion,
+    i.unidad_medida_codigo_costo,
+    u.unidad_medida_descripcion,
+    m.moneda_simbolo,
+    fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as precio_original,
+    fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as precio_cotizar
+  FROM tb_insumo i
+    INNER JOIN tb_tcostos t ON t.tcostos_codigo = i.tcostos_codigo
+    INNER JOIN tb_moneda  m ON m.moneda_codigo = i.moneda_codigo_costo
+    INNER JOIN tb_unidad_medida u ON u.unidad_medida_codigo = i.unidad_medida_codigo_costo
+  WHERE empresa_id = v_empresa_id
+        and t.tcostos_indirecto =  FALSE
+        and i.insumo_tipo ='PR'
+  LIMIT COALESCE(p_max_results, 10000 ) OFFSET coalesce(p_offset,0);
 
 END;
 $$;
@@ -2151,7 +2189,7 @@ $$;
 ALTER FUNCTION public.sp_get_productos_for_cotizacion_old(p_cotizacion_id integer, p_max_results integer, p_offset integer) OWNER TO postgres;
 
 --
--- TOC entry 281 (class 1255 OID 84061)
+-- TOC entry 280 (class 1255 OID 84061)
 -- Name: sp_insumo_delete_record(integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -2187,31 +2225,31 @@ Historia : Creado 03-02-2014
 */
 BEGIN
 
-	-- Verificacion previa que el registro no esta modificado
-	--
-	-- Existe una pequeñisima oportunidad que el registro sea alterado entre el exist y el delete
-	-- pero dado que es intranscendente no es importante crear una sub transaccion para solo
-	-- verificar eso , por ende es mas que suficiente solo esta previa verificacion por exist.
-	IF EXISTS (SELECT 1 FROM tb_insumo WHERE insumo_id = p_insumo_id and xmin=p_version_id) THEN
-		-- Eliminamos si es que tiene componentes
-		DELETE FROM
-			tb_producto_detalle
-		WHERE insumo_id_origen = p_insumo_id;
+  -- Verificacion previa que el registro no esta modificado
+  --
+  -- Existe una pequeñisima oportunidad que el registro sea alterado entre el exist y el delete
+  -- pero dado que es intranscendente no es importante crear una sub transaccion para solo
+  -- verificar eso , por ende es mas que suficiente solo esta previa verificacion por exist.
+  IF EXISTS (SELECT 1 FROM tb_insumo WHERE insumo_id = p_insumo_id and xmin=p_version_id) THEN
+    -- Eliminamos si es que tiene componentes
+    DELETE FROM
+      tb_producto_detalle
+    WHERE insumo_id_origen = p_insumo_id;
 
-		DELETE FROM
-			tb_insumo
-		WHERE insumo_id = p_insumo_id and xmin=p_version_id;
+    DELETE FROM
+      tb_insumo
+    WHERE insumo_id = p_insumo_id and xmin=p_version_id;
 
-		-- SI SE PUDO ELIMINAR SE INDICA 1 DE LO CONTRARIO NULL
-		-- VER DOCUMENTACION DE LA FUNCION
-		IF FOUND THEN
-			RETURN 1;
-		ELSE
-			RETURN null;
-		END IF;
-	ELSE
-		RETURN null;
-	END IF;
+    -- SI SE PUDO ELIMINAR SE INDICA 1 DE LO CONTRARIO NULL
+    -- VER DOCUMENTACION DE LA FUNCION
+    IF FOUND THEN
+      RETURN 1;
+    ELSE
+      RETURN null;
+    END IF;
+  ELSE
+    RETURN null;
+  END IF;
 
 END;
 $$;
@@ -2255,32 +2293,32 @@ Historia : Creado 05-01-2014
 */
 BEGIN
 
-	-- Verificacion previa que el registro no esgta modificado
-	--
-	-- Existe una pequeñisima oportunidad que el registro sea alterado entre el exist y el delete
-	-- pero dado que es intranscendente no es importante crear una sub transaccion para solo
-	-- verificar eso , por ende es mas que suficiente solo esta previa verificacion por exist.
-	IF EXISTS (SELECT 1 FROM tb_sys_perfil WHERE perfil_id = p_perfil_id and xmin=p_version_id) THEN
-		-- Eliminamos
-		DELETE FROM
-			tb_sys_perfil_detalle
-		WHERE perfil_id = p_perfil_id ;
+  -- Verificacion previa que el registro no esgta modificado
+  --
+  -- Existe una pequeñisima oportunidad que el registro sea alterado entre el exist y el delete
+  -- pero dado que es intranscendente no es importante crear una sub transaccion para solo
+  -- verificar eso , por ende es mas que suficiente solo esta previa verificacion por exist.
+  IF EXISTS (SELECT 1 FROM tb_sys_perfil WHERE perfil_id = p_perfil_id and xmin=p_version_id) THEN
+    -- Eliminamos
+    DELETE FROM
+      tb_sys_perfil_detalle
+    WHERE perfil_id = p_perfil_id ;
 
-		DELETE FROM
-			tb_sys_perfil
-		WHERE perfil_id = p_perfil_id and xmin =p_version_id;
+    DELETE FROM
+      tb_sys_perfil
+    WHERE perfil_id = p_perfil_id and xmin =p_version_id;
 
-		--RAISE NOTICE  'COUNT ID --> %', FOUND;
-		-- SI SE PUDO ELIMINAR SE INDICA 1 DE LO CONTRARIO NULL
-		-- VER DOCUMENTACION DE LA FUNCION
-		IF FOUND THEN
-			RETURN 1;
-		ELSE
-			RETURN null;
-		END IF;
-	ELSE
-		RETURN null;
-	END IF;
+    --RAISE NOTICE  'COUNT ID --> %', FOUND;
+    -- SI SE PUDO ELIMINAR SE INDICA 1 DE LO CONTRARIO NULL
+    -- VER DOCUMENTACION DE LA FUNCION
+    IF FOUND THEN
+      RETURN 1;
+    ELSE
+      RETURN null;
+    END IF;
+  ELSE
+    RETURN null;
+  END IF;
 
 END;
 $$;
@@ -2331,90 +2369,90 @@ Historia : Creado 08-10-2013
 */
 DECLARE v_isRoot BOOLEAN := 'F';
 BEGIN
-	-- Si no hay acceso de lectura los demas son desactivados
-	IF p_acc_leer = 'F'
-	THEN
-		p_acc_agregar 	= 'F';
-		p_acc_actualizar 	= 'F';
-		p_acc_eliminar 	= 'F';
-		p_acc_imprimir 	= 'F';
+  -- Si no hay acceso de lectura los demas son desactivados
+  IF p_acc_leer = 'F'
+  THEN
+    p_acc_agregar 	= 'F';
+    p_acc_actualizar 	= 'F';
+    p_acc_eliminar 	= 'F';
+    p_acc_imprimir 	= 'F';
 
-	END IF;
+  END IF;
 
-	-- Primero vemos si es un menu o submenu (root de arbol)
-	-- PAra esto vemos si algun parent id apunta a este menu , si es asi es un menu
-	-- o submenu.
-	IF EXISTS (SELECT 1 FROM tb_sys_menu WHERE menu_parent_id = p_menu_id)
-	THEN
-		v_isRoot := 'T';
-		-- Si es root y acceso de lectura es true a todos true
-		IF p_acc_leer = 'T'
-		THEN
-			p_acc_agregar 	= 'T';
-			p_acc_actualizar= 'T';
-			p_acc_eliminar 	= 'T';
-			p_acc_imprimir 	= 'T';
+  -- Primero vemos si es un menu o submenu (root de arbol)
+  -- PAra esto vemos si algun parent id apunta a este menu , si es asi es un menu
+  -- o submenu.
+  IF EXISTS (SELECT 1 FROM tb_sys_menu WHERE menu_parent_id = p_menu_id)
+  THEN
+    v_isRoot := 'T';
+    -- Si es root y acceso de lectura es true a todos true
+    IF p_acc_leer = 'T'
+    THEN
+      p_acc_agregar 	= 'T';
+      p_acc_actualizar= 'T';
+      p_acc_eliminar 	= 'T';
+      p_acc_imprimir 	= 'T';
 
-		END IF;
-	END IF;
+    END IF;
+  END IF;
 
-	-- Si es root (menu o submenu) se hace unn update a todas las opciones
-	-- debajo del menu o submenu a setear en el perfil.
-	IF v_isRoot = 'T'
-	THEN
-		-- Este metodo es recursivo y existe en otras bases de datos
-		-- revisar documentacion de las mismas.
-		WITH RECURSIVE rootMenus(menu_id,menu_parent_id)
-		AS (
-			SELECT menu_id,menu_parent_id
-			FROM tb_sys_menu
-			WHERE menu_id = p_menu_id
+  -- Si es root (menu o submenu) se hace unn update a todas las opciones
+  -- debajo del menu o submenu a setear en el perfil.
+  IF v_isRoot = 'T'
+  THEN
+    -- Este metodo es recursivo y existe en otras bases de datos
+    -- revisar documentacion de las mismas.
+    WITH RECURSIVE rootMenus(menu_id,menu_parent_id)
+    AS (
+      SELECT menu_id,menu_parent_id
+      FROM tb_sys_menu
+      WHERE menu_id = p_menu_id
 
-			UNION ALL
+      UNION ALL
 
-			SELECT
-				r.menu_id,r.menu_parent_id
-			FROM tb_sys_menu r, rootMenus as t
-			WHERE r.menu_parent_id = t.menu_id
-		)
+      SELECT
+        r.menu_id,r.menu_parent_id
+      FROM tb_sys_menu r, rootMenus as t
+      WHERE r.menu_parent_id = t.menu_id
+    )
 
-		-- Update a todo el path a partir de menu o submenu raiz.
-		UPDATE tb_sys_perfil_detalle
-		SET perfdet_accleer=p_acc_leer,perfdet_accagregar=p_acc_agregar,
-			perfdet_accactualizar=p_acc_actualizar,perfdet_accimprimir=p_acc_imprimir,
-			perfdet_acceliminar=p_acc_eliminar,
-			usuario_mod=p_usuario
-		WHERE perfil_id = p_perfil_id-- and xmin=p_version_id
-					and menu_id in (
-			SELECT menu_id FROM rootMenus
-		);
+    -- Update a todo el path a partir de menu o submenu raiz.
+    UPDATE tb_sys_perfil_detalle
+    SET perfdet_accleer=p_acc_leer,perfdet_accagregar=p_acc_agregar,
+      perfdet_accactualizar=p_acc_actualizar,perfdet_accimprimir=p_acc_imprimir,
+      perfdet_acceliminar=p_acc_eliminar,
+      usuario_mod=p_usuario
+    WHERE perfil_id = p_perfil_id-- and xmin=p_version_id
+          and menu_id in (
+      SELECT menu_id FROM rootMenus
+    );
 
-		RAISE NOTICE  'COUNT ID --> %', FOUND;
+    RAISE NOTICE  'COUNT ID --> %', FOUND;
 
-		IF FOUND THEN
-			RETURN 1;
-		ELSE
-			RETURN null;
-		END IF;
-	ELSE
-		-- UPDATE PARA EL CASO DE UNA OPCION QUE NO ES DE MENU O SUBMENU
-		UPDATE tb_sys_perfil_detalle
-		SET perfdet_accleer=p_acc_leer,perfdet_accagregar=p_acc_agregar,
-			perfdet_accactualizar=p_acc_actualizar,perfdet_accimprimir=p_acc_imprimir,
-			perfdet_acceliminar=p_acc_eliminar,
-			usuario_mod=p_usuario
-		WHERE perfil_id = p_perfil_id
-					and menu_id = p_menu_id and xmin=p_version_id;
+    IF FOUND THEN
+      RETURN 1;
+    ELSE
+      RETURN null;
+    END IF;
+  ELSE
+    -- UPDATE PARA EL CASO DE UNA OPCION QUE NO ES DE MENU O SUBMENU
+    UPDATE tb_sys_perfil_detalle
+    SET perfdet_accleer=p_acc_leer,perfdet_accagregar=p_acc_agregar,
+      perfdet_accactualizar=p_acc_actualizar,perfdet_accimprimir=p_acc_imprimir,
+      perfdet_acceliminar=p_acc_eliminar,
+      usuario_mod=p_usuario
+    WHERE perfil_id = p_perfil_id
+          and menu_id = p_menu_id and xmin=p_version_id;
 
-		RAISE NOTICE  'COUNT ID --> %', FOUND;
+    RAISE NOTICE  'COUNT ID --> %', FOUND;
 
-		IF FOUND THEN
-			RETURN 1;
-		ELSE
-			RETURN null;
-		END IF;
+    IF FOUND THEN
+      RETURN 1;
+    ELSE
+      RETURN null;
+    END IF;
 
-	END IF;
+  END IF;
 END;
 $$;
 
@@ -2461,48 +2499,48 @@ Historia : Creado 26-09-2013
 
 BEGIN
 
-	-- Insertamos primero el header
-	INSERT INTO
-		tb_sys_perfil
-		(sys_systemcode,perfil_codigo,perfil_descripcion,activo,usuario)
-	VALUES (p_sys_systemcode,
-					p_perfil_codigo,
-					p_perfil_descripcion,
-					p_activo,
-					p_usuario);
+  -- Insertamos primero el header
+  INSERT INTO
+    tb_sys_perfil
+    (sys_systemcode,perfil_codigo,perfil_descripcion,activo,usuario)
+  VALUES (p_sys_systemcode,
+          p_perfil_codigo,
+          p_perfil_descripcion,
+          p_activo,
+          p_usuario);
 
-	IF (p_copyFrom IS NOT NULL)
-	THEN
-		-- Verificamos exista el origen de copia
-		IF EXISTS (SELECT 1 FROM tb_sys_perfil WHERE sys_systemcode = p_sys_systemcode and perfil_id=p_copyFrom)
-		THEN
-			-- De sys menu copiamos todas las opciones desabilitadas en el acceso para
-			-- crear el perfil default.
-			INSERT INTO
-				tb_sys_perfil_detalle
-				(perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,activo,usuario)
-				SELECT  currval('tb_sys_perfil_id_seq'),perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,p_activo,p_usuario
-				FROM tb_sys_perfil_detalle pd
-				WHERE pd.perfil_id=p_copyFrom;
-			RETURN 1;
+  IF (p_copyFrom IS NOT NULL)
+  THEN
+    -- Verificamos exista el origen de copia
+    IF EXISTS (SELECT 1 FROM tb_sys_perfil WHERE sys_systemcode = p_sys_systemcode and perfil_id=p_copyFrom)
+    THEN
+      -- De sys menu copiamos todas las opciones desabilitadas en el acceso para
+      -- crear el perfil default.
+      INSERT INTO
+        tb_sys_perfil_detalle
+        (perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,activo,usuario)
+        SELECT  currval('tb_sys_perfil_id_seq'),perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,p_activo,p_usuario
+        FROM tb_sys_perfil_detalle pd
+        WHERE pd.perfil_id=p_copyFrom;
+      RETURN 1;
 
-		ELSE
-			-- Excepcion de integridad referencial
-			RAISE 'El perfil origen para copiar no existe' USING ERRCODE = 'no_data_found';
-		END IF;
-	ELSE
-		-- De sys menu copiamos todas las opciones desabilitadas en el acceso para
-		-- crear el perfil default.
-		INSERT INTO
-			tb_sys_perfil_detalle
-			(perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,activo,usuario)
-			SELECT  currval('tb_sys_perfil_id_seq'),null,'N','N','N','N','N',m.menu_id,p_activo,p_usuario
-			FROM tb_sys_menu m
-			WHERE m.sys_systemcode = p_sys_systemcode
-			ORDER BY menu_orden;
+    ELSE
+      -- Excepcion de integridad referencial
+      RAISE 'El perfil origen para copiar no existe' USING ERRCODE = 'no_data_found';
+    END IF;
+  ELSE
+    -- De sys menu copiamos todas las opciones desabilitadas en el acceso para
+    -- crear el perfil default.
+    INSERT INTO
+      tb_sys_perfil_detalle
+      (perfil_id,perfdet_accessdef,perfdet_accleer,perfdet_accagregar,perfdet_accactualizar,perfdet_acceliminar,perfdet_accimprimir,menu_id,activo,usuario)
+      SELECT  currval('tb_sys_perfil_id_seq'),null,'N','N','N','N','N',m.menu_id,p_activo,p_usuario
+      FROM tb_sys_menu m
+      WHERE m.sys_systemcode = p_sys_systemcode
+      ORDER BY menu_orden;
 
-		RETURN 1;
-	END IF;
+    RETURN 1;
+  END IF;
 
 END;
 $$;
@@ -2511,7 +2549,7 @@ $$;
 ALTER FUNCTION public.sp_sysperfil_add_record(p_sys_systemcode character varying, p_perfil_codigo character varying, p_perfil_descripcion character varying, p_copyfrom integer, p_activo boolean, p_usuario character varying) OWNER TO atluser;
 
 --
--- TOC entry 255 (class 1255 OID 101054)
+-- TOC entry 294 (class 1255 OID 101054)
 -- Name: sptrg_cliente_validate_delete(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -2530,17 +2568,14 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.cotizacion_es_cliente_real = TRUE
-		THEN
-			IF EXISTS (select 1 from tb_cotizacion where cliente_id = OLD.cliente_id LIMIT 1)
-			THEN
-				-- Excepcion de region con ese nombre existe
-				RAISE 'No puede eliminarse una cliente que tiene cotizaciones' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF EXISTS (select 1 from tb_cotizacion where cliente_id = OLD.cliente_id LIMIT 1)
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'No puede eliminarse una cliente que tiene cotizaciones' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -2548,7 +2583,7 @@ $$;
 ALTER FUNCTION public.sptrg_cliente_validate_delete() OWNER TO clabsuser;
 
 --
--- TOC entry 302 (class 1255 OID 246554)
+-- TOC entry 299 (class 1255 OID 246554)
 -- Name: sptrg_cotizacion_detalle_validate_delete(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2567,21 +2602,21 @@ AS $$
 DECLARE v_cotizacion_cerrada BOOLEAN;
 
 BEGIN
-	SELECT
-		cotizacion_cerrada
-	INTO
-		v_cotizacion_cerrada
-	FROM tb_cotizacion
-	WHERE cotizacion_id = OLD.cotizacion_id;
+  SELECT
+    cotizacion_cerrada
+  INTO
+    v_cotizacion_cerrada
+  FROM tb_cotizacion
+  WHERE cotizacion_id = OLD.cotizacion_id;
 
-	IF (TG_OP = 'DELETE') THEN
-		IF v_cotizacion_cerrada = TRUE
-		THEN
-			-- Excepcion
-			RAISE 'No puede eliminarse un item de una cotizacion cerrada' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF v_cotizacion_cerrada = TRUE
+    THEN
+      -- Excepcion
+      RAISE 'No puede eliminarse un item de una cotizacion cerrada' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -2589,7 +2624,7 @@ $$;
 ALTER FUNCTION public.sptrg_cotizacion_detalle_validate_delete() OWNER TO postgres;
 
 --
--- TOC entry 296 (class 1255 OID 109695)
+-- TOC entry 292 (class 1255 OID 109695)
 -- Name: sptrg_cotizacion_detalle_validate_save(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2611,147 +2646,147 @@ AS $$
 -------------------------------------------------------------------------------------------
 
 DECLARE v_empresa_id integer;
-				DECLARE v_cliente_id integer;
-				DECLARE v_cotizacion_fecha date;
-				DECLARE v_cotizacion_es_cliente_real boolean;
-				DECLARE v_cotizacion_cerrada boolean;
-				DECLARE v_regla_by_costo boolean;
-				DECLARE v_regla_porcentaje numeric(6,2);
-				DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
-				DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
-				DECLARE v_moneda_codigo character varying(8);
-				DECLARE v_insumo_id integer;
-				DECLARE v_moneda_codigo_costo character varying(8);
-				DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_insumo_tipo character varying(15);
-				DECLARE v_insumo_precio_mercado numeric(10,2);
-				DECLARE v_insumo_precio numeric(12,2);
-				DECLARE v_insumo_precio_original numeric(12,4);
-				DECLARE v_insumo_costo_original numeric(12,2);
+  DECLARE v_cliente_id integer;
+  DECLARE v_cotizacion_fecha date;
+  DECLARE v_cotizacion_es_cliente_real boolean;
+  DECLARE v_cotizacion_cerrada boolean;
+  DECLARE v_regla_by_costo boolean;
+  DECLARE v_regla_porcentaje numeric(6,2);
+  DECLARE v_tipo_cambio_tasa_compra numeric(8,4);
+  DECLARE v_tipo_cambio_tasa_venta numeric(8,4);
+  DECLARE v_moneda_codigo character varying(8);
+  DECLARE v_insumo_id integer;
+  DECLARE v_moneda_codigo_costo character varying(8);
+  DECLARE v_unidad_medida_codigo_costo character varying(8);
+  DECLARE v_insumo_tipo character varying(15);
+  DECLARE v_insumo_precio_mercado numeric(10,2);
+  DECLARE v_insumo_precio numeric(12,2);
+  DECLARE v_insumo_precio_original numeric(12,4);
+  DECLARE v_insumo_costo_original numeric(12,2);
 
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		-- Leemos los datos de la cabecera para post proceso.
-		SELECT
-			empresa_id,
-			cliente_id,
-			cotizacion_fecha,
-			cotizacion_es_cliente_real,
-			cotizacion_cerrada,
-			moneda_codigo
-		FROM  tb_cotizacion
-		INTO
-			v_empresa_id,
-			v_cliente_id,
-			v_cotizacion_fecha,
-			v_cotizacion_es_cliente_real,
-			v_cotizacion_cerrada,
-			v_moneda_codigo
-		WHERE cotizacion_id = NEW.cotizacion_id;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    -- Leemos los datos de la cabecera para post proceso.
+    SELECT
+      empresa_id,
+      cliente_id,
+      cotizacion_fecha,
+      cotizacion_es_cliente_real,
+      cotizacion_cerrada,
+      moneda_codigo
+    FROM  tb_cotizacion
+    INTO
+      v_empresa_id,
+      v_cliente_id,
+      v_cotizacion_fecha,
+      v_cotizacion_es_cliente_real,
+      v_cotizacion_cerrada,
+      v_moneda_codigo
+    WHERE cotizacion_id = NEW.cotizacion_id;
 
-		IF v_empresa_id IS NULL
-		THEN
-			RAISE 'No existe la cotizacion' USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF v_empresa_id IS NULL
+    THEN
+      RAISE 'No existe la cotizacion' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF v_cotizacion_cerrada	 = TRUE
-		THEN
-			RAISE 'La cotizacion se encuentra cerrada , no puede agregar o modificar items' USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF v_cotizacion_cerrada	 = TRUE
+    THEN
+      RAISE 'La cotizacion se encuentra cerrada , no puede agregar o modificar items' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- datos del insumo
-		SELECT
-			insumo_id,
-			moneda_codigo_costo,
-			insumo_tipo ,
-			unidad_medida_codigo_costo,
-			insumo_precio_mercado,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha) as insumo_precio,
-			fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha) as insumo_precio_original,
-			fn_get_producto_costo(i.insumo_id,v_cotizacion_fecha) as insumo_costo_original
-		FROM tb_insumo i
-		INTO
-			v_insumo_id,
-			v_moneda_codigo_costo,
-			v_insumo_tipo ,
-			v_unidad_medida_codigo_costo,
-			v_insumo_precio_mercado,
-			v_insumo_precio,
-			v_insumo_precio_original,
-			v_insumo_costo_original
-		WHERE insumo_id = NEW.insumo_id and empresa_id = v_empresa_id;
+    -- datos del insumo
+    SELECT
+      insumo_id,
+      moneda_codigo_costo,
+      insumo_tipo ,
+      unidad_medida_codigo_costo,
+      insumo_precio_mercado,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,v_moneda_codigo,v_cotizacion_fecha,true) as insumo_precio,
+      fn_get_producto_precio(i.insumo_id,v_empresa_id,v_cliente_id,v_cotizacion_es_cliente_real,NULL::character varying,v_cotizacion_fecha,true) as insumo_precio_original,
+      fn_get_producto_costo(i.insumo_id,v_cotizacion_fecha) as insumo_costo_original
+    FROM tb_insumo i
+    INTO
+      v_insumo_id,
+      v_moneda_codigo_costo,
+      v_insumo_tipo ,
+      v_unidad_medida_codigo_costo,
+      v_insumo_precio_mercado,
+      v_insumo_precio,
+      v_insumo_precio_original,
+      v_insumo_costo_original
+    WHERE insumo_id = NEW.insumo_id and empresa_id = v_empresa_id;
 
-		IF v_insumo_id IS NOT NULL
-		THEN
-			IF v_insumo_tipo != 'PR'
-			THEN
-				RAISE 'No se puede cotizar un insumo , solo productos' USING ERRCODE = 'restrict_violation';
-			END IF;
-		ELSE
-			RAISE 'El producto a cotizar no existe o no pertenece a la empresa que cotiza' USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF v_insumo_id IS NOT NULL
+    THEN
+      IF v_insumo_tipo != 'PR'
+      THEN
+        RAISE 'No se puede cotizar un insumo , solo productos' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSE
+      RAISE 'El producto a cotizar no existe o no pertenece a la empresa que cotiza' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Leemos la regla en que se baso para guardarla.
-		IF v_cotizacion_es_cliente_real = FALSE
-		THEN
-			SELECT
-				regla_by_costo,
-				regla_porcentaje
-			INTO
-				v_regla_by_costo,
-				v_regla_porcentaje
-			FROM tb_reglas
-			WHERE regla_empresa_origen_id = v_empresa_id
-						and regla_empresa_destino_id = v_cliente_id;
-		ELSE
-			v_regla_by_costo = NULL;
-			v_regla_porcentaje = NULL;
-		END IF;
+    -- Leemos la regla en que se baso para guardarla.
+    IF v_cotizacion_es_cliente_real = FALSE
+    THEN
+      SELECT
+        regla_by_costo,
+        regla_porcentaje
+      INTO
+        v_regla_by_costo,
+        v_regla_porcentaje
+      FROM tb_reglas
+      WHERE regla_empresa_origen_id = v_empresa_id
+            and regla_empresa_destino_id = v_cliente_id;
+    ELSE
+      v_regla_by_costo = NULL;
+      v_regla_porcentaje = NULL;
+    END IF;
 
-		-- Leemos el tipo de cambio
+    -- Leemos el tipo de cambio
 
-		IF v_moneda_codigo_costo != v_moneda_codigo
-		THEN
-			SELECT
-				tipo_cambio_tasa_compra,
-				tipo_cambio_tasa_venta
-			INTO
-				v_tipo_cambio_tasa_compra,
-				v_tipo_cambio_tasa_venta
-			FROM tb_tipo_cambio
-			WHERE v_cotizacion_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta
-						AND moneda_codigo_origen  = v_moneda_codigo_costo
-						AND moneda_codigo_destino = v_moneda_codigo ;
+    IF v_moneda_codigo_costo != v_moneda_codigo
+    THEN
+      SELECT
+        tipo_cambio_tasa_compra,
+        tipo_cambio_tasa_venta
+      INTO
+        v_tipo_cambio_tasa_compra,
+        v_tipo_cambio_tasa_venta
+      FROM tb_tipo_cambio
+      WHERE v_cotizacion_fecha BETWEEN tipo_cambio_fecha_desde AND tipo_cambio_fecha_hasta
+            AND moneda_codigo_origen  = v_moneda_codigo_costo
+            AND moneda_codigo_destino = v_moneda_codigo ;
 
-			IF v_tipo_cambio_tasa_compra IS NULL
-			THEN
-				RAISE 'No existe el tipo de cambio para el calculo de precios' USING ERRCODE = 'restrict_violation';
-			END IF;
-		ELSE
-			v_tipo_cambio_tasa_compra = 1.00;
-			v_tipo_cambio_tasa_venta  = 1.00;
-		END IF;
+      IF v_tipo_cambio_tasa_compra IS NULL
+      THEN
+        RAISE 'No existe el tipo de cambio para el calculo de precios' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSE
+      v_tipo_cambio_tasa_compra = 1.00;
+      v_tipo_cambio_tasa_venta  = 1.00;
+    END IF;
 
-		-- Agregar campos requeridos para log de cotizaciones.
-		NEW.log_tipo_cambio_tasa_venta  = v_tipo_cambio_tasa_venta;
-		NEW.log_tipo_cambio_tasa_compra = v_tipo_cambio_tasa_compra;
-		NEW.log_regla_by_costo = v_regla_by_costo;
-		NEW.log_regla_porcentaje = v_regla_porcentaje;
-		NEW.log_moneda_codigo_costo = v_moneda_codigo_costo;
-		NEW.log_unidad_medida_codigo_costo = v_unidad_medida_codigo_costo;
-		NEW.log_insumo_precio_original = v_insumo_precio_original;
-		NEW.log_insumo_precio_mercado  = v_insumo_precio_mercado;
-		NEW.log_insumo_costo_original = v_insumo_costo_original;
+    -- Agregar campos requeridos para log de cotizaciones.
+    NEW.log_tipo_cambio_tasa_venta  = v_tipo_cambio_tasa_venta;
+    NEW.log_tipo_cambio_tasa_compra = v_tipo_cambio_tasa_compra;
+    NEW.log_regla_by_costo = v_regla_by_costo;
+    NEW.log_regla_porcentaje = v_regla_porcentaje;
+    NEW.log_moneda_codigo_costo = v_moneda_codigo_costo;
+    NEW.log_unidad_medida_codigo_costo = v_unidad_medida_codigo_costo;
+    NEW.log_insumo_precio_original = v_insumo_precio_original;
+    NEW.log_insumo_precio_mercado  = v_insumo_precio_mercado;
+    NEW.log_insumo_costo_original = v_insumo_costo_original;
 
-		----------------------------------------------------------------------------------------------
-		-- Recalculamos el total con el valor obtenido en el trigger por si ha cambiado en el medio
-		-- para garantizar que los campos log coinciden con el calculo del item de detalle.
-		-- --------------------------------------------------------------------------------------------
-		NEW.cotizacion_detalle_precio = v_insumo_precio;
-		NEW.cotizacion_detalle_total = NEW.cotizacion_detalle_cantidad * v_insumo_precio;
+    ----------------------------------------------------------------------------------------------
+    -- Recalculamos el total con el valor obtenido en el trigger por si ha cambiado en el medio
+    -- para garantizar que los campos log coinciden con el calculo del item de detalle.
+    -- --------------------------------------------------------------------------------------------
+    NEW.cotizacion_detalle_precio = v_insumo_precio;
+    NEW.cotizacion_detalle_total = NEW.cotizacion_detalle_cantidad * v_insumo_precio;
 
-	END IF;
-	RETURN NEW;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -2759,7 +2794,7 @@ $$;
 ALTER FUNCTION public.sptrg_cotizacion_detalle_validate_save() OWNER TO postgres;
 
 --
--- TOC entry 300 (class 1255 OID 246549)
+-- TOC entry 297 (class 1255 OID 246549)
 -- Name: sptrg_cotizacion_producto_history_log(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2782,55 +2817,55 @@ AS $$
 -------------------------------------------------------------------------------------------
 
 BEGIN
-	IF NEW.cotizacion_cerrada = TRUE
-	THEN
+  IF NEW.cotizacion_cerrada = TRUE
+  THEN
 
-		-- grabamos el log del producto principal y todos los que son partes componentes del mismo.
-		INSERT INTO
-			tb_insumo_history (
-				insumo_history_fecha,
-				insumo_id,
-				insumo_tipo,
-				tinsumo_codigo,
-				tcostos_codigo,
-				unidad_medida_codigo_costo,
-				insumo_merma,
-				insumo_costo,
-				moneda_codigo_costo,
-				insumo_precio_mercado,
-				insumo_history_origen_id
-			)
+    -- grabamos el log del producto principal y todos los que son partes componentes del mismo.
+    INSERT INTO
+      tb_insumo_history (
+        insumo_history_fecha,
+        insumo_id,
+        insumo_tipo,
+        tinsumo_codigo,
+        tcostos_codigo,
+        unidad_medida_codigo_costo,
+        insumo_merma,
+        insumo_costo,
+        moneda_codigo_costo,
+        insumo_precio_mercado,
+        insumo_history_origen_id
+      )
 
-			SELECT DISTINCT
-				NEW.cotizacion_fecha,
-				ins.insumo_id,
-				ins.insumo_tipo,
-				ins.tinsumo_codigo,
-				ins.tcostos_codigo,
-				ins.unidad_medida_codigo_costo,
-				ins.insumo_merma,
-				fn_get_producto_costo(ins.insumo_id,NEW.cotizacion_fecha) as insumo_costo,
-				ins.moneda_codigo_costo,
-				ins.insumo_precio_mercado,
-				NEW.cotizacion_id
-			FROM tb_insumo ins
-			WHERE ins.insumo_id IN (
-				-- Los productos de la cotizacion
-				SELECT ins.insumo_id
-				FROM tb_cotizacion_detalle d
-					INNER JOIN tb_insumo ins ON ins.insumo_id =d.insumo_id
-				WHERE d.cotizacion_id = NEW.cotizacion_id AND ins.insumo_tipo='PR'
+      SELECT DISTINCT
+        NEW.cotizacion_fecha,
+        ins.insumo_id,
+        ins.insumo_tipo,
+        ins.tinsumo_codigo,
+        ins.tcostos_codigo,
+        ins.unidad_medida_codigo_costo,
+        ins.insumo_merma,
+        fn_get_producto_costo(ins.insumo_id,NEW.cotizacion_fecha) as insumo_costo,
+        ins.moneda_codigo_costo,
+        ins.insumo_precio_mercado,
+        NEW.cotizacion_id
+      FROM tb_insumo ins
+      WHERE ins.insumo_id IN (
+        -- Los productos de la cotizacion
+        SELECT ins.insumo_id
+        FROM tb_cotizacion_detalle d
+          INNER JOIN tb_insumo ins ON ins.insumo_id =d.insumo_id
+        WHERE d.cotizacion_id = NEW.cotizacion_id AND ins.insumo_tipo='PR'
 
-				UNION  -- solo union para que escogan solo los distintos
+        UNION  -- solo union para que escogan solo los distintos
 
-				-- Los productos incluidos en la cotizacion
-				SELECT ins.insumo_id
-				FROM tb_cotizacion_detalle d
-					INNER JOIN tb_insumo ins ON ins.insumo_id IN ( SELECT g.insumo_id FROM sp_get_datos_insumos_for_producto(d.insumo_id) g)
-				WHERE d.cotizacion_id = NEW.cotizacion_id AND ins.insumo_tipo='PR'
-			);
-	END IF;
-	RETURN NEW;
+        -- Los productos incluidos en la cotizacion
+        SELECT ins.insumo_id
+        FROM tb_cotizacion_detalle d
+          INNER JOIN tb_insumo ins ON ins.insumo_id IN ( SELECT g.insumo_id FROM sp_get_datos_insumos_for_producto(d.insumo_id) g)
+        WHERE d.cotizacion_id = NEW.cotizacion_id AND ins.insumo_tipo='PR'
+      );
+  END IF;
+  RETURN NEW;
 
 END;
 $$;
@@ -2839,7 +2874,7 @@ $$;
 ALTER FUNCTION public.sptrg_cotizacion_producto_history_log() OWNER TO postgres;
 
 --
--- TOC entry 298 (class 1255 OID 110323)
+-- TOC entry 295 (class 1255 OID 110323)
 -- Name: sptrg_cotizacion_validate_delete(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2856,14 +2891,14 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.cotizacion_cerrada = TRUE
-		THEN
-			-- Excepcion
-			RAISE 'No puede eliminarse una cotizacion cerrada' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF OLD.cotizacion_cerrada = TRUE
+    THEN
+      -- Excepcion
+      RAISE 'No puede eliminarse una cotizacion cerrada' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -2891,50 +2926,50 @@ AS $$
 DECLARE rec_changed boolean;
 
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE')
-	THEN
-		-- Verificamos la existencia de la empresa a la que se cotiza, no se puede hacer via foreign key
-		-- ya que el campo cliente_id en realidad representa a una empresa del grupo en la tabla tb_empresa
-		-- o un cliente en la tabla tb_cliente. Lo discernimos en base al campo 'cotizacion_es_cliente_real'
-		IF NEW.cotizacion_es_cliente_real = TRUE
-		THEN
-			IF NOT EXISTS (select 1 from tb_cliente where cliente_id = NEW.cliente_id)
-			THEN
-				RAISE 'No existe el cliente indicado' USING ERRCODE = 'restrict_violation';
-			END IF;
-		ELSE
-			IF NOT EXISTS (select 1 from tb_empresa where empresa_id = NEW.cliente_id)
-			THEN
-				RAISE 'No existe la empresa del grupo indicada' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE')
+  THEN
+    -- Verificamos la existencia de la empresa a la que se cotiza, no se puede hacer via foreign key
+    -- ya que el campo cliente_id en realidad representa a una empresa del grupo en la tabla tb_empresa
+    -- o un cliente en la tabla tb_cliente. Lo discernimos en base al campo 'cotizacion_es_cliente_real'
+    IF NEW.cotizacion_es_cliente_real = TRUE
+    THEN
+      IF NOT EXISTS (select 1 from tb_cliente where cliente_id = NEW.cliente_id)
+      THEN
+        RAISE 'No existe el cliente indicado' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSE
+      IF NOT EXISTS (select 1 from tb_empresa where empresa_id = NEW.cliente_id)
+      THEN
+        RAISE 'No existe la empresa del grupo indicada' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		IF (TG_OP = 'UPDATE')
-		THEN
-			IF OLD.cotizacion_cerrada = TRUE
-			THEN
-				RAISE 'La cotizacion esta cerrada , no puede modificarse' USING ERRCODE = 'restrict_violation';
-			END IF;
+    IF (TG_OP = 'UPDATE')
+    THEN
+      IF OLD.cotizacion_cerrada = TRUE
+      THEN
+        RAISE 'La cotizacion esta cerrada , no puede modificarse' USING ERRCODE = 'restrict_violation';
+      END IF;
 
 
-			IF NEW.cliente_id != OLD.cliente_id OR NEW.cotizacion_numero != OLD.cotizacion_numero OR
-				 NEW.moneda_codigo != OLD.moneda_codigo OR NEW.cotizacion_fecha != OLD.cotizacion_fecha
-			THEN
-				rec_changed := TRUE;
-			ELSE
-				rec_changed := FALSE;
-			END IF;
+      IF NEW.cliente_id != OLD.cliente_id OR NEW.cotizacion_numero != OLD.cotizacion_numero OR
+         NEW.moneda_codigo != OLD.moneda_codigo OR NEW.cotizacion_fecha != OLD.cotizacion_fecha
+      THEN
+        rec_changed := TRUE;
+      ELSE
+        rec_changed := FALSE;
+      END IF;
 
-			IF rec_changed = TRUE
-			THEN
-				IF EXISTS(select 1 from tb_cotizacion_detalle where cotizacion_id = NEW.cotizacion_id LIMIT 1)
-				THEN
-					RAISE 'La cotizacion tiene items solo puede cerrarse no modificarse , elimine los items o eliminela' USING ERRCODE = 'restrict_violation';
-				END IF;
-			END IF;
-		END IF;
-	END IF;
-	RETURN NEW;
+      IF rec_changed = TRUE
+      THEN
+        IF EXISTS(select 1 from tb_cotizacion_detalle where cotizacion_id = NEW.cotizacion_id LIMIT 1)
+        THEN
+          RAISE 'La cotizacion tiene items solo puede cerrarse no modificarse , elimine los items o eliminela' USING ERRCODE = 'restrict_violation';
+        END IF;
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -2942,7 +2977,7 @@ $$;
 ALTER FUNCTION public.sptrg_cotizacion_validate_save() OWNER TO clabsuser;
 
 --
--- TOC entry 256 (class 1255 OID 101055)
+-- TOC entry 267 (class 1255 OID 101055)
 -- Name: sptrg_empresa_validate_delete(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -2961,16 +2996,13 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.cotizacion_es_cliente_real = FALSE
-		THEN
-			IF EXISTS (select 1 from tb_cotizacion where cliente_id = OLD.empresa_id LIMIT 1)
-			THEN
-				RAISE 'No puede eliminarse una empresa que tiene cotizaciones' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF EXISTS (select 1 from tb_cotizacion where cliente_id = OLD.empresa_id LIMIT 1)
+    THEN
+      RAISE 'No puede eliminarse una empresa que tiene cotizaciones' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -2978,7 +3010,7 @@ $$;
 ALTER FUNCTION public.sptrg_empresa_validate_delete() OWNER TO clabsuser;
 
 --
--- TOC entry 299 (class 1255 OID 246537)
+-- TOC entry 296 (class 1255 OID 246537)
 -- Name: sptrg_insumo_history_log(); Type: FUNCTION; Schema: public; Owner: postgres
 --
 
@@ -2996,34 +3028,34 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF NEW.insumo_tipo = 'IN'
-	THEN
-		INSERT INTO
-			tb_insumo_history (
-				insumo_history_fecha,
-				insumo_id,
-				insumo_tipo,
-				tinsumo_codigo,
-				tcostos_codigo,
-				unidad_medida_codigo_costo,
-				insumo_merma,
-				insumo_costo,
-				moneda_codigo_costo,
-				insumo_precio_mercado
-			)
-			SELECT
-				now(),
-				NEW.insumo_id,
-				NEW.insumo_tipo,
-				NEW.tinsumo_codigo,
-				NEW.tcostos_codigo,
-				NEW.unidad_medida_codigo_costo,
-				NEW.insumo_merma,
-				NEW.insumo_costo,
-				NEW.moneda_codigo_costo,
-				NEW.insumo_precio_mercado;
-	END IF;
-	RETURN NEW;
+  IF NEW.insumo_tipo = 'IN'
+  THEN
+    INSERT INTO
+      tb_insumo_history (
+        insumo_history_fecha,
+        insumo_id,
+        insumo_tipo,
+        tinsumo_codigo,
+        tcostos_codigo,
+        unidad_medida_codigo_costo,
+        insumo_merma,
+        insumo_costo,
+        moneda_codigo_costo,
+        insumo_precio_mercado
+      )
+      SELECT
+        now(),
+        NEW.insumo_id,
+        NEW.insumo_tipo,
+        NEW.tinsumo_codigo,
+        NEW.tcostos_codigo,
+        NEW.unidad_medida_codigo_costo,
+        NEW.insumo_merma,
+        NEW.insumo_costo,
+        NEW.moneda_codigo_costo,
+        NEW.insumo_precio_mercado;
+  END IF;
+  RETURN NEW;
 
 END;
 $$;
@@ -3032,7 +3064,7 @@ $$;
 ALTER FUNCTION public.sptrg_insumo_history_log() OWNER TO postgres;
 
 --
--- TOC entry 292 (class 1255 OID 59436)
+-- TOC entry 300 (class 1255 OID 59436)
 -- Name: sptrg_insumo_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3040,88 +3072,93 @@ CREATE FUNCTION sptrg_insumo_validate_save() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE v_insumo_codigo character varying(15);
-				DECLARE v_insumo_tipo character varying(2) := NULL;
-				DECLARE v_insumo_descripcion character varying(60);
-				DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_insumo_tipo character varying(2) := NULL;
+  DECLARE v_insumo_descripcion character varying(60);
+  DECLARE v_tcostos_indirecto boolean;
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un update que para el tipo
-	-- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un update que para el tipo
+  -- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
 
-		-- Cuando se trata de un producto ciertos valores siempre deben ser los mismos , por ende
-		-- seteamos default. Recordar que para un PRODUCTO ('PR') el costo es calculado
-		-- on line por ende no se debe grabar costo.
-		IF NEW.insumo_tipo = 'PR'
-		THEN
-			NEW.tinsumo_codigo = 'NING';
-			NEW.tcostos_codigo = 'NING';
-			NEW.unidad_medida_codigo_ingreso = 'NING';
-			NEW.insumo_costo = NULL;
-		ELSE
-			-- En el caso que sea un insumo y el tipo de costo es indirecto
-			-- la unidad de codigo ingreso y la merma no tienen sentido y son colocados
-			-- con los valores neutros.
-			SELECT tcostos_indirecto INTO v_tcostos_indirecto
-			FROM
-				tb_tcostos
-			WHERE tcostos_codigo = NEW.tcostos_codigo;
+    -- Cuando se trata de un producto ciertos valores siempre deben ser los mismos , por ende
+    -- seteamos default. Recordar que para un PRODUCTO ('PR') el costo es calculado
+    -- on line por ende no se debe grabar costo.
+    IF NEW.insumo_tipo = 'PR'
+    THEN
+      NEW.tinsumo_codigo = 'NING';
+      NEW.tcostos_codigo = 'NING';
+      NEW.unidad_medida_codigo_ingreso = 'NING';
+      NEW.insumo_costo = NULL;
+    ELSE
+      -- En el caso que sea un insumo y el tipo de costo es indirecto
+      -- la unidad de codigo ingreso y la merma no tienen sentido y son colocados
+      -- con los valores neutros.
+      SELECT tcostos_indirecto INTO v_tcostos_indirecto
+      FROM
+        tb_tcostos
+      WHERE tcostos_codigo = NEW.tcostos_codigo;
 
-			IF v_tcostos_indirecto = FALSE AND NEW.unidad_medida_codigo_ingreso = 'NING'
-			THEN
-				RAISE 'Un insumo con costo directo debe especificar la unidad de medida de ingreso' USING ERRCODE = 'restrict_violation';
-			END IF;
+      IF v_tcostos_indirecto = FALSE AND NEW.unidad_medida_codigo_ingreso = 'NING'
+      THEN
+        RAISE 'Un insumo con costo directo debe especificar la unidad de medida de ingreso' USING ERRCODE = 'restrict_violation';
+      END IF;
 
-			IF v_tcostos_indirecto = TRUE
-			THEN
-				NEW.unidad_medida_codigo_ingreso := 'NING';
-				NEW.insumo_merma := 0;
-				NEW.insumo_precio_mercado := 0;
-			END IF;
-		END IF;
+      IF v_tcostos_indirecto = TRUE
+      THEN
+        NEW.unidad_medida_codigo_ingreso := 'NING';
+        NEW.insumo_merma := 0;
+        NEW.insumo_precio_mercado := 0;
+      END IF;
+    END IF;
 
-		IF NEW.unidad_medida_codigo_costo = 'NING'
-		THEN
-			RAISE 'La unidad de medida del costo debe estar definida' USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.unidad_medida_codigo_costo = 'NING'
+    THEN
+      RAISE 'La unidad de medida del costo debe estar definida' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Verificamos si alguno con el mismo nombre existe e indicamos el error.
-		SELECT insumo_codigo INTO v_insumo_codigo FROM tb_insumo
-		where UPPER(LTRIM(RTRIM(insumo_descripcion))) = UPPER(LTRIM(RTRIM(NEW.insumo_descripcion)));
+    -- Verificamos si alguno con el mismo nombre existe e indicamos el error.
+    SELECT insumo_codigo INTO v_insumo_codigo FROM tb_insumo
+    where UPPER(LTRIM(RTRIM(insumo_descripcion))) = UPPER(LTRIM(RTRIM(NEW.insumo_descripcion)));
 
-		IF NEW.insumo_codigo != v_insumo_codigo
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'Ya existe una insumo con ese nombre en el insumo [%]',v_insumo_codigo USING ERRCODE = 'restrict_violation';
-		END IF;
-
-
-		-- Validamos que exista la  conversion entre medidas siempre que sea insumo no producto , ya que los productos
-		-- no tienen unidad de ingreso.
-		IF NEW.insumo_tipo = 'IN' AND
-			 NEW.unidad_medida_codigo_ingreso != 'NING' AND NEW.unidad_medida_codigo_costo != 'NING' AND
-			 NEW.unidad_medida_codigo_ingreso != NEW.unidad_medida_codigo_costo AND
-			 NOT EXISTS(select 1 from tb_unidad_medida_conversion
-			 where unidad_medida_origen = NEW.unidad_medida_codigo_ingreso AND unidad_medida_destino = NEW.unidad_medida_codigo_costo LIMIT 1)
-		THEN
-			RAISE 'Debera existir la conversion entre las unidades de medidas indicadas [% - %]',NEW.unidad_medida_codigo_ingreso,NEW.unidad_medida_codigo_costo  USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.insumo_codigo != v_insumo_codigo
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'Ya existe una insumo con ese nombre en el insumo [%]',v_insumo_codigo USING ERRCODE = 'restrict_violation';
+    END IF;
 
 
-		IF EXISTS (SELECT 1 FROM tb_cotizacion_detalle where insumo_id = NEW.insumo_id LIMIT 1)
-		THEN
-			RAISE 'No puede modificarse un producto que ya se encuentra cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
-		END IF;
+    -- Validamos que exista la  conversion entre medidas siempre que sea insumo no producto , ya que los productos
+    -- no tienen unidad de ingreso.
+    IF NEW.insumo_tipo = 'IN' AND
+       NEW.unidad_medida_codigo_ingreso != 'NING' AND NEW.unidad_medida_codigo_costo != 'NING' AND
+       NEW.unidad_medida_codigo_ingreso != NEW.unidad_medida_codigo_costo AND
+       NOT EXISTS(select 1 from tb_unidad_medida_conversion
+       where unidad_medida_origen = NEW.unidad_medida_codigo_ingreso AND unidad_medida_destino = NEW.unidad_medida_codigo_costo LIMIT 1)
+    THEN
+      RAISE 'Debera existir la conversion entre las unidades de medidas indicadas [% - %]',NEW.unidad_medida_codigo_ingreso,NEW.unidad_medida_codigo_costo  USING ERRCODE = 'restrict_violation';
+    END IF;
 
-	END IF;
-	RETURN NEW;
+    -- busco si este insumo es parte de un producto ya cotizado y de serlo no permito modificaciones
+    IF EXISTS (select * from tb_cotizacion_detalle cd
+    where insumo_id in (
+      SELECT DISTINCT i.insumo_id FROM tb_producto_detalle pd
+        INNER JOIN tb_insumo i ON i.insumo_id = pd.insumo_id_origen
+      WHERE pd.insumo_id = NEW.insumo_id
+    ) LIMIT 1)
+    THEN
+      RAISE 'No puede modificarse un insumo que es parte de un producto ya cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
+    END IF;
+
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3137,43 +3174,43 @@ CREATE FUNCTION sptrg_moneda_validate_save() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE v_moneda_codigo_s character varying(8);
-				DECLARE v_moneda_codigo_d character varying(8);
+  DECLARE v_moneda_codigo_d character varying(8);
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un add o update que no exista otra moneda con las
-	-- mismas siglas o descripcion.
-	-- No he usado unique index o constraint ya que prefiero indicar que moneda es la que tiene
-	-- la sigla o descripcion duplicada. En este caso no habra muchos registros por lo que el impacto
-	-- es minimo.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un add o update que no exista otra moneda con las
+  -- mismas siglas o descripcion.
+  -- No he usado unique index o constraint ya que prefiero indicar que moneda es la que tiene
+  -- la sigla o descripcion duplicada. En este caso no habra muchos registros por lo que el impacto
+  -- es minimo.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		-- buscamos si existe un codigo que ya tenga las mismas siglas
-		SELECT moneda_codigo INTO v_moneda_codigo_s FROM tb_moneda
-		where moneda_simbolo = NEW.moneda_simbolo;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    -- buscamos si existe un codigo que ya tenga las mismas siglas
+    SELECT moneda_codigo INTO v_moneda_codigo_s FROM tb_moneda
+    where moneda_simbolo = NEW.moneda_simbolo;
 
-		-- buscamos si existe un codigo que ya tenga la misma descripcion
-		SELECT moneda_codigo INTO v_moneda_codigo_d FROM tb_moneda
-		where UPPER(LTRIM(RTRIM(moneda_descripcion))) = UPPER(LTRIM(RTRIM(NEW.moneda_descripcion)));
+    -- buscamos si existe un codigo que ya tenga la misma descripcion
+    SELECT moneda_codigo INTO v_moneda_codigo_d FROM tb_moneda
+    where UPPER(LTRIM(RTRIM(moneda_descripcion))) = UPPER(LTRIM(RTRIM(NEW.moneda_descripcion)));
 
-		IF NEW.moneda_codigo != v_moneda_codigo_s
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'Las siglas de la moneda existe en otro codigo [%]',v_moneda_codigo_s USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.moneda_codigo != v_moneda_codigo_s
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'Las siglas de la moneda existe en otro codigo [%]',v_moneda_codigo_s USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF NEW.moneda_codigo != v_moneda_codigo_d
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'La descripcion de la moneda existe en otro codigo [%]',v_moneda_codigo_d USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF NEW.moneda_codigo != v_moneda_codigo_d
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'La descripcion de la moneda existe en otro codigo [%]',v_moneda_codigo_d USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3181,7 +3218,7 @@ $$;
 ALTER FUNCTION public.sptrg_moneda_validate_save() OWNER TO clabsuser;
 
 --
--- TOC entry 294 (class 1255 OID 75870)
+-- TOC entry 290 (class 1255 OID 75870)
 -- Name: sptrg_producto_detalle_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3199,105 +3236,105 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 DECLARE v_unidad_medida_codigo_costo character varying(8);
-				DECLARE v_tcostos_indirecto boolean;
-				DECLARE v_insumo_tipo character varying(2) := NULL;
+  DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_insumo_tipo character varying(2) := NULL;
 
-				DECLARE v_empresa_item_id integer;
-				DECLARE v_empresa_producto_id integer;
+  DECLARE v_empresa_item_id integer;
+  DECLARE v_empresa_producto_id integer;
 
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF NEW.insumo_id = NEW.insumo_id_origen
-		THEN
-			RAISE 'Un componente no puede ser igual al producto principal' USING ERRCODE = 'restrict_violation';
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF NEW.insumo_id = NEW.insumo_id_origen
+    THEN
+      RAISE 'Un componente no puede ser igual al producto principal' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Si ya esta cotizado el producto principal no pueden cambiarse un componente del mismo.
-		IF EXISTS (SELECT 1 FROM tb_cotizacion_detalle where insumo_id = NEW.insumo_id_origen LIMIT 1)
-		THEN
-			RAISE 'No puede modificarse un producto que ya se encuentra cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
-		END IF;
+    -- Si ya esta cotizado el producto principal no pueden cambiarse un componente del mismo.
+    IF EXISTS (SELECT 1 FROM tb_cotizacion_detalle where insumo_id = NEW.insumo_id_origen LIMIT 1)
+    THEN
+      RAISE 'No puede modificarse un producto que ya se encuentra cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
+    END IF;
 
 
-		--No se puede agregar un producto como item si es que este mismo contiene al producto
-		-- principal.
-		IF EXISTS(select 1 from tb_producto_detalle where insumo_id_origen = NEW.insumo_id and insumo_id = NEW.insumo_id_origen LIMIT 1)
-		THEN
-			RAISE 'Este item contiene a este producto lo cual no es posible' USING ERRCODE = 'restrict_violation';
-		END IF;
+    --No se puede agregar un producto como item si es que este mismo contiene al producto
+    -- principal.
+    IF EXISTS(select 1 from tb_producto_detalle where insumo_id_origen = NEW.insumo_id and insumo_id = NEW.insumo_id_origen LIMIT 1)
+    THEN
+      RAISE 'Este item contiene a este producto lo cual no es posible' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- leemos datos para validacion
-		SELECT unidad_medida_codigo_costo,insumo_tipo,tcostos_indirecto
-		INTO v_unidad_medida_codigo_costo,v_insumo_tipo,v_tcostos_indirecto
-		FROM
-			tb_insumo ins
-			INNER JOIN tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
-		WHERE insumo_id = NEW.insumo_id;
+    -- leemos datos para validacion
+    SELECT unidad_medida_codigo_costo,insumo_tipo,tcostos_indirecto
+    INTO v_unidad_medida_codigo_costo,v_insumo_tipo,v_tcostos_indirecto
+    FROM
+      tb_insumo ins
+      INNER JOIN tb_tcostos tc ON tc.tcostos_codigo = ins.tcostos_codigo
+    WHERE insumo_id = NEW.insumo_id;
 
-		-- Si el tipo de costos del insumo es del tipo INDIRECTO  este debe pertenecer a la empresa a la que pertenece el producto al cual se esta agregando esta
-		-- linea de detalle.
-		IF v_tcostos_indirecto = TRUE AND TG_OP = 'INSERT'
-		THEN
-			select empresa_id
-			INTO v_empresa_item_id
-			FROM
-				tb_insumo ins
-			where ins.insumo_id = NEW.insumo_id;
+    -- Si el tipo de costos del insumo es del tipo INDIRECTO  este debe pertenecer a la empresa a la que pertenece el producto al cual se esta agregando esta
+    -- linea de detalle.
+    IF v_tcostos_indirecto = TRUE AND TG_OP = 'INSERT'
+    THEN
+      select empresa_id
+      INTO v_empresa_item_id
+      FROM
+        tb_insumo ins
+      where ins.insumo_id = NEW.insumo_id;
 
-			select empresa_id
-			INTO v_empresa_producto_id
-			FROM
-				tb_insumo ins
-			where ins.insumo_id = NEW.insumo_id_origen;
+      select empresa_id
+      INTO v_empresa_producto_id
+      FROM
+        tb_insumo ins
+      where ins.insumo_id = NEW.insumo_id_origen;
 
-			IF v_empresa_item_id != v_empresa_producto_id
-			THEN
-				RAISE 'Un insumo del tipo indirecto solo puede ser de la misma empresa del producto en proceso' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+      IF v_empresa_item_id != v_empresa_producto_id
+      THEN
+        RAISE 'Un insumo del tipo indirecto solo puede ser de la misma empresa del producto en proceso' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		-- si es del yipo insumo validamos el tema del costo indirecto.
-		IF v_insumo_tipo = 'IN'
-		THEN
-			-- En el caso que sea un insumo y el tipo de costo es indirecto
-			-- la unidad de codigo ingreso y la merma no tienen sentido y son colocados
-			-- con los valores neutros.
-			-- Asi mismo si en este caso si el costo es directo la unidad de medida debe estar definida.
-			IF v_tcostos_indirecto = FALSE AND NEW.unidad_medida_codigo = 'NING'
-			THEN
-				RAISE 'Un insumo con costo directo debe especificar la unidad de costeo' USING ERRCODE = 'restrict_violation';
-			END IF;
+    -- si es del yipo insumo validamos el tema del costo indirecto.
+    IF v_insumo_tipo = 'IN'
+    THEN
+      -- En el caso que sea un insumo y el tipo de costo es indirecto
+      -- la unidad de codigo ingreso y la merma no tienen sentido y son colocados
+      -- con los valores neutros.
+      -- Asi mismo si en este caso si el costo es directo la unidad de medida debe estar definida.
+      IF v_tcostos_indirecto = FALSE AND NEW.unidad_medida_codigo = 'NING'
+      THEN
+        RAISE 'Un insumo con costo directo debe especificar la unidad de costeo' USING ERRCODE = 'restrict_violation';
+      END IF;
 
-			IF v_tcostos_indirecto = TRUE
-			THEN
-				NEW.unidad_medida_codigo := 'NING';
-				NEW.producto_detalle_merma := 0;
-			END IF;
-		ELSE
-			-- Para el caso de productos la unidad de medida debe estar siempre definida.
-			IF NEW.unidad_medida_codigo = 'NING'
-			THEN
-				RAISE 'Un producto debe especificar la unidad de medida de costeo' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+      IF v_tcostos_indirecto = TRUE
+      THEN
+        NEW.unidad_medida_codigo := 'NING';
+        NEW.producto_detalle_merma := 0;
+      END IF;
+    ELSE
+      -- Para el caso de productos la unidad de medida debe estar siempre definida.
+      IF NEW.unidad_medida_codigo = 'NING'
+      THEN
+        RAISE 'Un producto debe especificar la unidad de medida de costeo' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		-- Validamos que el tipo de unidad del item exista conversion entre medidas siempre que sea insumo no producto , ya que los productos
-		-- no tienen unidad de ingreso.
+    -- Validamos que el tipo de unidad del item exista conversion entre medidas siempre que sea insumo no producto , ya que los productos
+    -- no tienen unidad de ingreso.
 
-		-- Si las unidades son diferentes y los costos son directos requiere validacion .
-		IF v_unidad_medida_codigo_costo != NEW.unidad_medida_codigo AND v_tcostos_indirecto = FALSE
-		THEN
-			IF NOT EXISTS(
-					select 1
-					from tb_unidad_medida_conversion
-					where unidad_medida_origen = v_unidad_medida_codigo_costo AND
-								unidad_medida_destino = NEW.unidad_medida_codigo LIMIT 1)
-			THEN
-				RAISE 'No existe conversion entre la unidad de costo y la unidad indicada en el item , indicadas por [% - %]',v_unidad_medida_codigo_costo,NEW.unidad_medida_codigo  USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
-	END IF;
-	RETURN NEW;
+    -- Si las unidades son diferentes y los costos son directos requiere validacion .
+    IF v_unidad_medida_codigo_costo != NEW.unidad_medida_codigo AND v_tcostos_indirecto = FALSE
+    THEN
+      IF NOT EXISTS(
+          select 1
+          from tb_unidad_medida_conversion
+          where unidad_medida_origen = v_unidad_medida_codigo_costo AND
+                unidad_medida_destino = NEW.unidad_medida_codigo LIMIT 1)
+      THEN
+        RAISE 'No existe conversion entre la unidad de costo y la unidad indicada en el item , indicadas por [% - %]',v_unidad_medida_codigo_costo,NEW.unidad_medida_codigo  USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3305,7 +3342,7 @@ $$;
 ALTER FUNCTION public.sptrg_producto_detalle_validate_save() OWNER TO clabsuser;
 
 --
--- TOC entry 286 (class 1255 OID 100541)
+-- TOC entry 284 (class 1255 OID 100541)
 -- Name: sptrg_reglas_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3313,52 +3350,52 @@ CREATE FUNCTION sptrg_reglas_validate_save() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE v_tipo_empresa_codigo_origen character varying(3);
-				DECLARE v_tipo_empresa_codigo_destino character varying(3);
+  DECLARE v_tipo_empresa_codigo_destino character varying(3);
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un update que para el tipo
-	-- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un update que para el tipo
+  -- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF NEW.regla_empresa_origen_id = NEW.regla_empresa_destino_id
-		THEN
-			RAISE 'No puede existir una regla de costos en la misma empresa' USING ERRCODE = 'restrict_violation';
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF NEW.regla_empresa_origen_id = NEW.regla_empresa_destino_id
+    THEN
+      RAISE 'No puede existir una regla de costos en la misma empresa' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Verificamos la jerarquia entre la empresa de origen y la de destino.
-		-- Las fabricas pueden tener como origen un importador.
-		-- las distribuidoras pueden tener como origen una fabrica o una importadora.
-		-- Ninguna otra condicion es permitida.
-		select tipo_empresa_codigo INTO v_tipo_empresa_codigo_origen
-		FROM tb_empresa where empresa_id = NEW.regla_empresa_origen_id;
+    -- Verificamos la jerarquia entre la empresa de origen y la de destino.
+    -- Las fabricas pueden tener como origen un importador.
+    -- las distribuidoras pueden tener como origen una fabrica o una importadora.
+    -- Ninguna otra condicion es permitida.
+    select tipo_empresa_codigo INTO v_tipo_empresa_codigo_origen
+    FROM tb_empresa where empresa_id = NEW.regla_empresa_origen_id;
 
-		select tipo_empresa_codigo INTO v_tipo_empresa_codigo_destino
-		FROM tb_empresa where empresa_id = NEW.regla_empresa_destino_id;
+    select tipo_empresa_codigo INTO v_tipo_empresa_codigo_destino
+    FROM tb_empresa where empresa_id = NEW.regla_empresa_destino_id;
 
-		IF v_tipo_empresa_codigo_origen = 'IMP'
-		THEN
-			IF v_tipo_empresa_codigo_destino != 'FAB' AND v_tipo_empresa_codigo_destino != 'DIS'
-			THEN
-				RAISE 'Solo fabrica y distribuidor pueden tener reglas de costos con un importador' USING ERRCODE = 'restrict_violation';
-			END IF;
-		ELSIF v_tipo_empresa_codigo_origen = 'FAB'
-			THEN
-				IF v_tipo_empresa_codigo_destino != 'DIS'
-				THEN
-					RAISE 'Solo distribuidores pueden tener reglas de costos con una fabrica' USING ERRCODE = 'restrict_violation';
-				END IF;
-		ELSIF v_tipo_empresa_codigo_origen = 'DIS' OR v_tipo_empresa_codigo_destino = 'CLI'
-			THEN
-				RAISE 'Solo Importadores o Fabricas pueden tener reglas de costos con otras empresas' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF v_tipo_empresa_codigo_origen = 'IMP'
+    THEN
+      IF v_tipo_empresa_codigo_destino != 'FAB' AND v_tipo_empresa_codigo_destino != 'DIS'
+      THEN
+        RAISE 'Solo fabrica y distribuidor pueden tener reglas de costos con un importador' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSIF v_tipo_empresa_codigo_origen = 'FAB'
+      THEN
+        IF v_tipo_empresa_codigo_destino != 'DIS'
+        THEN
+          RAISE 'Solo distribuidores pueden tener reglas de costos con una fabrica' USING ERRCODE = 'restrict_violation';
+        END IF;
+    ELSIF v_tipo_empresa_codigo_origen = 'DIS' OR v_tipo_empresa_codigo_destino = 'CLI'
+      THEN
+        RAISE 'Solo Importadores o Fabricas pueden tener reglas de costos con otras empresas' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3384,14 +3421,14 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.tcostos_protected = TRUE
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'No puede eliminarse un tipo de costos de sistema' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF OLD.tcostos_protected = TRUE
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'No puede eliminarse un tipo de costos de sistema' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -3408,35 +3445,35 @@ LANGUAGE plpgsql
 AS $$
 DECLARE v_tcostos_codigo character varying(5);
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un update que para el tipo
-	-- de costo , que no exista un tipo de costo con diferente codigo pero el mismo nombre.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un update que para el tipo
+  -- de costo , que no exista un tipo de costo con diferente codigo pero el mismo nombre.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF TG_OP = 'UPDATE'
-		THEN
-			IF OLD.tcostos_protected = TRUE
-			THEN
-				RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF TG_OP = 'UPDATE'
+    THEN
+      IF OLD.tcostos_protected = TRUE
+      THEN
+        RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		-- Verificamos si alguno con el mismo nombre existe e indicamos el error.
-		SELECT tcostos_codigo INTO v_tcostos_codigo FROM tb_tcostos
-		where UPPER(LTRIM(RTRIM(tcostos_descripcion))) = UPPER(LTRIM(RTRIM(NEW.tcostos_descripcion)));
+    -- Verificamos si alguno con el mismo nombre existe e indicamos el error.
+    SELECT tcostos_codigo INTO v_tcostos_codigo FROM tb_tcostos
+    where UPPER(LTRIM(RTRIM(tcostos_descripcion))) = UPPER(LTRIM(RTRIM(NEW.tcostos_descripcion)));
 
-		IF NEW.tcostos_codigo != v_tcostos_codigo
-		THEN
-			RAISE 'Ya existe una tipo de costo con ese nombre en el tipo de costos [%]',v_tcostos_codigo USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF NEW.tcostos_codigo != v_tcostos_codigo
+    THEN
+      RAISE 'Ya existe una tipo de costo con ese nombre en el tipo de costos [%]',v_tcostos_codigo USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3444,7 +3481,7 @@ $$;
 ALTER FUNCTION public.sptrg_tcostos_validate_save() OWNER TO clabsuser;
 
 --
--- TOC entry 297 (class 1255 OID 75922)
+-- TOC entry 293 (class 1255 OID 75922)
 -- Name: sptrg_tinsumo_validate_delete(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3461,14 +3498,14 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.tinsumo_protected = TRUE
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'No puede eliminarse un tipo de insumo de sistema' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF OLD.tinsumo_protected = TRUE
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'No puede eliminarse un tipo de insumo de sistema' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -3476,7 +3513,7 @@ $$;
 ALTER FUNCTION public.sptrg_tinsumo_validate_delete() OWNER TO clabsuser;
 
 --
--- TOC entry 291 (class 1255 OID 59257)
+-- TOC entry 289 (class 1255 OID 59257)
 -- Name: sptrg_tinsumo_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3485,36 +3522,36 @@ LANGUAGE plpgsql
 AS $$
 DECLARE v_tinsumo_codigo character varying(15);
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un update que para el tipo
-	-- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un update que para el tipo
+  -- de insumo , que no exista un tipo de insumo con diferente codigo pero el mismo nombre.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF TG_OP = 'UPDATE'
-		THEN
-			IF OLD.tinsumo_protected = TRUE
-			THEN
-				RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF TG_OP = 'UPDATE'
+    THEN
+      IF OLD.tinsumo_protected = TRUE
+      THEN
+        RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		-- Verificamos si alguno con el mismo nombre existe e indicamos el error.
-		SELECT tinsumo_codigo INTO v_tinsumo_codigo FROM tb_tinsumo
-		where UPPER(LTRIM(RTRIM(tinsumo_descripcion))) = UPPER(LTRIM(RTRIM(NEW.tinsumo_descripcion)));
+    -- Verificamos si alguno con el mismo nombre existe e indicamos el error.
+    SELECT tinsumo_codigo INTO v_tinsumo_codigo FROM tb_tinsumo
+    where UPPER(LTRIM(RTRIM(tinsumo_descripcion))) = UPPER(LTRIM(RTRIM(NEW.tinsumo_descripcion)));
 
-		IF NEW.tinsumo_codigo != v_tinsumo_codigo
-		THEN
-			-- Excepcion no puede usarse el mismo nombre para un insumo
-			RAISE 'Ya existe una tipo de insumo con ese nombre en el tipo de insumo [%]',v_tinsumo_codigo USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF NEW.tinsumo_codigo != v_tinsumo_codigo
+    THEN
+      -- Excepcion no puede usarse el mismo nombre para un insumo
+      RAISE 'Ya existe una tipo de insumo con ese nombre en el tipo de insumo [%]',v_tinsumo_codigo USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3541,45 +3578,45 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF NEW.moneda_codigo_origen = NEW.moneda_codigo_destino
-		THEN
-			RAISE 'La moneda origen no puede ser la misma que la de destino' USING ERRCODE = 'restrict_violation';
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF NEW.moneda_codigo_origen = NEW.moneda_codigo_destino
+    THEN
+      RAISE 'La moneda origen no puede ser la misma que la de destino' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF NEW.tipo_cambio_fecha_desde > NEW.tipo_cambio_fecha_hasta
-		THEN
-			RAISE 'La fecha inicial no puede ser mayor que la fecha final' USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.tipo_cambio_fecha_desde > NEW.tipo_cambio_fecha_hasta
+    THEN
+      RAISE 'La fecha inicial no puede ser mayor que la fecha final' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF TG_OP = 'UPDATE'
-		THEN
-			-- Validamos que no haya un tipo de cambio entre las fechas indicadas, pero que no sea el mismo
-			-- registro al que hacemos update.
-			-- Algoritmo , si es tru entonces las fechas se cruzan( start1 <= end2 and start2 <= end1 )
-			IF EXISTS( SELECT 1 from tb_tipo_cambio tc
-			where (tc.moneda_codigo_origen = NEW.moneda_codigo_origen and
-						 tc.moneda_codigo_destino = NEW.moneda_codigo_destino) and
-						tc.tipo_cambio_fecha_desde <= NEW.tipo_cambio_fecha_hasta and
-						tc.tipo_cambio_fecha_hasta >= NEW.tipo_cambio_fecha_desde and
-						tc.tipo_cambio_id != NEW.tipo_cambio_id)
-			THEN
-				RAISE 'Ya existe un tipo de cambio en ese rango de fechas' USING ERRCODE = 'restrict_violation';
-			END IF;
-		ELSE
-			-- Validamos que no haya un tipo de cambio entre las fechas indicadas.
-			-- Algoritmo , si es tru entonces las fechas se cruzan( start1 <= end2 and start2 <= end1 )
-			IF EXISTS( SELECT 1 from tb_tipo_cambio tc
-			where (tc.moneda_codigo_origen = NEW.moneda_codigo_origen and
-						 tc.moneda_codigo_destino = NEW.moneda_codigo_destino) and
-						tc.tipo_cambio_fecha_desde <= NEW.tipo_cambio_fecha_hasta and
-						tc.tipo_cambio_fecha_hasta >= NEW.tipo_cambio_fecha_desde)
-			THEN
-				RAISE 'Ya existe un tipo de cambio en ese rango de fechas' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF TG_OP = 'UPDATE'
+    THEN
+      -- Validamos que no haya un tipo de cambio entre las fechas indicadas, pero que no sea el mismo
+      -- registro al que hacemos update.
+      -- Algoritmo , si es tru entonces las fechas se cruzan( start1 <= end2 and start2 <= end1 )
+      IF EXISTS( SELECT 1 from tb_tipo_cambio tc
+      where (tc.moneda_codigo_origen = NEW.moneda_codigo_origen and
+             tc.moneda_codigo_destino = NEW.moneda_codigo_destino) and
+            tc.tipo_cambio_fecha_desde <= NEW.tipo_cambio_fecha_hasta and
+            tc.tipo_cambio_fecha_hasta >= NEW.tipo_cambio_fecha_desde and
+            tc.tipo_cambio_id != NEW.tipo_cambio_id)
+      THEN
+        RAISE 'Ya existe un tipo de cambio en ese rango de fechas' USING ERRCODE = 'restrict_violation';
+      END IF;
+    ELSE
+      -- Validamos que no haya un tipo de cambio entre las fechas indicadas.
+      -- Algoritmo , si es tru entonces las fechas se cruzan( start1 <= end2 and start2 <= end1 )
+      IF EXISTS( SELECT 1 from tb_tipo_cambio tc
+      where (tc.moneda_codigo_origen = NEW.moneda_codigo_origen and
+             tc.moneda_codigo_destino = NEW.moneda_codigo_destino) and
+            tc.tipo_cambio_fecha_desde <= NEW.tipo_cambio_fecha_hasta and
+            tc.tipo_cambio_fecha_hasta >= NEW.tipo_cambio_fecha_desde)
+      THEN
+        RAISE 'Ya existe un tipo de cambio en ese rango de fechas' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3595,42 +3632,42 @@ CREATE FUNCTION sptrg_unidad_medida_conversion_validate_save() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE v_unidad_medida_origen_tipo CHARACTER(1);
-				DECLARE v_unidad_medida_destino_tipo CHARACTER(1);
+  DECLARE v_unidad_medida_destino_tipo CHARACTER(1);
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un add o update que los valores sean
-	-- consistentes , las unidades de medida no deben ser las mismas y asi mismo deben de ser del
-	-- mismo tipo por ejemplo VOLUMEN.
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un add o update que los valores sean
+  -- consistentes , las unidades de medida no deben ser las mismas y asi mismo deben de ser del
+  -- mismo tipo por ejemplo VOLUMEN.
 
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF NEW.unidad_medida_origen = NEW.unidad_medida_destino
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'LA unidad de medida origen no puede ser la misma que la de destino' USING ERRCODE = 'restrict_violation';
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF NEW.unidad_medida_origen = NEW.unidad_medida_destino
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'LA unidad de medida origen no puede ser la misma que la de destino' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Verificamos si alguno con el mismo nombre existe e indicamos el error.
-		SELECT unidad_medida_tipo INTO v_unidad_medida_origen_tipo
-		FROM tb_unidad_medida
-		WHERE unidad_medida_codigo = NEW.unidad_medida_origen;
+    -- Verificamos si alguno con el mismo nombre existe e indicamos el error.
+    SELECT unidad_medida_tipo INTO v_unidad_medida_origen_tipo
+    FROM tb_unidad_medida
+    WHERE unidad_medida_codigo = NEW.unidad_medida_origen;
 
-		SELECT unidad_medida_tipo INTO v_unidad_medida_destino_tipo
-		FROM tb_unidad_medida
-		WHERE unidad_medida_codigo = NEW.unidad_medida_destino;
+    SELECT unidad_medida_tipo INTO v_unidad_medida_destino_tipo
+    FROM tb_unidad_medida
+    WHERE unidad_medida_codigo = NEW.unidad_medida_destino;
 
-		IF v_unidad_medida_origen_tipo != v_unidad_medida_destino_tipo
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'Ambas unidades de medida deben de ser del mismo tipo' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN NEW;
+    IF v_unidad_medida_origen_tipo != v_unidad_medida_destino_tipo
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'Ambas unidades de medida deben de ser del mismo tipo' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3656,14 +3693,14 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'DELETE') THEN
-		IF OLD.unidad_medida_protected = TRUE
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'No puede eliminarse una unidad de medida de sistema' USING ERRCODE = 'restrict_violation';
-		END IF;
-	END IF;
-	RETURN OLD;
+  IF (TG_OP = 'DELETE') THEN
+    IF OLD.unidad_medida_protected = TRUE
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'No puede eliminarse una unidad de medida de sistema' USING ERRCODE = 'restrict_violation';
+    END IF;
+  END IF;
+  RETURN OLD;
 END;
 $$;
 
@@ -3679,69 +3716,69 @@ CREATE FUNCTION sptrg_unidad_medida_validate_save() RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 DECLARE v_unidad_medida_codigo_s character varying(8);
-				DECLARE v_unidad_medida_codigo_d character varying(8);
-				DECLARE v_unidad_medida_descripcion character varying(80);
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un add o update que no exista otra undad de media con las
-	-- mismas siglas o descripcion.
-	-- No he usado unique index o constraint ya que prefiero indicar que unidad de medida es la que tiene
-	-- la sigla o descripcion duplicada. En este caso no habra muchos registros por lo que el impacto
-	-- es minimo.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 10/07/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  DECLARE v_unidad_medida_codigo_d character varying(8);
+  DECLARE v_unidad_medida_descripcion character varying(80);
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un add o update que no exista otra undad de media con las
+  -- mismas siglas o descripcion.
+  -- No he usado unique index o constraint ya que prefiero indicar que unidad de medida es la que tiene
+  -- la sigla o descripcion duplicada. En este caso no habra muchos registros por lo que el impacto
+  -- es minimo.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 10/07/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-		IF TG_OP = 'UPDATE'
-		THEN
-			IF OLD.unidad_medida_protected = TRUE
-			THEN
-				RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
-			END IF;
-		END IF;
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+    IF TG_OP = 'UPDATE'
+    THEN
+      IF OLD.unidad_medida_protected = TRUE
+      THEN
+        RAISE 'No puede modificarse un registro protegido o de sistema' USING ERRCODE = 'restrict_violation';
+      END IF;
+    END IF;
 
-		-- buscamos si existe un codigo que ya tenga las mismas siglas
-		SELECT unidad_medida_codigo INTO v_unidad_medida_codigo_s FROM tb_unidad_medida
-		where unidad_medida_siglas = NEW.unidad_medida_siglas;
+    -- buscamos si existe un codigo que ya tenga las mismas siglas
+    SELECT unidad_medida_codigo INTO v_unidad_medida_codigo_s FROM tb_unidad_medida
+    where unidad_medida_siglas = NEW.unidad_medida_siglas;
 
-		-- buscamos si existe un codigo que ya tenga la misma descripcion
-		SELECT unidad_medida_codigo INTO v_unidad_medida_codigo_d FROM tb_unidad_medida
-		where UPPER(LTRIM(RTRIM(unidad_medida_descripcion))) = UPPER(LTRIM(RTRIM(NEW.unidad_medida_descripcion)));
+    -- buscamos si existe un codigo que ya tenga la misma descripcion
+    SELECT unidad_medida_codigo INTO v_unidad_medida_codigo_d FROM tb_unidad_medida
+    where UPPER(LTRIM(RTRIM(unidad_medida_descripcion))) = UPPER(LTRIM(RTRIM(NEW.unidad_medida_descripcion)));
 
-		IF NEW.unidad_medida_codigo != v_unidad_medida_codigo_s
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'Las siglas de la unidad de medida existe en otro codigo [%]',v_unidad_medida_codigo_s USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.unidad_medida_codigo != v_unidad_medida_codigo_s
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'Las siglas de la unidad de medida existe en otro codigo [%]',v_unidad_medida_codigo_s USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		IF NEW.unidad_medida_codigo != v_unidad_medida_codigo_d
-		THEN
-			-- Excepcion de region con ese nombre existe
-			RAISE 'La descripcion de la unidad de medida existe en otro codigo [%]',v_unidad_medida_codigo_d USING ERRCODE = 'restrict_violation';
-		END IF;
+    IF NEW.unidad_medida_codigo != v_unidad_medida_codigo_d
+    THEN
+      -- Excepcion de region con ese nombre existe
+      RAISE 'La descripcion de la unidad de medida existe en otro codigo [%]',v_unidad_medida_codigo_d USING ERRCODE = 'restrict_violation';
+    END IF;
 
-		-- Si se ha indicado que sera el default verificamos que no exista otro seteado como tal.
-		IF NEW.unidad_medida_default = TRUE
-		THEN
-			IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' and NEW.unidad_medida_default != OLD.unidad_medida_default)
-			THEN
-				select unidad_medida_descripcion into v_unidad_medida_descripcion
-				from tb_unidad_medida
-				where
-					unidad_medida_tipo = NEW.unidad_medida_tipo and
-					unidad_medida_default = true ;
+    -- Si se ha indicado que sera el default verificamos que no exista otro seteado como tal.
+    IF NEW.unidad_medida_default = TRUE
+    THEN
+      IF TG_OP = 'INSERT' OR (TG_OP = 'UPDATE' and NEW.unidad_medida_default != OLD.unidad_medida_default)
+      THEN
+        select unidad_medida_descripcion into v_unidad_medida_descripcion
+        from tb_unidad_medida
+        where
+          unidad_medida_tipo = NEW.unidad_medida_tipo and
+          unidad_medida_default = true ;
 
-				IF v_unidad_medida_descripcion IS NOT NULL
-				THEN
-					RAISE 'Solo una unidad de medida puede ser la default para un tipo como volumen,peso,etc y [%] es actualmente la default',v_unidad_medida_descripcion USING ERRCODE = 'restrict_violation';
-				END IF;
-			END IF;
-		END IF;
-	END IF;
-	RETURN NEW;
+        IF v_unidad_medida_descripcion IS NOT NULL
+        THEN
+          RAISE 'Solo una unidad de medida puede ser la default para un tipo como volumen,peso,etc y [%] es actualmente la default',v_unidad_medida_descripcion USING ERRCODE = 'restrict_violation';
+        END IF;
+      END IF;
+    END IF;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3774,24 +3811,24 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT') THEN
-		NEW.FECHA_CREACION := now();
-		IF (NEW.usuario is null) THEN
-			NEW.usuario := current_user;
-		END IF;
-	END IF;
+  IF (TG_OP = 'INSERT') THEN
+    NEW.FECHA_CREACION := now();
+    IF (NEW.usuario is null) THEN
+      NEW.usuario := current_user;
+    END IF;
+  END IF;
 
-	IF (TG_OP = 'UPDATE') THEN
-		-- Solo si hay cambio en el registro
-		IF (OLD != NEW) THEN
-			NEW.fecha_modificacion := now();
-			IF (NEW.usuario_mod is null) THEN
-				NEW.usuario_mod := current_user;
-			END IF;
-		END IF;
-	END IF;
+  IF (TG_OP = 'UPDATE') THEN
+    -- Solo si hay cambio en el registro
+    IF (OLD != NEW) THEN
+      NEW.fecha_modificacion := now();
+      IF (NEW.usuario_mod is null) THEN
+        NEW.usuario_mod := current_user;
+      END IF;
+    END IF;
+  END IF;
 
-	RETURN NEW;
+  RETURN NEW;
 END;
 $$;
 
@@ -3808,39 +3845,39 @@ LANGUAGE plpgsql
 AS $$
 DECLARE v_usuario_perfil_id integer;
 
-	-------------------------------------------------------------------------------------------
-	--
-	-- Funcion para trigger que verifica durante un add o update que no pueda existir
-	-- mas de un perfil para el mismo sistema y el mismo usuario.
-	--
-	-- Author :Carlos Arana R
-	-- Fecha: 02/10/2016
-	-- Version 1.00
-	-------------------------------------------------------------------------------------------
+  -------------------------------------------------------------------------------------------
+  --
+  -- Funcion para trigger que verifica durante un add o update que no pueda existir
+  -- mas de un perfil para el mismo sistema y el mismo usuario.
+  --
+  -- Author :Carlos Arana R
+  -- Fecha: 02/10/2016
+  -- Version 1.00
+  -------------------------------------------------------------------------------------------
 BEGIN
-	IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
 
-		if TG_OP = 'INSERT'
-		THEN
-			v_usuario_perfil_id = -1;
-		ELSE
-			v_usuario_perfil_id = NEW.usuario_perfil_id;
-		END IF;
+    if TG_OP = 'INSERT'
+    THEN
+      v_usuario_perfil_id = -1;
+    ELSE
+      v_usuario_perfil_id = NEW.usuario_perfil_id;
+    END IF;
 
-		-- Validamos que exista la  conversion entre medidas siempre que sea insumo no producto , ya que los productos
-		-- no tienen unidad de ingreso.
-		IF EXISTS(select 1 from tb_sys_usuario_perfiles up
-			inner join tb_sys_perfil sp on sp.perfil_id = up.perfil_id
-		where
-			up.usuarios_id = NEW.usuarios_id and
-			up.usuario_perfil_id != v_usuario_perfil_id and
-			sys_systemcode = (select sys_systemcode from tb_sys_perfil where perfil_id = new.perfil_id)LIMIT 1)
-		THEN
-			RAISE 'Cada usuario solo puede tener un perfil por sistema' USING ERRCODE = 'restrict_violation';
-		END IF;
+    -- Validamos que exista la  conversion entre medidas siempre que sea insumo no producto , ya que los productos
+    -- no tienen unidad de ingreso.
+    IF EXISTS(select 1 from tb_sys_usuario_perfiles up
+      inner join tb_sys_perfil sp on sp.perfil_id = up.perfil_id
+    where
+      up.usuarios_id = NEW.usuarios_id and
+      up.usuario_perfil_id != v_usuario_perfil_id and
+      sys_systemcode = (select sys_systemcode from tb_sys_perfil where perfil_id = new.perfil_id)LIMIT 1)
+    THEN
+      RAISE 'Cada usuario solo puede tener un perfil por sistema' USING ERRCODE = 'restrict_violation';
+    END IF;
 
-	END IF;
-	RETURN NEW;
+  END IF;
+  RETURN NEW;
 END;
 $$;
 
@@ -3867,24 +3904,24 @@ AS $$
 -- Version 1.00
 -------------------------------------------------------------------------------------------
 DECLARE v_TABLENAME_ROW RECORD;
-				DECLARE v_queryfield CHARACTER VARYING;
-				DECLARE v_found integer;
+  DECLARE v_queryfield CHARACTER VARYING;
+  DECLARE v_found integer;
 
 BEGIN
 
-	IF (TG_OP = 'UPDATE' OR TG_OP = 'DELETE') THEN
-		-- Verificamos si ha habido cambio de codigo de usuario o nombre o si se trata de un delete
-		IF TG_OP = 'DELETE' OR (OLD.usuarios_code <> NEW.usuarios_code OR OLD.usuarios_nombre_completo <> NEW.usuarios_nombre_completo)
-		THEN
-			-- Busco todas las tablas en el esquema public ya que pertenecen solo al sistema
-			FOR v_TABLENAME_ROW IN
-			SELECT  table_name
-			from information_schema.tables
-			where table_Schema = 'public'
-			LOOP
-				--raise notice '%', v_TABLENAME_ROW.table_name;
-				-- Armo sql query de busqueda usando la metadata del postgress
-				v_queryfield := 'SELECT 1
+  IF (TG_OP = 'UPDATE' OR TG_OP = 'DELETE') THEN
+    -- Verificamos si ha habido cambio de codigo de usuario o nombre o si se trata de un delete
+    IF TG_OP = 'DELETE' OR (OLD.usuarios_code <> NEW.usuarios_code OR OLD.usuarios_nombre_completo <> NEW.usuarios_nombre_completo)
+    THEN
+      -- Busco todas las tablas en el esquema public ya que pertenecen solo al sistema
+      FOR v_TABLENAME_ROW IN
+      SELECT  table_name
+      from information_schema.tables
+      where table_Schema = 'public'
+      LOOP
+        --raise notice '%', v_TABLENAME_ROW.table_name;
+        -- Armo sql query de busqueda usando la metadata del postgress
+        v_queryfield := 'SELECT 1
 				 FROM
 				     pg_catalog.pg_attribute a
 				 WHERE
@@ -3898,36 +3935,36 @@ BEGIN
 				     )
 				     AND (a.attname =''usuario'')';
 
-				-- Ejexuto y verfico que tenga resultados , aqui parto de la idea que siempre
-				-- deben existir los campos usuario y usuario_mod juntos , por eso para hacer la busqueda
-				-- mas rapida lo ejecuto solo buscando el campo usuario
-				EXECUTE v_queryfield;
-				GET DIAGNOSTICS v_found = ROW_COUNT;
+        -- Ejexuto y verfico que tenga resultados , aqui parto de la idea que siempre
+        -- deben existir los campos usuario y usuario_mod juntos , por eso para hacer la busqueda
+        -- mas rapida lo ejecuto solo buscando el campo usuario
+        EXECUTE v_queryfield;
+        GET DIAGNOSTICS v_found = ROW_COUNT;
 
-				IF v_found > 0 THEN
-					-- Verifico si en la tabla actual del loop esta usado ya sea en el campo usuario o el campo usuario_mod
-					v_queryfield := 'SELECT 1 FROM ' || v_TABLENAME_ROW.table_name || ' WHERE usuario=' || quote_literal(OLD.usuarios_code)
-													|| ' or usuario_mod=' || quote_literal(OLD.usuarios_code);
+        IF v_found > 0 THEN
+          -- Verifico si en la tabla actual del loop esta usado ya sea en el campo usuario o el campo usuario_mod
+          v_queryfield := 'SELECT 1 FROM ' || v_TABLENAME_ROW.table_name || ' WHERE usuario=' || quote_literal(OLD.usuarios_code)
+                          || ' or usuario_mod=' || quote_literal(OLD.usuarios_code);
 
-					EXECUTE v_queryfield;
-					GET DIAGNOSTICS v_found = ROW_COUNT;
-					--raise notice 'nueva %',v_found;
-					IF v_found > 0 THEN
-						RAISE 'No puede modificarse o eliminarse el codigo ya que el usuario tiene transacciones' USING ERRCODE = 'restrict_violation';
-					END IF;
-				END IF;
-			END LOOP;
-		END IF;
+          EXECUTE v_queryfield;
+          GET DIAGNOSTICS v_found = ROW_COUNT;
+          --raise notice 'nueva %',v_found;
+          IF v_found > 0 THEN
+            RAISE 'No puede modificarse o eliminarse el codigo ya que el usuario tiene transacciones' USING ERRCODE = 'restrict_violation';
+          END IF;
+        END IF;
+      END LOOP;
+    END IF;
 
-	END IF;
+  END IF;
 
-	-- Colocamos en mayuscula siempre el codigo de usuario si no ha habido problemas
-	IF (TG_OP = 'UPDATE' OR TG_OP = 'INSERT') THEN
-		NEW.usuarios_code := UPPER(NEW.usuarios_code);
-		RETURN NEW;
-	ELSE
-		RETURN OLD; -- Para delete siempre se retorna old
-	END IF;
+  -- Colocamos en mayuscula siempre el codigo de usuario si no ha habido problemas
+  IF (TG_OP = 'UPDATE' OR TG_OP = 'INSERT') THEN
+    NEW.usuarios_code := UPPER(NEW.usuarios_code);
+    RETURN NEW;
+  ELSE
+    RETURN OLD; -- Para delete siempre se retorna old
+  END IF;
 
 END;
 $$;
@@ -3940,49 +3977,49 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 204 (class 1259 OID 92399)
+-- TOC entry 206 (class 1259 OID 92399)
 -- Name: ci_sessions; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE ci_sessions (
-	session_id character varying(40) DEFAULT '0'::character varying NOT NULL,
-	ip_address character varying(45) DEFAULT '0'::character varying NOT NULL,
-	user_agent character varying(120) NOT NULL,
-	last_activity integer DEFAULT 0 NOT NULL,
-	user_data text NOT NULL
+  session_id character varying(40) DEFAULT '0'::character varying NOT NULL,
+  ip_address character varying(45) DEFAULT '0'::character varying NOT NULL,
+  user_agent character varying(120) NOT NULL,
+  last_activity integer DEFAULT 0 NOT NULL,
+  user_data text NOT NULL
 );
 
 
 ALTER TABLE public.ci_sessions OWNER TO clabsuser;
 
 --
--- TOC entry 210 (class 1259 OID 100956)
+-- TOC entry 212 (class 1259 OID 100956)
 -- Name: tb_cliente; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_cliente (
-	cliente_id integer NOT NULL,
-	empresa_id integer NOT NULL,
-	cliente_razon_social character varying(200) NOT NULL,
-	tipo_cliente_codigo character varying(3) NOT NULL,
-	cliente_ruc character varying(15) NOT NULL,
-	cliente_direccion character varying(200) NOT NULL,
-	cliente_telefonos character varying(60),
-	cliente_fax character varying(10),
-	cliente_correo character varying(100),
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_razon_social_field_len CHECK ((length(rtrim((cliente_razon_social)::text)) > 0))
+  cliente_id integer NOT NULL,
+  empresa_id integer NOT NULL,
+  cliente_razon_social character varying(200) NOT NULL,
+  tipo_cliente_codigo character varying(3) NOT NULL,
+  cliente_ruc character varying(15) NOT NULL,
+  cliente_direccion character varying(200) NOT NULL,
+  cliente_telefonos character varying(60),
+  cliente_fax character varying(10),
+  cliente_correo character varying(100),
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_razon_social_field_len CHECK ((length(rtrim((cliente_razon_social)::text)) > 0))
 );
 
 
 ALTER TABLE public.tb_cliente OWNER TO clabsuser;
 
 --
--- TOC entry 209 (class 1259 OID 100954)
+-- TOC entry 211 (class 1259 OID 100954)
 -- Name: tb_cliente_cliente_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -3998,7 +4035,7 @@ ALTER TABLE public.tb_cliente_cliente_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2564 (class 0 OID 0)
--- Dependencies: 209
+-- Dependencies: 211
 -- Name: tb_cliente_cliente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4006,31 +4043,31 @@ ALTER SEQUENCE tb_cliente_cliente_id_seq OWNED BY tb_cliente.cliente_id;
 
 
 --
--- TOC entry 212 (class 1259 OID 101028)
+-- TOC entry 214 (class 1259 OID 101028)
 -- Name: tb_cotizacion; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_cotizacion (
-	cotizacion_id integer NOT NULL,
-	empresa_id integer NOT NULL,
-	cliente_id integer NOT NULL,
-	cotizacion_es_cliente_real boolean DEFAULT true NOT NULL,
-	cotizacion_numero integer NOT NULL,
-	moneda_codigo character varying(8) NOT NULL,
-	cotizacion_fecha date NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	cotizacion_cerrada boolean DEFAULT false NOT NULL
+  cotizacion_id integer NOT NULL,
+  empresa_id integer NOT NULL,
+  cliente_id integer NOT NULL,
+  cotizacion_es_cliente_real boolean DEFAULT true NOT NULL,
+  cotizacion_numero integer NOT NULL,
+  moneda_codigo character varying(8) NOT NULL,
+  cotizacion_fecha date NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  cotizacion_cerrada boolean DEFAULT false NOT NULL
 );
 
 
 ALTER TABLE public.tb_cotizacion OWNER TO clabsuser;
 
 --
--- TOC entry 211 (class 1259 OID 101026)
+-- TOC entry 213 (class 1259 OID 101026)
 -- Name: tb_cotizacion_cotizacion_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4046,7 +4083,7 @@ ALTER TABLE public.tb_cotizacion_cotizacion_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2565 (class 0 OID 0)
--- Dependencies: 211
+-- Dependencies: 213
 -- Name: tb_cotizacion_cotizacion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4054,51 +4091,51 @@ ALTER SEQUENCE tb_cotizacion_cotizacion_id_seq OWNED BY tb_cotizacion.cotizacion
 
 
 --
--- TOC entry 207 (class 1259 OID 100641)
+-- TOC entry 209 (class 1259 OID 100641)
 -- Name: tb_cotizacion_counter; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_cotizacion_counter (
-	cotizacion_counter_last_id integer NOT NULL
+  cotizacion_counter_last_id integer NOT NULL
 );
 
 
 ALTER TABLE public.tb_cotizacion_counter OWNER TO clabsuser;
 
 --
--- TOC entry 220 (class 1259 OID 109776)
+-- TOC entry 222 (class 1259 OID 109776)
 -- Name: tb_cotizacion_detalle; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_cotizacion_detalle (
-	cotizacion_detalle_id integer NOT NULL,
-	cotizacion_id integer NOT NULL,
-	insumo_id integer NOT NULL,
-	unidad_medida_codigo character varying(8) NOT NULL,
-	cotizacion_detalle_cantidad numeric(8,2) NOT NULL,
-	cotizacion_detalle_precio numeric(10,2) NOT NULL,
-	cotizacion_detalle_total numeric(12,2) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	log_regla_by_costo boolean,
-	log_regla_porcentaje numeric(6,2),
-	log_tipo_cambio_tasa_compra numeric(8,4) NOT NULL,
-	log_tipo_cambio_tasa_venta numeric(8,4) NOT NULL,
-	log_moneda_codigo_costo character varying(8) NOT NULL,
-	log_unidad_medida_codigo_costo character varying(8) NOT NULL,
-	log_insumo_precio_original numeric(10,2) NOT NULL,
-	log_insumo_precio_mercado numeric(10,2) NOT NULL,
-	log_insumo_costo_original numeric(10,2) NOT NULL
+  cotizacion_detalle_id integer NOT NULL,
+  cotizacion_id integer NOT NULL,
+  insumo_id integer NOT NULL,
+  unidad_medida_codigo character varying(8) NOT NULL,
+  cotizacion_detalle_cantidad numeric(8,2) NOT NULL,
+  cotizacion_detalle_precio numeric(10,2) NOT NULL,
+  cotizacion_detalle_total numeric(12,2) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  log_regla_by_costo boolean,
+  log_regla_porcentaje numeric(6,2),
+  log_tipo_cambio_tasa_compra numeric(8,4) NOT NULL,
+  log_tipo_cambio_tasa_venta numeric(8,4) NOT NULL,
+  log_moneda_codigo_costo character varying(8) NOT NULL,
+  log_unidad_medida_codigo_costo character varying(8) NOT NULL,
+  log_insumo_precio_original numeric(10,2) NOT NULL,
+  log_insumo_precio_mercado numeric(10,2) NOT NULL,
+  log_insumo_costo_original numeric(10,2) NOT NULL
 );
 
 
 ALTER TABLE public.tb_cotizacion_detalle OWNER TO clabsuser;
 
 --
--- TOC entry 219 (class 1259 OID 109774)
+-- TOC entry 221 (class 1259 OID 109774)
 -- Name: tb_cotizacion_detalle_cotizacion_detalle_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4114,7 +4151,7 @@ ALTER TABLE public.tb_cotizacion_detalle_cotizacion_detalle_id_seq OWNER TO clab
 
 --
 -- TOC entry 2566 (class 0 OID 0)
--- Dependencies: 219
+-- Dependencies: 221
 -- Name: tb_cotizacion_detalle_cotizacion_detalle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4122,32 +4159,32 @@ ALTER SEQUENCE tb_cotizacion_detalle_cotizacion_detalle_id_seq OWNED BY tb_cotiz
 
 
 --
--- TOC entry 203 (class 1259 OID 92358)
+-- TOC entry 205 (class 1259 OID 92358)
 -- Name: tb_empresa; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_empresa (
-	empresa_id integer NOT NULL,
-	empresa_razon_social character varying(200) NOT NULL,
-	tipo_empresa_codigo character varying(3) NOT NULL,
-	empresa_ruc character varying(15) NOT NULL,
-	empresa_direccion character varying(200) NOT NULL,
-	empresa_telefonos character varying(60),
-	empresa_fax character varying(10),
-	empresa_correo character varying(100),
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_razon_social_field_len CHECK ((length(rtrim((empresa_razon_social)::text)) > 0))
+  empresa_id integer NOT NULL,
+  empresa_razon_social character varying(200) NOT NULL,
+  tipo_empresa_codigo character varying(3) NOT NULL,
+  empresa_ruc character varying(15) NOT NULL,
+  empresa_direccion character varying(200) NOT NULL,
+  empresa_telefonos character varying(60),
+  empresa_fax character varying(10),
+  empresa_correo character varying(100),
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_razon_social_field_len CHECK ((length(rtrim((empresa_razon_social)::text)) > 0))
 );
 
 
 ALTER TABLE public.tb_empresa OWNER TO clabsuser;
 
 --
--- TOC entry 202 (class 1259 OID 92356)
+-- TOC entry 204 (class 1259 OID 92356)
 -- Name: tb_empresa_empresa_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4163,7 +4200,7 @@ ALTER TABLE public.tb_empresa_empresa_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2567 (class 0 OID 0)
--- Dependencies: 202
+-- Dependencies: 204
 -- Name: tb_empresa_empresa_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4171,23 +4208,23 @@ ALTER SEQUENCE tb_empresa_empresa_id_seq OWNED BY tb_empresa.empresa_id;
 
 
 --
--- TOC entry 201 (class 1259 OID 92328)
+-- TOC entry 203 (class 1259 OID 92328)
 -- Name: tb_entidad; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_entidad (
-	entidad_id integer NOT NULL,
-	entidad_razon_social character varying(200) NOT NULL,
-	entidad_ruc character varying(15) NOT NULL,
-	entidad_direccion character varying(200) NOT NULL,
-	entidad_telefonos character varying(60),
-	entidad_fax character varying(10),
-	entidad_correo character varying(100),
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  entidad_id integer NOT NULL,
+  entidad_razon_social character varying(200) NOT NULL,
+  entidad_ruc character varying(15) NOT NULL,
+  entidad_direccion character varying(200) NOT NULL,
+  entidad_telefonos character varying(60),
+  entidad_fax character varying(10),
+  entidad_correo character varying(100),
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
@@ -4195,7 +4232,7 @@ ALTER TABLE public.tb_entidad OWNER TO atluser;
 
 --
 -- TOC entry 2568 (class 0 OID 0)
--- Dependencies: 201
+-- Dependencies: 203
 -- Name: TABLE tb_entidad; Type: COMMENT; Schema: public; Owner: atluser
 --
 
@@ -4203,7 +4240,7 @@ COMMENT ON TABLE tb_entidad IS 'Datos generales de la entidad que usa el sistema
 
 
 --
--- TOC entry 200 (class 1259 OID 92326)
+-- TOC entry 202 (class 1259 OID 92326)
 -- Name: tb_entidad_entidad_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4219,7 +4256,7 @@ ALTER TABLE public.tb_entidad_entidad_id_seq OWNER TO atluser;
 
 --
 -- TOC entry 2569 (class 0 OID 0)
--- Dependencies: 200
+-- Dependencies: 202
 -- Name: tb_entidad_entidad_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4227,92 +4264,92 @@ ALTER SEQUENCE tb_entidad_entidad_id_seq OWNED BY tb_entidad.entidad_id;
 
 
 --
--- TOC entry 221 (class 1259 OID 110317)
+-- TOC entry 223 (class 1259 OID 110317)
 -- Name: tb_igv; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_igv (
-	fecha_desde date NOT NULL,
-	fecha_hasta date NOT NULL,
-	igv_valor numeric(4,2) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  fecha_desde date NOT NULL,
+  fecha_hasta date NOT NULL,
+  igv_valor numeric(4,2) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_igv OWNER TO clabsuser;
 
 --
--- TOC entry 196 (class 1259 OID 84160)
+-- TOC entry 198 (class 1259 OID 84160)
 -- Name: tb_insumo; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_insumo (
-	insumo_id integer NOT NULL,
-	insumo_tipo character varying(2) NOT NULL,
-	insumo_codigo character varying(15) NOT NULL,
-	insumo_descripcion character varying(60) NOT NULL,
-	tinsumo_codigo character varying(15) NOT NULL,
-	tcostos_codigo character varying(5) NOT NULL,
-	unidad_medida_codigo_ingreso character varying(8) NOT NULL,
-	unidad_medida_codigo_costo character varying(8) NOT NULL,
-	insumo_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
-	insumo_costo numeric(10,4) DEFAULT 0.00,
-	moneda_codigo_costo character varying(8) NOT NULL,
-	activo boolean,
-	usuario character varying(15),
-	fecha_creacion timestamp without time zone,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	empresa_id integer DEFAULT 5 NOT NULL,
-	insumo_precio_mercado numeric(10,2) DEFAULT 0 NOT NULL,
-	CONSTRAINT chk_insumo_costo CHECK (
-		CASE
-		WHEN ((insumo_tipo)::text = 'IN'::text) THEN (insumo_costo IS NOT NULL)
-		ELSE (insumo_costo = NULL::numeric)
-		END),
-	CONSTRAINT chk_insumo_field_len CHECK (((length(rtrim((insumo_codigo)::text)) > 0) AND (length(rtrim((insumo_descripcion)::text)) > 0))),
-	CONSTRAINT chk_insumo_merma CHECK ((insumo_merma >= 0.00)),
-	CONSTRAINT chk_insumo_pmercado CHECK ((insumo_precio_mercado >= 0.00)),
-	CONSTRAINT chk_insumo_tipo CHECK ((((insumo_tipo)::text = 'IN'::text) OR ((insumo_tipo)::text = 'PR'::text)))
+  insumo_id integer NOT NULL,
+  insumo_tipo character varying(2) NOT NULL,
+  insumo_codigo character varying(15) NOT NULL,
+  insumo_descripcion character varying(60) NOT NULL,
+  tinsumo_codigo character varying(15) NOT NULL,
+  tcostos_codigo character varying(5) NOT NULL,
+  unidad_medida_codigo_ingreso character varying(8) NOT NULL,
+  unidad_medida_codigo_costo character varying(8) NOT NULL,
+  insumo_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
+  insumo_costo numeric(10,4) DEFAULT 0.00,
+  moneda_codigo_costo character varying(8) NOT NULL,
+  activo boolean,
+  usuario character varying(15),
+  fecha_creacion timestamp without time zone,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  empresa_id integer DEFAULT 5 NOT NULL,
+  insumo_precio_mercado numeric(10,2) DEFAULT 0 NOT NULL,
+  CONSTRAINT chk_insumo_costo CHECK (
+    CASE
+    WHEN ((insumo_tipo)::text = 'IN'::text) THEN (insumo_costo IS NOT NULL)
+    ELSE (insumo_costo = NULL::numeric)
+    END),
+  CONSTRAINT chk_insumo_field_len CHECK (((length(rtrim((insumo_codigo)::text)) > 0) AND (length(rtrim((insumo_descripcion)::text)) > 0))),
+  CONSTRAINT chk_insumo_merma CHECK ((insumo_merma >= 0.00)),
+  CONSTRAINT chk_insumo_pmercado CHECK ((insumo_precio_mercado >= 0.00)),
+  CONSTRAINT chk_insumo_tipo CHECK ((((insumo_tipo)::text = 'IN'::text) OR ((insumo_tipo)::text = 'PR'::text)))
 );
 
 
 ALTER TABLE public.tb_insumo OWNER TO clabsuser;
 
 --
--- TOC entry 223 (class 1259 OID 246561)
+-- TOC entry 225 (class 1259 OID 246561)
 -- Name: tb_insumo_history; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE tb_insumo_history (
-	insumo_history_id integer NOT NULL,
-	insumo_history_fecha timestamp without time zone NOT NULL,
-	insumo_id integer NOT NULL,
-	insumo_tipo character varying(2) NOT NULL,
-	tinsumo_codigo character varying(15) NOT NULL,
-	tcostos_codigo character varying(5) NOT NULL,
-	unidad_medida_codigo_costo character varying(8) NOT NULL,
-	insumo_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
-	insumo_costo numeric(10,4) DEFAULT 0.00,
-	moneda_codigo_costo character varying(8) NOT NULL,
-	insumo_precio_mercado numeric(10,2) DEFAULT 0 NOT NULL,
-	insumo_history_origen_id integer,
-	activo boolean,
-	usuario character varying(15),
-	fecha_creacion timestamp without time zone,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  insumo_history_id integer NOT NULL,
+  insumo_history_fecha timestamp without time zone NOT NULL,
+  insumo_id integer NOT NULL,
+  insumo_tipo character varying(2) NOT NULL,
+  tinsumo_codigo character varying(15) NOT NULL,
+  tcostos_codigo character varying(5) NOT NULL,
+  unidad_medida_codigo_costo character varying(8) NOT NULL,
+  insumo_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
+  insumo_costo numeric(10,4) DEFAULT 0.00,
+  moneda_codigo_costo character varying(8) NOT NULL,
+  insumo_precio_mercado numeric(10,2) DEFAULT 0 NOT NULL,
+  insumo_history_origen_id integer,
+  activo boolean,
+  usuario character varying(15),
+  fecha_creacion timestamp without time zone,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_insumo_history OWNER TO postgres;
 
 --
--- TOC entry 222 (class 1259 OID 246559)
+-- TOC entry 224 (class 1259 OID 246559)
 -- Name: tb_insumo_history_insumo_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -4328,7 +4365,7 @@ ALTER TABLE public.tb_insumo_history_insumo_history_id_seq OWNER TO postgres;
 
 --
 -- TOC entry 2570 (class 0 OID 0)
--- Dependencies: 222
+-- Dependencies: 224
 -- Name: tb_insumo_history_insumo_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -4336,7 +4373,7 @@ ALTER SEQUENCE tb_insumo_history_insumo_history_id_seq OWNED BY tb_insumo_histor
 
 
 --
--- TOC entry 195 (class 1259 OID 84158)
+-- TOC entry 197 (class 1259 OID 84158)
 -- Name: tb_insumo_insumo_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4352,7 +4389,7 @@ ALTER TABLE public.tb_insumo_insumo_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2571 (class 0 OID 0)
--- Dependencies: 195
+-- Dependencies: 197
 -- Name: tb_insumo_insumo_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4360,54 +4397,54 @@ ALTER SEQUENCE tb_insumo_insumo_id_seq OWNED BY tb_insumo.insumo_id;
 
 
 --
--- TOC entry 188 (class 1259 OID 59242)
+-- TOC entry 190 (class 1259 OID 59242)
 -- Name: tb_moneda; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_moneda (
-	moneda_codigo character varying(8) NOT NULL,
-	moneda_simbolo character varying(6) NOT NULL,
-	moneda_descripcion character varying(80) NOT NULL,
-	moneda_protected boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_moneda_field_len CHECK ((((length(rtrim((moneda_codigo)::text)) > 0) AND (length(rtrim((moneda_simbolo)::text)) > 0)) AND (length(rtrim((moneda_descripcion)::text)) > 0)))
+  moneda_codigo character varying(8) NOT NULL,
+  moneda_simbolo character varying(6) NOT NULL,
+  moneda_descripcion character varying(80) NOT NULL,
+  moneda_protected boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_moneda_field_len CHECK ((((length(rtrim((moneda_codigo)::text)) > 0) AND (length(rtrim((moneda_simbolo)::text)) > 0)) AND (length(rtrim((moneda_descripcion)::text)) > 0)))
 );
 
 
 ALTER TABLE public.tb_moneda OWNER TO clabsuser;
 
 --
--- TOC entry 198 (class 1259 OID 84303)
+-- TOC entry 200 (class 1259 OID 84303)
 -- Name: tb_producto_detalle; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_producto_detalle (
-	producto_detalle_id integer NOT NULL,
-	insumo_id_origen integer NOT NULL,
-	insumo_id integer NOT NULL,
-	unidad_medida_codigo character varying(8) NOT NULL,
-	producto_detalle_cantidad numeric(10,4) DEFAULT 0.00 NOT NULL,
-	producto_detalle_valor numeric(10,4) DEFAULT 0.00 NOT NULL,
-	producto_detalle_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
-	activo boolean,
-	usuario character varying(15),
-	fecha_creacion timestamp without time zone,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	empresa_id integer NOT NULL,
-	CONSTRAINT chk_producto_detalle_cantidad CHECK ((producto_detalle_cantidad > 0.00)),
-	CONSTRAINT chk_producto_detalle_merma CHECK ((producto_detalle_merma >= 0.00))
+  producto_detalle_id integer NOT NULL,
+  insumo_id_origen integer NOT NULL,
+  insumo_id integer NOT NULL,
+  unidad_medida_codigo character varying(8) NOT NULL,
+  producto_detalle_cantidad numeric(10,4) DEFAULT 0.00 NOT NULL,
+  producto_detalle_valor numeric(10,4) DEFAULT 0.00 NOT NULL,
+  producto_detalle_merma numeric(10,4) DEFAULT 0.00 NOT NULL,
+  activo boolean,
+  usuario character varying(15),
+  fecha_creacion timestamp without time zone,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  empresa_id integer NOT NULL,
+  CONSTRAINT chk_producto_detalle_cantidad CHECK ((producto_detalle_cantidad > 0.00)),
+  CONSTRAINT chk_producto_detalle_merma CHECK ((producto_detalle_merma >= 0.00))
 );
 
 
 ALTER TABLE public.tb_producto_detalle OWNER TO clabsuser;
 
 --
--- TOC entry 197 (class 1259 OID 84301)
+-- TOC entry 199 (class 1259 OID 84301)
 -- Name: tb_producto_detalle_producto_detalle_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4423,7 +4460,7 @@ ALTER TABLE public.tb_producto_detalle_producto_detalle_id_seq OWNER TO clabsuse
 
 --
 -- TOC entry 2572 (class 0 OID 0)
--- Dependencies: 197
+-- Dependencies: 199
 -- Name: tb_producto_detalle_producto_detalle_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4431,28 +4468,28 @@ ALTER SEQUENCE tb_producto_detalle_producto_detalle_id_seq OWNED BY tb_producto_
 
 
 --
--- TOC entry 206 (class 1259 OID 100520)
+-- TOC entry 208 (class 1259 OID 100520)
 -- Name: tb_reglas; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_reglas (
-	regla_id integer NOT NULL,
-	regla_empresa_origen_id integer NOT NULL,
-	regla_empresa_destino_id integer NOT NULL,
-	regla_by_costo boolean DEFAULT true NOT NULL,
-	regla_porcentaje numeric(6,2) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  regla_id integer NOT NULL,
+  regla_empresa_origen_id integer NOT NULL,
+  regla_empresa_destino_id integer NOT NULL,
+  regla_by_costo boolean DEFAULT true NOT NULL,
+  regla_porcentaje numeric(6,2) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_reglas OWNER TO clabsuser;
 
 --
--- TOC entry 205 (class 1259 OID 100518)
+-- TOC entry 207 (class 1259 OID 100518)
 -- Name: tb_reglas_regla_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4468,7 +4505,7 @@ ALTER TABLE public.tb_reglas_regla_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2573 (class 0 OID 0)
--- Dependencies: 205
+-- Dependencies: 207
 -- Name: tb_reglas_regla_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4476,30 +4513,30 @@ ALTER SEQUENCE tb_reglas_regla_id_seq OWNED BY tb_reglas.regla_id;
 
 
 --
--- TOC entry 176 (class 1259 OID 58731)
+-- TOC entry 178 (class 1259 OID 58731)
 -- Name: tb_sys_menu; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_sys_menu (
-	sys_systemcode character varying(10),
-	menu_id integer NOT NULL,
-	menu_codigo character varying(30) NOT NULL,
-	menu_descripcion character varying(100) NOT NULL,
-	menu_accesstype character(10) NOT NULL,
-	menu_parent_id integer,
-	menu_orden integer DEFAULT 0,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  sys_systemcode character varying(10),
+  menu_id integer NOT NULL,
+  menu_codigo character varying(30) NOT NULL,
+  menu_descripcion character varying(100) NOT NULL,
+  menu_accesstype character(10) NOT NULL,
+  menu_parent_id integer,
+  menu_orden integer DEFAULT 0,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_sys_menu OWNER TO atluser;
 
 --
--- TOC entry 177 (class 1259 OID 58736)
+-- TOC entry 179 (class 1259 OID 58736)
 -- Name: tb_sys_menu_menu_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4515,7 +4552,7 @@ ALTER TABLE public.tb_sys_menu_menu_id_seq OWNER TO atluser;
 
 --
 -- TOC entry 2574 (class 0 OID 0)
--- Dependencies: 177
+-- Dependencies: 179
 -- Name: tb_sys_menu_menu_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4523,52 +4560,52 @@ ALTER SEQUENCE tb_sys_menu_menu_id_seq OWNED BY tb_sys_menu.menu_id;
 
 
 --
--- TOC entry 178 (class 1259 OID 58738)
+-- TOC entry 180 (class 1259 OID 58738)
 -- Name: tb_sys_perfil; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_sys_perfil (
-	perfil_id integer NOT NULL,
-	sys_systemcode character varying(10) NOT NULL,
-	perfil_codigo character varying(15) NOT NULL,
-	perfil_descripcion character varying(120),
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  perfil_id integer NOT NULL,
+  sys_systemcode character varying(10) NOT NULL,
+  perfil_codigo character varying(15) NOT NULL,
+  perfil_descripcion character varying(120),
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_sys_perfil OWNER TO atluser;
 
 --
--- TOC entry 179 (class 1259 OID 58742)
+-- TOC entry 181 (class 1259 OID 58742)
 -- Name: tb_sys_perfil_detalle; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_sys_perfil_detalle (
-	perfdet_id integer NOT NULL,
-	perfdet_accessdef character varying(10),
-	perfdet_accleer boolean DEFAULT false NOT NULL,
-	perfdet_accagregar boolean DEFAULT false NOT NULL,
-	perfdet_accactualizar boolean DEFAULT false NOT NULL,
-	perfdet_acceliminar boolean DEFAULT false NOT NULL,
-	perfdet_accimprimir boolean DEFAULT false NOT NULL,
-	perfil_id integer,
-	menu_id integer NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  perfdet_id integer NOT NULL,
+  perfdet_accessdef character varying(10),
+  perfdet_accleer boolean DEFAULT false NOT NULL,
+  perfdet_accagregar boolean DEFAULT false NOT NULL,
+  perfdet_accactualizar boolean DEFAULT false NOT NULL,
+  perfdet_acceliminar boolean DEFAULT false NOT NULL,
+  perfdet_accimprimir boolean DEFAULT false NOT NULL,
+  perfil_id integer,
+  menu_id integer NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_sys_perfil_detalle OWNER TO atluser;
 
 --
--- TOC entry 180 (class 1259 OID 58751)
+-- TOC entry 182 (class 1259 OID 58751)
 -- Name: tb_sys_perfil_detalle_perfdet_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4584,7 +4621,7 @@ ALTER TABLE public.tb_sys_perfil_detalle_perfdet_id_seq OWNER TO atluser;
 
 --
 -- TOC entry 2575 (class 0 OID 0)
--- Dependencies: 180
+-- Dependencies: 182
 -- Name: tb_sys_perfil_detalle_perfdet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4592,7 +4629,7 @@ ALTER SEQUENCE tb_sys_perfil_detalle_perfdet_id_seq OWNED BY tb_sys_perfil_detal
 
 
 --
--- TOC entry 181 (class 1259 OID 58753)
+-- TOC entry 183 (class 1259 OID 58753)
 -- Name: tb_sys_perfil_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4608,7 +4645,7 @@ ALTER TABLE public.tb_sys_perfil_id_seq OWNER TO atluser;
 
 --
 -- TOC entry 2576 (class 0 OID 0)
--- Dependencies: 181
+-- Dependencies: 183
 -- Name: tb_sys_perfil_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4616,44 +4653,44 @@ ALTER SEQUENCE tb_sys_perfil_id_seq OWNED BY tb_sys_perfil.perfil_id;
 
 
 --
--- TOC entry 182 (class 1259 OID 58755)
+-- TOC entry 184 (class 1259 OID 58755)
 -- Name: tb_sys_sistemas; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_sys_sistemas (
-	sys_systemcode character varying(10) NOT NULL,
-	sistema_descripcion character varying(100) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  sys_systemcode character varying(10) NOT NULL,
+  sistema_descripcion character varying(100) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_sys_sistemas OWNER TO atluser;
 
 --
--- TOC entry 183 (class 1259 OID 58759)
+-- TOC entry 185 (class 1259 OID 58759)
 -- Name: tb_sys_usuario_perfiles; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_sys_usuario_perfiles (
-	usuario_perfil_id integer NOT NULL,
-	perfil_id integer NOT NULL,
-	usuarios_id integer NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone
+  usuario_perfil_id integer NOT NULL,
+  perfil_id integer NOT NULL,
+  usuarios_id integer NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone
 );
 
 
 ALTER TABLE public.tb_sys_usuario_perfiles OWNER TO atluser;
 
 --
--- TOC entry 184 (class 1259 OID 58763)
+-- TOC entry 186 (class 1259 OID 58763)
 -- Name: tb_sys_usuario_perfiles_usuario_perfil_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4669,7 +4706,7 @@ ALTER TABLE public.tb_sys_usuario_perfiles_usuario_perfil_id_seq OWNER TO atluse
 
 --
 -- TOC entry 2577 (class 0 OID 0)
--- Dependencies: 184
+-- Dependencies: 186
 -- Name: tb_sys_usuario_perfiles_usuario_perfil_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4677,73 +4714,73 @@ ALTER SEQUENCE tb_sys_usuario_perfiles_usuario_perfil_id_seq OWNED BY tb_sys_usu
 
 
 --
--- TOC entry 194 (class 1259 OID 84146)
+-- TOC entry 196 (class 1259 OID 84146)
 -- Name: tb_tcostos; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_tcostos (
-	tcostos_codigo character varying(5) NOT NULL,
-	tcostos_descripcion character varying(60) NOT NULL,
-	tcostos_protected boolean DEFAULT false NOT NULL,
-	tcostos_indirecto boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_tcostos_field_len CHECK (((length(rtrim((tcostos_codigo)::text)) > 0) AND (length(rtrim((tcostos_descripcion)::text)) > 0)))
+  tcostos_codigo character varying(5) NOT NULL,
+  tcostos_descripcion character varying(60) NOT NULL,
+  tcostos_protected boolean DEFAULT false NOT NULL,
+  tcostos_indirecto boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_tcostos_field_len CHECK (((length(rtrim((tcostos_codigo)::text)) > 0) AND (length(rtrim((tcostos_descripcion)::text)) > 0)))
 );
 
 
 ALTER TABLE public.tb_tcostos OWNER TO clabsuser;
 
 --
--- TOC entry 193 (class 1259 OID 84062)
+-- TOC entry 195 (class 1259 OID 84062)
 -- Name: tb_tinsumo; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_tinsumo (
-	tinsumo_codigo character varying(15) NOT NULL,
-	tinsumo_descripcion character varying(60) NOT NULL,
-	tinsumo_protected boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_tinsumo_field_len CHECK (((length(rtrim((tinsumo_codigo)::text)) > 0) AND (length(rtrim((tinsumo_descripcion)::text)) > 0)))
+  tinsumo_codigo character varying(15) NOT NULL,
+  tinsumo_descripcion character varying(60) NOT NULL,
+  tinsumo_protected boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_tinsumo_field_len CHECK (((length(rtrim((tinsumo_codigo)::text)) > 0) AND (length(rtrim((tinsumo_descripcion)::text)) > 0)))
 );
 
 
 ALTER TABLE public.tb_tinsumo OWNER TO clabsuser;
 
 --
--- TOC entry 192 (class 1259 OID 75877)
+-- TOC entry 194 (class 1259 OID 75877)
 -- Name: tb_tipo_cambio; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_tipo_cambio (
-	tipo_cambio_id integer NOT NULL,
-	moneda_codigo_origen character varying(8) NOT NULL,
-	moneda_codigo_destino character varying(8) NOT NULL,
-	tipo_cambio_fecha_desde date NOT NULL,
-	tipo_cambio_fecha_hasta date NOT NULL,
-	tipo_cambio_tasa_compra numeric(8,4) NOT NULL,
-	tipo_cambio_tasa_venta numeric(8,4) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT ckk_tipo_cambio_tasa_compra CHECK ((tipo_cambio_tasa_compra > 0.00)),
-	CONSTRAINT ckk_tipo_cambio_tasa_venta CHECK ((tipo_cambio_tasa_venta > 0.00))
+  tipo_cambio_id integer NOT NULL,
+  moneda_codigo_origen character varying(8) NOT NULL,
+  moneda_codigo_destino character varying(8) NOT NULL,
+  tipo_cambio_fecha_desde date NOT NULL,
+  tipo_cambio_fecha_hasta date NOT NULL,
+  tipo_cambio_tasa_compra numeric(8,4) NOT NULL,
+  tipo_cambio_tasa_venta numeric(8,4) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT ckk_tipo_cambio_tasa_compra CHECK ((tipo_cambio_tasa_compra > 0.00)),
+  CONSTRAINT ckk_tipo_cambio_tasa_venta CHECK ((tipo_cambio_tasa_venta > 0.00))
 );
 
 
 ALTER TABLE public.tb_tipo_cambio OWNER TO clabsuser;
 
 --
--- TOC entry 191 (class 1259 OID 75875)
+-- TOC entry 193 (class 1259 OID 75875)
 -- Name: tb_tipo_cambio_tipo_cambio_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4759,7 +4796,7 @@ ALTER TABLE public.tb_tipo_cambio_tipo_cambio_id_seq OWNER TO clabsuser;
 
 --
 -- TOC entry 2578 (class 0 OID 0)
--- Dependencies: 191
+-- Dependencies: 193
 -- Name: tb_tipo_cambio_tipo_cambio_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4767,92 +4804,92 @@ ALTER SEQUENCE tb_tipo_cambio_tipo_cambio_id_seq OWNED BY tb_tipo_cambio.tipo_ca
 
 
 --
--- TOC entry 208 (class 1259 OID 100944)
+-- TOC entry 210 (class 1259 OID 100944)
 -- Name: tb_tipo_cliente; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_tipo_cliente (
-	tipo_cliente_codigo character varying(3) NOT NULL,
-	tipo_cliente_descripcion character varying(120) NOT NULL,
-	tipo_cliente_protected boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_tipo_cliente_field_len CHECK (((length(rtrim((tipo_cliente_codigo)::text)) > 0) AND (length(rtrim((tipo_cliente_descripcion)::text)) > 0)))
+  tipo_cliente_codigo character varying(3) NOT NULL,
+  tipo_cliente_descripcion character varying(120) NOT NULL,
+  tipo_cliente_protected boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_tipo_cliente_field_len CHECK (((length(rtrim((tipo_cliente_codigo)::text)) > 0) AND (length(rtrim((tipo_cliente_descripcion)::text)) > 0)))
 );
 
 
 ALTER TABLE public.tb_tipo_cliente OWNER TO clabsuser;
 
 --
--- TOC entry 199 (class 1259 OID 92271)
+-- TOC entry 201 (class 1259 OID 92271)
 -- Name: tb_tipo_empresa; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_tipo_empresa (
-	tipo_empresa_codigo character varying(3) NOT NULL,
-	tipo_empresa_descripcion character varying(120) NOT NULL,
-	tipo_empresa_protected boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_tipo_empresa_field_len CHECK (((length(rtrim((tipo_empresa_codigo)::text)) > 0) AND (length(rtrim((tipo_empresa_descripcion)::text)) > 0)))
+  tipo_empresa_codigo character varying(3) NOT NULL,
+  tipo_empresa_descripcion character varying(120) NOT NULL,
+  tipo_empresa_protected boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_tipo_empresa_field_len CHECK (((length(rtrim((tipo_empresa_codigo)::text)) > 0) AND (length(rtrim((tipo_empresa_descripcion)::text)) > 0)))
 );
 
 
 ALTER TABLE public.tb_tipo_empresa OWNER TO clabsuser;
 
 --
--- TOC entry 187 (class 1259 OID 59224)
+-- TOC entry 189 (class 1259 OID 59224)
 -- Name: tb_unidad_medida; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_unidad_medida (
-	unidad_medida_codigo character varying(8) NOT NULL,
-	unidad_medida_siglas character varying(6) NOT NULL,
-	unidad_medida_descripcion character varying(80) NOT NULL,
-	unidad_medida_tipo character(1) NOT NULL,
-	unidad_medida_protected boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	unidad_medida_default boolean DEFAULT false NOT NULL,
-	CONSTRAINT chk_unidad_medida_field_len CHECK ((((length(rtrim((unidad_medida_codigo)::text)) > 0) AND (length(rtrim((unidad_medida_siglas)::text)) > 0)) AND (length(rtrim((unidad_medida_descripcion)::text)) > 0))),
-	CONSTRAINT chk_unidad_medida_tipo CHECK ((unidad_medida_tipo = ANY (ARRAY['P'::bpchar, 'V'::bpchar, 'L'::bpchar, 'T'::bpchar])))
+  unidad_medida_codigo character varying(8) NOT NULL,
+  unidad_medida_siglas character varying(6) NOT NULL,
+  unidad_medida_descripcion character varying(80) NOT NULL,
+  unidad_medida_tipo character(1) NOT NULL,
+  unidad_medida_protected boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  unidad_medida_default boolean DEFAULT false NOT NULL,
+  CONSTRAINT chk_unidad_medida_field_len CHECK ((((length(rtrim((unidad_medida_codigo)::text)) > 0) AND (length(rtrim((unidad_medida_siglas)::text)) > 0)) AND (length(rtrim((unidad_medida_descripcion)::text)) > 0))),
+  CONSTRAINT chk_unidad_medida_tipo CHECK ((unidad_medida_tipo = ANY (ARRAY['P'::bpchar, 'V'::bpchar, 'L'::bpchar, 'T'::bpchar])))
 );
 
 
 ALTER TABLE public.tb_unidad_medida OWNER TO clabsuser;
 
 --
--- TOC entry 190 (class 1259 OID 59377)
+-- TOC entry 192 (class 1259 OID 59377)
 -- Name: tb_unidad_medida_conversion; Type: TABLE; Schema: public; Owner: clabsuser; Tablespace:
 --
 
 CREATE TABLE tb_unidad_medida_conversion (
-	unidad_medida_conversion_id integer NOT NULL,
-	unidad_medida_origen character varying(8) NOT NULL,
-	unidad_medida_destino character varying(8) NOT NULL,
-	unidad_medida_conversion_factor numeric(12,5) NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion timestamp without time zone,
-	CONSTRAINT chk_unidad_medida_conversion_factor CHECK ((unidad_medida_conversion_factor > 0.00))
+  unidad_medida_conversion_id integer NOT NULL,
+  unidad_medida_origen character varying(8) NOT NULL,
+  unidad_medida_destino character varying(8) NOT NULL,
+  unidad_medida_conversion_factor numeric(12,5) NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion timestamp without time zone,
+  CONSTRAINT chk_unidad_medida_conversion_factor CHECK ((unidad_medida_conversion_factor > 0.00))
 );
 
 
 ALTER TABLE public.tb_unidad_medida_conversion OWNER TO clabsuser;
 
 --
--- TOC entry 189 (class 1259 OID 59375)
+-- TOC entry 191 (class 1259 OID 59375)
 -- Name: tb_unidad_medida_conversion_unidad_medida_conversion_id_seq; Type: SEQUENCE; Schema: public; Owner: clabsuser
 --
 
@@ -4868,7 +4905,7 @@ ALTER TABLE public.tb_unidad_medida_conversion_unidad_medida_conversion_id_seq O
 
 --
 -- TOC entry 2579 (class 0 OID 0)
--- Dependencies: 189
+-- Dependencies: 191
 -- Name: tb_unidad_medida_conversion_unidad_medida_conversion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: clabsuser
 --
 
@@ -4876,29 +4913,29 @@ ALTER SEQUENCE tb_unidad_medida_conversion_unidad_medida_conversion_id_seq OWNED
 
 
 --
--- TOC entry 185 (class 1259 OID 58771)
+-- TOC entry 187 (class 1259 OID 58771)
 -- Name: tb_usuarios; Type: TABLE; Schema: public; Owner: atluser; Tablespace:
 --
 
 CREATE TABLE tb_usuarios (
-	usuarios_id integer NOT NULL,
-	usuarios_code character varying(15) NOT NULL,
-	usuarios_password character varying(20) NOT NULL,
-	usuarios_nombre_completo character varying(250) NOT NULL,
-	usuarios_admin boolean DEFAULT false NOT NULL,
-	activo boolean DEFAULT true NOT NULL,
-	usuario character varying(15) NOT NULL,
-	fecha_creacion timestamp without time zone NOT NULL,
-	usuario_mod character varying(15),
-	fecha_modificacion time without time zone,
-	empresa_id integer DEFAULT 1 NOT NULL
+  usuarios_id integer NOT NULL,
+  usuarios_code character varying(15) NOT NULL,
+  usuarios_password character varying(20) NOT NULL,
+  usuarios_nombre_completo character varying(250) NOT NULL,
+  usuarios_admin boolean DEFAULT false NOT NULL,
+  activo boolean DEFAULT true NOT NULL,
+  usuario character varying(15) NOT NULL,
+  fecha_creacion timestamp without time zone NOT NULL,
+  usuario_mod character varying(15),
+  fecha_modificacion time without time zone,
+  empresa_id integer DEFAULT 1 NOT NULL
 );
 
 
 ALTER TABLE public.tb_usuarios OWNER TO atluser;
 
 --
--- TOC entry 186 (class 1259 OID 58776)
+-- TOC entry 188 (class 1259 OID 58776)
 -- Name: tb_usuarios_usuarios_id_seq; Type: SEQUENCE; Schema: public; Owner: atluser
 --
 
@@ -4914,7 +4951,7 @@ ALTER TABLE public.tb_usuarios_usuarios_id_seq OWNER TO atluser;
 
 --
 -- TOC entry 2580 (class 0 OID 0)
--- Dependencies: 186
+-- Dependencies: 188
 -- Name: tb_usuarios_usuarios_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: atluser
 --
 
@@ -4922,12 +4959,12 @@ ALTER SEQUENCE tb_usuarios_usuarios_id_seq OWNED BY tb_usuarios.usuarios_id;
 
 
 --
--- TOC entry 213 (class 1259 OID 101306)
+-- TOC entry 215 (class 1259 OID 101306)
 -- Name: v_insumo_costo; Type: TABLE; Schema: public; Owner: postgres; Tablespace:
 --
 
 CREATE TABLE v_insumo_costo (
-	insumo_costo numeric
+  insumo_costo numeric
 );
 
 
@@ -5063,77 +5100,79 @@ ALTER TABLE ONLY tb_usuarios ALTER COLUMN usuarios_id SET DEFAULT nextval('tb_us
 
 --
 -- TOC entry 2540 (class 0 OID 92399)
--- Dependencies: 204
+-- Dependencies: 206
 -- Data for Name: ci_sessions; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY ci_sessions (session_id, ip_address, user_agent, last_activity, user_data) FROM stdin;
-30c09ddd7717d54486b6f728eb651158	127.0.0.1	Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:51.0) Gecko/20100101 Firefox/51.0	1485813407	a:6:{s:9:"user_data";s:0:"";s:10:"empresa_id";s:1:"5";s:10:"usuario_id";s:2:"21";s:12:"usuario_code";s:5:"ADMIN";s:12:"usuario_name";s:21:"Carlos Arana Reategui";s:10:"isLoggedIn";b:1;}
+9cf5b1bf99f289c29c4f95adb1798021	::1	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.98 Safari/537.36 Vivaldi/1.6.689	1486345044	a:6:{s:9:"user_data";s:0:"";s:10:"empresa_id";s:1:"5";s:10:"usuario_id";s:2:"21";s:12:"usuario_code";s:5:"ADMIN";s:12:"usuario_name";s:21:"Carlos Arana Reategui";s:10:"isLoggedIn";b:1;}
+e276d5dc37314671720f120eb053f7de	::1	Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.98 Safari/537.36 Vivaldi/1.6.689	1486343409	a:6:{s:9:"user_data";s:0:"";s:10:"empresa_id";s:1:"5";s:10:"usuario_id";s:2:"21";s:12:"usuario_code";s:5:"ADMIN";s:12:"usuario_name";s:21:"Carlos Arana Reategui";s:10:"isLoggedIn";b:1;}
 \.
 
 
 --
 -- TOC entry 2546 (class 0 OID 100956)
--- Dependencies: 210
+-- Dependencies: 212
 -- Data for Name: tb_cliente; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_cliente (cliente_id, empresa_id, cliente_razon_social, tipo_cliente_codigo, cliente_ruc, cliente_direccion, cliente_telefonos, cliente_fax, cliente_correo, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
-1	5	ewrwerewrew	DIS	10088090867	erwerewrewr				t	ADMIN	2016-10-29 16:00:17.908844	ADMIN	2016-10-30 12:59:16.486793
+1	5	ewrwerewrew	DIS	10088090867	sfsdfsdfsdf		1234222222		t	ADMIN	2016-10-29 16:00:17.908844	ADMIN	2017-02-08 00:58:09.315482
+5	5	dfyfrtyrty	DIS	54645364564	rtyrtyrty				t	ADMIN	2017-02-09 05:26:06.987284	\N	\N
 \.
 
 
 --
 -- TOC entry 2581 (class 0 OID 0)
--- Dependencies: 209
+-- Dependencies: 211
 -- Name: tb_cliente_cliente_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_cliente_cliente_id_seq', 1, true);
+SELECT pg_catalog.setval('tb_cliente_cliente_id_seq', 6, true);
 
 
 --
 -- TOC entry 2548 (class 0 OID 101028)
--- Dependencies: 212
+-- Dependencies: 214
 -- Data for Name: tb_cotizacion; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_cotizacion (cotizacion_id, empresa_id, cliente_id, cotizacion_es_cliente_real, cotizacion_numero, moneda_codigo, cotizacion_fecha, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion, cotizacion_cerrada) FROM stdin;
-12	5	7	f	21	USD	2016-12-22	t	ADMIN	2016-12-22 03:41:41.650949	ADMIN	2017-01-10 01:16:30.800215	f
-13	5	1	t	22	EURO	2016-12-22	t	ADMIN	2016-12-22 03:42:29.319153	ADMIN	2017-01-10 01:16:30.800215	f
-18	5	1	t	25	USD	2017-01-14	t	ADMIN	2017-01-14 02:22:54.889457	postgres	2017-01-16 02:08:44.562827	f
-19	5	7	f	26	PEN	2017-01-14	t	ADMIN	2017-01-14 02:24:05.082406	ADMIN	2017-01-16 02:08:44.562827	f
-10	5	7	f	19	EURO	2016-12-21	t	ADMIN	2016-12-21 15:08:17.359936	ADMIN	2017-01-16 02:08:44.562827	f
 5	5	7	f	18	EURO	2016-12-15	t	ADMIN	2016-12-07 02:05:24.714805	ADMIN	2017-01-16 02:09:50.115133	t
 4	5	1	t	17	EURO	2016-12-15	t	ADMIN	2016-11-02 04:02:42.749312	ADMIN	2017-01-16 02:11:12.681956	t
 15	5	7	f	24	USD	2016-12-26	t	ADMIN	2016-12-26 14:39:05.412198	ADMIN	2017-01-16 02:12:58.577998	t
 11	5	1	t	20	USD	2016-12-21	t	ADMIN	2016-12-21 15:37:53.983507	ADMIN	2017-01-16 02:13:17.932435	t
+18	5	5	t	25	USD	2017-01-14	t	ADMIN	2017-01-14 02:22:54.889457	ADMIN	2017-02-15 03:50:12.327554	t
+13	5	5	t	22	EURO	2016-12-22	t	ADMIN	2016-12-22 03:42:29.319153	ADMIN	2017-02-15 03:53:49.160578	t
+20	5	1	t	27	EURO	2017-02-15	t	ADMIN	2017-02-15 03:54:16.466348	ADMIN	2017-02-20 04:05:35.195021	t
+12	5	7	f	21	USD	2016-12-22	t	ADMIN	2016-12-22 03:41:41.650949	ADMIN	2017-02-20 04:12:06.006455	t
+10	5	7	f	19	USD	2016-12-21	t	ADMIN	2016-12-21 15:08:17.359936	ADMIN	2017-02-20 04:19:28.406972	f
 \.
 
 
 --
 -- TOC entry 2582 (class 0 OID 0)
--- Dependencies: 211
+-- Dependencies: 213
 -- Name: tb_cotizacion_cotizacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_cotizacion_cotizacion_id_seq', 19, true);
+SELECT pg_catalog.setval('tb_cotizacion_cotizacion_id_seq', 22, true);
 
 
 --
 -- TOC entry 2543 (class 0 OID 100641)
--- Dependencies: 207
+-- Dependencies: 209
 -- Data for Name: tb_cotizacion_counter; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_cotizacion_counter (cotizacion_counter_last_id) FROM stdin;
-26
+29
 \.
 
 
 --
 -- TOC entry 2551 (class 0 OID 109776)
--- Dependencies: 220
+-- Dependencies: 222
 -- Data for Name: tb_cotizacion_detalle; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5144,21 +5183,24 @@ COPY tb_cotizacion_detalle (cotizacion_detalle_id, cotizacion_id, insumo_id, uni
 20	4	12	GALON	0.98	315.00	308.70	t	ADMIN	2016-12-14 02:07:40.748058	ADMIN	2017-01-12 01:35:47.563191	\N	\N	0.9000	0.9100	USD	GALON	350.00	350.00	188.85
 28	15	16	GALON	3.50	143.00	500.50	t	ADMIN	2016-12-26 14:39:18.916866	ADMIN	2017-01-12 01:37:00.189201	t	50.00	1.0000	1.0000	USD	GALON	143.00	420.00	93.46
 31	11	16	GALON	2.00	420.00	840.00	t	ADMIN	2017-01-16 01:33:51.107513	\N	\N	\N	\N	1.0000	1.0000	USD	GALON	420.00	420.00	99.87
+32	20	12	GALON	2.00	700.00	1400.00	t	ADMIN	2017-02-15 04:40:08.262112	\N	\N	\N	\N	2.0000	3.0000	USD	GALON	350.00	350.00	-2.00
+33	20	10	GALON	4.00	3500.00	14000.00	t	ADMIN	2017-02-15 04:40:22.32689	ADMIN	2017-02-15 14:39:31.618328	\N	\N	1.0000	1.0000	EURO	GALON	3500.00	3500.00	-2.00
+34	20	16	GALON	3.00	840.00	2520.00	t	ADMIN	2017-02-15 14:39:43.246157	\N	\N	\N	\N	2.0000	3.0000	USD	GALON	420.00	420.00	-2.00
 \.
 
 
 --
 -- TOC entry 2583 (class 0 OID 0)
--- Dependencies: 219
+-- Dependencies: 221
 -- Name: tb_cotizacion_detalle_cotizacion_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_cotizacion_detalle_cotizacion_detalle_id_seq', 31, true);
+SELECT pg_catalog.setval('tb_cotizacion_detalle_cotizacion_detalle_id_seq', 34, true);
 
 
 --
 -- TOC entry 2539 (class 0 OID 92358)
--- Dependencies: 203
+-- Dependencies: 205
 -- Data for Name: tb_empresa; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5172,27 +5214,27 @@ COPY tb_empresa (empresa_id, empresa_razon_social, tipo_empresa_codigo, empresa_
 
 --
 -- TOC entry 2584 (class 0 OID 0)
--- Dependencies: 202
+-- Dependencies: 204
 -- Name: tb_empresa_empresa_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_empresa_empresa_id_seq', 23, true);
+SELECT pg_catalog.setval('tb_empresa_empresa_id_seq', 26, true);
 
 
 --
 -- TOC entry 2537 (class 0 OID 92328)
--- Dependencies: 201
+-- Dependencies: 203
 -- Data for Name: tb_entidad; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
 COPY tb_entidad (entidad_id, entidad_razon_social, entidad_ruc, entidad_direccion, entidad_telefonos, entidad_fax, entidad_correo, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
-1	LABODEC S.A	12345654457	Ate	2756910		labodec@gmail.com	t	ADMIN	2016-09-21 02:08:40.288333	ADMIN	2016-12-29 15:58:36.471425
+1	LABODEC S.A	12345654457	Ate	2756910		labodec@gmail.com	t	ADMIN	2016-09-21 02:08:40.288333	ADMIN	2017-02-20 03:59:44.131697
 \.
 
 
 --
 -- TOC entry 2585 (class 0 OID 0)
--- Dependencies: 200
+-- Dependencies: 202
 -- Name: tb_entidad_entidad_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
@@ -5201,7 +5243,7 @@ SELECT pg_catalog.setval('tb_entidad_entidad_id_seq', 1, true);
 
 --
 -- TOC entry 2552 (class 0 OID 110317)
--- Dependencies: 221
+-- Dependencies: 223
 -- Data for Name: tb_igv; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5212,7 +5254,7 @@ COPY tb_igv (fecha_desde, fecha_hasta, igv_valor, activo, usuario, fecha_creacio
 
 --
 -- TOC entry 2532 (class 0 OID 84160)
--- Dependencies: 196
+-- Dependencies: 198
 -- Data for Name: tb_insumo; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5223,22 +5265,24 @@ COPY tb_insumo (insumo_id, insumo_tipo, insumo_codigo, insumo_descripcion, tinsu
 13	IN	PUTTTT	Insumo 1 de PUSER	SOLUCION	CDIR	LITROS	LITROS	23.0000	4.0000	EURO	t	PUSER	2016-09-27 00:05:46.171545	PUSER	2016-11-30 22:38:07.781714	7	6.00
 16	PR	PROTREES	qweqwwqe	NING	NING	NING	GALON	2.0000	\N	USD	t	ADMIN	2016-10-10 02:05:38.919148	ADMIN	2016-11-30 22:39:36.281245	5	420.00
 10	PR	PRODUNO	Producto 1	NING	NING	NING	GALON	2.0000	\N	EURO	t	TESTUSER	2016-08-31 23:07:15.951263	ADMIN	2016-12-17 16:12:05.442705	5	3500.00
+30	IN	DFGD	dfgdfgdfg	SERV	CDIR	GALON	GALON	3.0000	22.0000	EURO	t	ADMIN	2017-02-20 04:30:35.549945	ADMIN	2017-02-20 04:33:21.112207	5	24.00
+1	IN	CODUNO	Agente de Aduanas	SERV	CIND	NING	COMIS	0.0000	3.0000	USD	t	TESTUSER	2016-08-30 21:23:10.087079	ADMIN	2017-02-21 02:31:37.171505	5	0.00
 9	IN	CODTRES	Transportista	SERV	CIND	NING	COMIS	0.0000	3.0000	USD	t	TESTUSER	2016-08-31 01:51:52.552593	ADMIN	2017-01-13 15:07:46.781123	5	0.00
 2	IN	CODDOS	Ivermectina	SOLUCION	CDIR	GALON	LITROS	0.0000	24.0000	EURO	t	TESTUSER	2016-08-30 21:24:05.160225	ADMIN	2017-01-13 15:49:01.904693	5	40.00
-17	IN	TRICL	triclabendazol	SOLUCION	CDIR	LITROS	LITROS	2.0000	85.0000	USD	t	ADMIN	2016-11-29 23:21:30.78284	ADMIN	2017-01-16 02:14:41.260389	5	240.00
 20	IN	DDDDD	ddddd	MOBRA	CDIR	GALON	GALON	2.0000	4.0000	EURO	t	ADMIN	2017-01-26 17:00:36.528241	ADMIN	2017-01-26 19:19:32.082665	5	4523.12
-1	IN	CODUNO	Agente de Aduanas	SERV	CDIR	COMIS	COMIS	0.0000	3.0000	USD	t	TESTUSER	2016-08-30 21:23:10.087079	ADMIN	2017-01-28 00:34:15.084949	5	4.00
-19	IN	XXXXZ	xxxxzx	SOLUCION	CDIR	GALON	GALON	2.0000	3.0000	EURO	t	ADMIN	2017-01-13 21:21:40.564423	ADMIN	2017-01-28 19:15:26.934231	5	12.00
+21	IN	XXXVVV	asdjkasdkasjhd	SERV	CIND	NING	KILOS	0.0000	45.0000	EURO	t	ADMIN	2017-02-06 04:24:53.60653	ADMIN	2017-02-15 02:55:09.45106	5	0.00
+27	IN	GGGGG	ggggg	MOBRA	CIND	NING	GALON	0.0000	2.0000	EURO	t	ADMIN	2017-02-15 02:57:56.512351	\N	\N	5	0.00
 \.
 
 
 --
 -- TOC entry 2554 (class 0 OID 246561)
--- Dependencies: 223
+-- Dependencies: 225
 -- Data for Name: tb_insumo_history; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY tb_insumo_history (insumo_history_id, insumo_history_fecha, insumo_id, insumo_tipo, tinsumo_codigo, tcostos_codigo, unidad_medida_codigo_costo, insumo_merma, insumo_costo, moneda_codigo_costo, insumo_precio_mercado, insumo_history_origen_id, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
+57	2017-02-21 02:31:37.171505	1	IN	SERV	CIND	COMIS	0.0000	3.0000	USD	0.00	\N	\N	clabsuser	2017-02-21 02:31:37.171505	\N	\N
 19	2016-12-15 00:00:00	16	PR	NING	NING	GALON	2.0000	404.4942	USD	420.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
 20	2016-12-15 00:00:00	12	PR	NING	NING	GALON	10.0000	198.2114	USD	350.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
 21	2016-12-15 00:00:00	10	PR	NING	NING	GALON	2.0000	2140.7236	EURO	3500.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
@@ -5250,7 +5294,6 @@ COPY tb_insumo_history (insumo_history_id, insumo_history_fecha, insumo_id, insu
 27	2016-12-21 00:00:00	16	PR	NING	NING	GALON	2.0000	99.8650	USD	420.00	11	\N	clabsuser	2017-01-16 02:13:17.932435	\N	\N
 28	2016-12-21 00:00:00	12	PR	NING	NING	GALON	10.0000	48.8834	USD	350.00	11	\N	clabsuser	2017-01-16 02:13:17.932435	\N	\N
 29	2017-01-16 02:14:00.859743	1	IN	SERV	CIND	COMIS	0.0000	2.0000	USD	0.00	\N	\N	clabsuser	2017-01-16 02:14:00.859743	\N	\N
-30	2017-01-16 02:14:41.260389	17	IN	SOLUCION	CDIR	LITROS	2.0000	85.0000	USD	240.00	\N	\N	clabsuser	2017-01-16 02:14:41.260389	\N	\N
 31	2017-01-18 02:34:23.518848	1	IN	SERV	CIND	COMIS	0.0000	4.0000	USD	0.00	\N	\N	clabsuser	2017-01-18 02:34:23.518848	\N	\N
 32	2017-01-26 17:00:36.528241	20	IN	SOLUCION	CDIR	GALON	2.0000	2.0000	EURO	12.00	\N	\N	clabsuser	2017-01-26 17:00:36.528241	\N	\N
 33	2017-01-26 17:01:29.698425	20	IN	SOLUCION	CDIR	GALON	2.0000	3.0000	EURO	12.00	\N	\N	clabsuser	2017-01-26 17:01:29.698425	\N	\N
@@ -5260,31 +5303,42 @@ COPY tb_insumo_history (insumo_history_id, insumo_history_fecha, insumo_id, insu
 37	2017-01-27 23:50:39.717108	1	IN	SERV	CIND	COMIS	0.0000	3.0000	USD	0.00	\N	\N	clabsuser	2017-01-27 23:50:39.717108	\N	\N
 38	2017-01-28 00:34:07.62361	1	IN	SERV	CDIR	COMIS	0.0000	3.0000	USD	0.00	\N	\N	clabsuser	2017-01-28 00:34:07.62361	\N	\N
 39	2017-01-28 00:34:15.084949	1	IN	SERV	CDIR	COMIS	0.0000	3.0000	USD	4.00	\N	\N	clabsuser	2017-01-28 00:34:15.084949	\N	\N
-40	2017-01-28 19:15:26.934231	19	IN	SOLUCION	CDIR	GALON	2.0000	3.0000	EURO	12.00	\N	\N	clabsuser	2017-01-28 19:15:26.934231	\N	\N
+41	2017-02-06 04:24:53.60653	21	IN	SOLUCION	CIND	KILOS	0.0000	33.0000	EURO	0.00	\N	\N	clabsuser	2017-02-06 04:24:53.60653	\N	\N
+43	2017-02-15 02:55:09.45106	21	IN	SERV	CIND	KILOS	0.0000	45.0000	EURO	0.00	\N	\N	clabsuser	2017-02-15 02:55:09.45106	\N	\N
+45	2017-02-15 02:57:56.512351	27	IN	MOBRA	CIND	GALON	0.0000	2.0000	EURO	0.00	\N	\N	clabsuser	2017-02-15 02:57:56.512351	\N	\N
+47	2017-02-15 00:00:00	12	PR	NING	NING	GALON	10.0000	-2.0000	USD	350.00	20	\N	clabsuser	2017-02-20 04:05:35.195021	\N	\N
+48	2017-02-15 00:00:00	16	PR	NING	NING	GALON	2.0000	-2.0000	USD	420.00	20	\N	clabsuser	2017-02-20 04:05:35.195021	\N	\N
+49	2017-02-15 00:00:00	10	PR	NING	NING	GALON	2.0000	-2.0000	EURO	3500.00	20	\N	clabsuser	2017-02-20 04:05:35.195021	\N	\N
+50	2017-02-20 04:30:35.549945	30	IN	MOBRA	CIND	GALON	0.0000	22.0000	EURO	0.00	\N	\N	clabsuser	2017-02-20 04:30:35.549945	\N	\N
+51	2017-02-20 04:30:56.923949	30	IN	MOBRA	CIND	KILOS	0.0000	22.0000	EURO	0.00	\N	\N	clabsuser	2017-02-20 04:30:56.923949	\N	\N
+52	2017-02-20 04:31:03.372385	30	IN	SOLUCION	CIND	KILOS	0.0000	22.0000	EURO	0.00	\N	\N	clabsuser	2017-02-20 04:31:03.372385	\N	\N
+53	2017-02-20 04:31:33.273625	30	IN	SERV	CDIR	GALON	0.0000	22.0000	EURO	0.00	\N	\N	clabsuser	2017-02-20 04:31:33.273625	\N	\N
+54	2017-02-20 04:33:04.843716	30	IN	SERV	CDIR	GALON	0.0000	22.0000	EURO	24.00	\N	\N	clabsuser	2017-02-20 04:33:04.843716	\N	\N
+55	2017-02-20 04:33:21.112207	30	IN	SERV	CDIR	GALON	3.0000	22.0000	EURO	24.00	\N	\N	clabsuser	2017-02-20 04:33:21.112207	\N	\N
 \.
 
 
 --
 -- TOC entry 2586 (class 0 OID 0)
--- Dependencies: 222
+-- Dependencies: 224
 -- Name: tb_insumo_history_insumo_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tb_insumo_history_insumo_history_id_seq', 40, true);
+SELECT pg_catalog.setval('tb_insumo_history_insumo_history_id_seq', 58, true);
 
 
 --
 -- TOC entry 2587 (class 0 OID 0)
--- Dependencies: 195
+-- Dependencies: 197
 -- Name: tb_insumo_insumo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_insumo_insumo_id_seq', 20, true);
+SELECT pg_catalog.setval('tb_insumo_insumo_id_seq', 35, true);
 
 
 --
 -- TOC entry 2524 (class 0 OID 59242)
--- Dependencies: 188
+-- Dependencies: 190
 -- Data for Name: tb_moneda; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5298,7 +5352,7 @@ EURO	â¬	Euros	f	t	TESTUSER	2016-08-21 23:36:32.726364	TESTUSER	2017-01-01 23
 
 --
 -- TOC entry 2534 (class 0 OID 84303)
--- Dependencies: 198
+-- Dependencies: 200
 -- Data for Name: tb_producto_detalle; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5323,38 +5377,38 @@ COPY tb_producto_detalle (producto_detalle_id, insumo_id_origen, insumo_id, unid
 
 --
 -- TOC entry 2588 (class 0 OID 0)
--- Dependencies: 197
+-- Dependencies: 199
 -- Name: tb_producto_detalle_producto_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_producto_detalle_producto_detalle_id_seq', 35, true);
+SELECT pg_catalog.setval('tb_producto_detalle_producto_detalle_id_seq', 42, true);
 
 
 --
 -- TOC entry 2542 (class 0 OID 100520)
--- Dependencies: 206
+-- Dependencies: 208
 -- Data for Name: tb_reglas; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_reglas (regla_id, regla_empresa_origen_id, regla_empresa_destino_id, regla_by_costo, regla_porcentaje, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
 17	5	11	f	20.00	t	ADMIN	2016-10-01 14:35:44.193287	ADMIN	2016-11-30 21:51:51.883136
-19	5	23	f	10.00	t	ADMIN	2016-12-02 20:13:18.243966	\N	\N
 16	5	7	t	50.00	t	ADMIN	2016-10-01 01:59:52.134056	ADMIN	2016-12-26 14:37:04.536824
+19	5	23	f	10.00	t	ADMIN	2016-12-02 20:13:18.243966	ADMIN	2017-02-20 03:49:42.116643
 \.
 
 
 --
 -- TOC entry 2589 (class 0 OID 0)
--- Dependencies: 205
+-- Dependencies: 207
 -- Name: tb_reglas_regla_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_reglas_regla_id_seq', 19, true);
+SELECT pg_catalog.setval('tb_reglas_regla_id_seq', 25, true);
 
 
 --
 -- TOC entry 2512 (class 0 OID 58731)
--- Dependencies: 176
+-- Dependencies: 178
 -- Data for Name: tb_sys_menu; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
@@ -5386,7 +5440,7 @@ labcostos	72	smn_costos_historicos	Costo Historico	A         	70	10	t	TESTUSER	2
 
 --
 -- TOC entry 2590 (class 0 OID 0)
--- Dependencies: 177
+-- Dependencies: 179
 -- Name: tb_sys_menu_menu_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
@@ -5395,7 +5449,7 @@ SELECT pg_catalog.setval('tb_sys_menu_menu_id_seq', 72, true);
 
 --
 -- TOC entry 2514 (class 0 OID 58738)
--- Dependencies: 178
+-- Dependencies: 180
 -- Data for Name: tb_sys_perfil; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
@@ -5407,7 +5461,7 @@ COPY tb_sys_perfil (perfil_id, sys_systemcode, perfil_codigo, perfil_descripcion
 
 --
 -- TOC entry 2515 (class 0 OID 58742)
--- Dependencies: 179
+-- Dependencies: 181
 -- Data for Name: tb_sys_perfil_detalle; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
@@ -5458,25 +5512,25 @@ COPY tb_sys_perfil_detalle (perfdet_id, perfdet_accessdef, perfdet_accleer, perf
 
 --
 -- TOC entry 2591 (class 0 OID 0)
--- Dependencies: 180
+-- Dependencies: 182
 -- Name: tb_sys_perfil_detalle_perfdet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
-SELECT pg_catalog.setval('tb_sys_perfil_detalle_perfdet_id_seq', 718, true);
+SELECT pg_catalog.setval('tb_sys_perfil_detalle_perfdet_id_seq', 872, true);
 
 
 --
 -- TOC entry 2592 (class 0 OID 0)
--- Dependencies: 181
+-- Dependencies: 183
 -- Name: tb_sys_perfil_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
-SELECT pg_catalog.setval('tb_sys_perfil_id_seq', 23, true);
+SELECT pg_catalog.setval('tb_sys_perfil_id_seq', 31, true);
 
 
 --
 -- TOC entry 2518 (class 0 OID 58755)
--- Dependencies: 182
+-- Dependencies: 184
 -- Data for Name: tb_sys_sistemas; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
@@ -5487,89 +5541,93 @@ labcostos	Sistema De Costos Laboratorios	t	TESTUSER	2016-07-08 23:47:11.960862	p
 
 --
 -- TOC entry 2519 (class 0 OID 58759)
--- Dependencies: 183
+-- Dependencies: 185
 -- Data for Name: tb_sys_usuario_perfiles; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
 COPY tb_sys_usuario_perfiles (usuario_perfil_id, perfil_id, usuarios_id, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
 14	21	22	t	ADMIN	2016-09-21 02:04:24.698619	ADMIN	2016-10-03 01:59:00.526257
 13	22	21	t	ADMIN	2016-09-21 02:02:31.236401	ADMIN	2016-10-03 02:01:50.620326
+24	22	25	t	ADMIN	2017-02-09 15:27:53.125555	ADMIN	2017-02-09 16:53:12.017344
+26	22	26	t	ADMIN	2017-02-20 01:28:23.624613	ADMIN	2017-02-20 01:28:35.265531
 \.
 
 
 --
 -- TOC entry 2593 (class 0 OID 0)
--- Dependencies: 184
+-- Dependencies: 186
 -- Name: tb_sys_usuario_perfiles_usuario_perfil_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
-SELECT pg_catalog.setval('tb_sys_usuario_perfiles_usuario_perfil_id_seq', 23, true);
+SELECT pg_catalog.setval('tb_sys_usuario_perfiles_usuario_perfil_id_seq', 26, true);
 
 
 --
 -- TOC entry 2530 (class 0 OID 84146)
--- Dependencies: 194
+-- Dependencies: 196
 -- Data for Name: tb_tcostos; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_tcostos (tcostos_codigo, tcostos_descripcion, tcostos_protected, tcostos_indirecto, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
-NING	Ninguno	t	f	t	admin	2016-08-30 20:03:40.281843	\N	\N
-CDIR	Costo Directo	f	f	t	TESTUSER	2016-08-30 20:18:08.544862	\N	\N
-CIND	Costo Indirecto	f	t	t	TESTUSER	2016-08-30 20:18:59.46133	TESTUSER	2016-08-30 20:26:12.976916
+CIND	Costo Indirecto	f	t	t	TESTUSER	2016-08-30 20:18:59.46133	ADMIN	2017-02-14 00:47:20.776931
+NING	Ninguno	t	f	t	admin	2016-08-30 20:03:40.281843	ADMIN	2017-02-14 00:48:13.45147
+CDIR	Costo Directo	f	f	t	TESTUSER	2016-08-30 20:18:08.544862	ADMIN	2017-02-14 01:12:02.164853
 \.
 
 
 --
 -- TOC entry 2529 (class 0 OID 84062)
--- Dependencies: 193
+-- Dependencies: 195
 -- Data for Name: tb_tinsumo; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_tinsumo (tinsumo_codigo, tinsumo_descripcion, tinsumo_protected, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
 NING	Ninguno	t	t	admin	2016-08-30 17:48:41.042868	\N	\N
 MOBRA	Mano De Obra	f	t	TESTUSER	2016-08-30 21:22:19.135911	\N	\N
-EQUIP	Equipo	f	t	TESTUSER	2016-08-30 21:22:31.390434	\N	\N
 SOLUCION	Solucion	f	t	PUSER	2016-09-26 22:29:14.474284	\N	\N
 SERV	Servicios	f	t	ADMIN	2016-11-29 23:49:45.766442	\N	\N
 TRANS	Transporte	f	t	ADMIN	2016-11-29 23:51:15.20716	\N	\N
+EQUIP	Equipo	f	t	TESTUSER	2016-08-30 21:22:31.390434	ADMIN	2017-02-14 00:00:40.670564
 \.
 
 
 --
 -- TOC entry 2528 (class 0 OID 75877)
--- Dependencies: 192
+-- Dependencies: 194
 -- Data for Name: tb_tipo_cambio; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_tipo_cambio (tipo_cambio_id, moneda_codigo_origen, moneda_codigo_destino, tipo_cambio_fecha_desde, tipo_cambio_fecha_hasta, tipo_cambio_tasa_compra, tipo_cambio_tasa_venta, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
 1	USD	JPY	2016-08-18	2016-08-19	3.0000	3.5000	t	TESTUSER	2016-08-13 15:41:24.405659	TESTUSER	2016-08-13 15:47:08.433642
-2	USD	JPY	2016-08-22	2016-08-22	3.1000	3.2000	t	TESTUSER	2016-08-22 15:35:06.442191	\N	\N
 3	EURO	USD	2016-12-15	2016-12-15	4.0000	4.2000	t	TESTUSER	2016-08-22 15:58:06.566396	ADMIN	2016-12-15 01:05:55.682777
 5	PEN	USD	2016-12-15	2016-12-15	3.2400	3.2900	t	TESTUSER	2016-08-24 16:18:47.669771	ADMIN	2016-12-15 01:06:06.582977
 6	USD	EURO	2016-12-15	2016-12-15	0.9000	0.9100	t	TESTUSER	2016-09-01 01:20:07.450926	ADMIN	2016-12-15 01:06:14.767977
 10	USD	EURO	2016-12-21	2016-12-21	4.2500	4.2100	t	ADMIN	2016-12-21 22:21:42.120595	\N	\N
-11	PEN	USD	2016-12-21	2016-12-21	3.2400	3.2300	t	ADMIN	2016-12-21 22:22:57.348017	\N	\N
 12	EURO	USD	2016-12-21	2016-12-21	0.9500	0.9400	t	ADMIN	2016-12-21 22:23:47.148811	\N	\N
 13	USD	EURO	2016-12-26	2016-12-26	4.2500	4.2100	t	ADMIN	2016-12-26 14:32:15.132598	\N	\N
 14	EURO	USD	2016-12-26	2016-12-26	0.9500	0.9400	t	ADMIN	2016-12-26 14:33:32.727022	\N	\N
 4	PEN	USD	2016-09-13	2016-09-13	3.2500	3.3000	t	TESTUSER	2016-08-23 14:31:00.466178	TESTUSER	2016-09-13 01:31:28.473115
-17	EURO	USD	2017-01-10	2017-01-14	0.9000	0.9100	t	ADMIN	2017-01-12 01:44:16.450111	ADMIN	2017-01-14 00:07:35.553357
 15	USD	EURO	2017-01-10	2017-01-14	4.2500	4.2100	t	ADMIN	2017-01-10 01:19:50.376197	ADMIN	2017-01-14 00:07:44.046276
+19	USD	EURO	2017-02-15	2017-02-20	2.0000	3.0000	t	ADMIN	2017-02-15 04:34:29.168028	ADMIN	2017-02-20 23:25:51.373333
+20	USD	PEN	2017-02-15	2017-02-20	4.0000	5.0000	t	ADMIN	2017-02-15 04:35:05.101076	ADMIN	2017-02-20 23:26:15.52793
+17	EURO	USD	2017-01-10	2017-02-20	0.9000	0.9100	t	ADMIN	2017-01-12 01:44:16.450111	ADMIN	2017-02-20 23:26:47.434478
+11	PEN	USD	2016-12-21	2017-02-20	3.2400	3.2300	t	ADMIN	2016-12-21 22:22:57.348017	ADMIN	2017-02-20 23:27:23.078125
+2	USD	JPY	2016-08-22	2017-02-20	3.1000	3.2000	t	TESTUSER	2016-08-22 15:35:06.442191	ADMIN	2017-02-20 23:28:08.789636
 \.
 
 
 --
 -- TOC entry 2594 (class 0 OID 0)
--- Dependencies: 191
+-- Dependencies: 193
 -- Name: tb_tipo_cambio_tipo_cambio_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_tipo_cambio_tipo_cambio_id_seq', 17, true);
+SELECT pg_catalog.setval('tb_tipo_cambio_tipo_cambio_id_seq', 21, true);
 
 
 --
 -- TOC entry 2544 (class 0 OID 100944)
--- Dependencies: 208
+-- Dependencies: 210
 -- Data for Name: tb_tipo_cliente; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5581,7 +5639,7 @@ VET	Veterinaria	f	t	ADMIN	2016-10-29 01:16:24.303677	\N	\N
 
 --
 -- TOC entry 2535 (class 0 OID 92271)
--- Dependencies: 199
+-- Dependencies: 201
 -- Data for Name: tb_tipo_empresa; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5594,24 +5652,24 @@ DIS	Distribuidor	t	t	TESTUSER	2016-09-14 14:32:35.783304	postgres	2016-09-21 01:
 
 --
 -- TOC entry 2523 (class 0 OID 59224)
--- Dependencies: 187
+-- Dependencies: 189
 -- Data for Name: tb_unidad_medida; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
 COPY tb_unidad_medida (unidad_medida_codigo, unidad_medida_siglas, unidad_medida_descripcion, unidad_medida_tipo, unidad_medida_protected, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion, unidad_medida_default) FROM stdin;
 GALON	Gls.	Galones	V	f	t	TESTUSER	2016-07-17 15:07:47.744565	TESTUSER	2016-07-18 04:56:08.667067	f
 NING	Ning	Ninguna	P	t	t	TESTUSER	2016-08-15 02:29:09.264036	postgres	2016-08-15 02:29:30.986832	f
-LITROS	Ltrs.	Litros	V	f	t	TESTUSER	2016-07-09 14:13:29.603714	ADMIN	2016-10-11 01:36:48.037782	t
 TONELAD	Ton.	Toneladas	P	f	t	TESTUSER	2016-07-11 17:17:40.095483	ADMIN	2016-10-11 01:38:35.010705	f
-KILOS	Kgs.	Kilogramos	P	f	t	TESTUSER	2016-07-09 14:30:43.815942	ADMIN	2016-10-11 01:38:39.99523	t
-COMIS	Com.	Comision	T	f	t	ADMIN	2016-11-29 23:48:42.283533	\N	\N	f
-HHOMBRE	HHOMBR	Hora Hombre	T	f	t	ADMIN	2016-11-29 23:33:52.541501	ADMIN	2016-12-27 17:01:50.237984	t
+KILOS	Kgs.	Kilogramos	P	t	t	TESTUSER	2016-07-09 14:30:43.815942	ADMIN	2017-02-13 23:00:14.941311	t
+HHOMBRE	HHOMBR	Hora Hombre	T	t	t	ADMIN	2016-11-29 23:33:52.541501	ADMIN	2017-02-13 23:00:28.304606	t
+LITROS	Ltrs.	Litros	V	f	t	TESTUSER	2016-07-09 14:13:29.603714	ADMIN	2017-02-15 02:13:46.093291	t
+COMIS	Com.	Comision	T	f	t	ADMIN	2016-11-29 23:48:42.283533	ADMIN	2017-02-20 04:00:21.289677	f
 \.
 
 
 --
 -- TOC entry 2526 (class 0 OID 59377)
--- Dependencies: 190
+-- Dependencies: 192
 -- Data for Name: tb_unidad_medida_conversion; Type: TABLE DATA; Schema: public; Owner: clabsuser
 --
 
@@ -5619,43 +5677,45 @@ COPY tb_unidad_medida_conversion (unidad_medida_conversion_id, unidad_medida_ori
 10	TONELAD	KILOS	1000.00000	t	TESTUSER	2016-07-11 17:18:02.132735	\N	\N
 60	GALON	LITROS	3.78540	t	TESTUSER	2016-07-18 04:44:20.861417	TESTUSER	2016-08-27 14:47:27.766392
 70	LITROS	GALON	0.26420	t	TESTUSER	2016-07-30 00:33:37.114577	TESTUSER	2016-08-27 14:47:33.986013
-24	KILOS	TONELAD	0.00100	t	TESTUSER	2016-07-12 15:58:35.930938	TESTUSER	2016-07-16 04:13:48.158402
+24	KILOS	TONELAD	0.00100	t	TESTUSER	2016-07-12 15:58:35.930938	ADMIN	2017-02-14 01:49:05.979355
 \.
 
 
 --
 -- TOC entry 2595 (class 0 OID 0)
--- Dependencies: 189
+-- Dependencies: 191
 -- Name: tb_unidad_medida_conversion_unidad_medida_conversion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_unidad_medida_conversion_unidad_medida_conversion_id_seq', 72, true);
+SELECT pg_catalog.setval('tb_unidad_medida_conversion_unidad_medida_conversion_id_seq', 78, true);
 
 
 --
 -- TOC entry 2521 (class 0 OID 58771)
--- Dependencies: 185
+-- Dependencies: 187
 -- Data for Name: tb_usuarios; Type: TABLE DATA; Schema: public; Owner: atluser
 --
 
 COPY tb_usuarios (usuarios_id, usuarios_code, usuarios_password, usuarios_nombre_completo, usuarios_admin, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion, empresa_id) FROM stdin;
 21	ADMIN	melivane	Carlos Arana Reategui	t	t	ADMIN	2016-09-21 01:45:30.980176	postgres	02:07:33.907445	5
 22	PUSER	puser	Soy Power User	f	t	ADMIN	2016-09-21 02:03:18.100401	ADMIN	16:14:37.451062	7
+25	YUIYTIY	yuiyuiyutyuti5	fddfgdfg	f	t	ADMIN	2017-02-09 05:13:53.596983	ADMIN	15:47:06.747233	7
+26	RWERWER	werwerwrw	werwerwerewrwer	f	t	ADMIN	2017-02-20 01:28:14.924596	ADMIN	01:28:42.49441	5
 \.
 
 
 --
 -- TOC entry 2596 (class 0 OID 0)
--- Dependencies: 186
+-- Dependencies: 188
 -- Name: tb_usuarios_usuarios_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atluser
 --
 
-SELECT pg_catalog.setval('tb_usuarios_usuarios_id_seq', 22, true);
+SELECT pg_catalog.setval('tb_usuarios_usuarios_id_seq', 26, true);
 
 
 --
 -- TOC entry 2549 (class 0 OID 101306)
--- Dependencies: 213
+-- Dependencies: 215
 -- Data for Name: v_insumo_costo; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -5669,7 +5729,7 @@ COPY v_insumo_costo (insumo_costo) FROM stdin;
 --
 
 ALTER TABLE ONLY tb_cliente
-ADD CONSTRAINT pk_cliente PRIMARY KEY (cliente_id);
+  ADD CONSTRAINT pk_cliente PRIMARY KEY (cliente_id);
 
 
 --
@@ -5678,7 +5738,7 @@ ADD CONSTRAINT pk_cliente PRIMARY KEY (cliente_id);
 --
 
 ALTER TABLE ONLY tb_cotizacion
-ADD CONSTRAINT pk_cotizacion PRIMARY KEY (cotizacion_id);
+  ADD CONSTRAINT pk_cotizacion PRIMARY KEY (cotizacion_id);
 
 
 --
@@ -5687,7 +5747,7 @@ ADD CONSTRAINT pk_cotizacion PRIMARY KEY (cotizacion_id);
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT pk_cotizacion_detalle PRIMARY KEY (cotizacion_detalle_id);
+  ADD CONSTRAINT pk_cotizacion_detalle PRIMARY KEY (cotizacion_detalle_id);
 
 
 --
@@ -5696,7 +5756,7 @@ ADD CONSTRAINT pk_cotizacion_detalle PRIMARY KEY (cotizacion_detalle_id);
 --
 
 ALTER TABLE ONLY tb_empresa
-ADD CONSTRAINT pk_empresa PRIMARY KEY (empresa_id);
+  ADD CONSTRAINT pk_empresa PRIMARY KEY (empresa_id);
 
 
 --
@@ -5705,7 +5765,7 @@ ADD CONSTRAINT pk_empresa PRIMARY KEY (empresa_id);
 --
 
 ALTER TABLE ONLY tb_entidad
-ADD CONSTRAINT pk_entidad PRIMARY KEY (entidad_id);
+  ADD CONSTRAINT pk_entidad PRIMARY KEY (entidad_id);
 
 
 --
@@ -5714,7 +5774,7 @@ ADD CONSTRAINT pk_entidad PRIMARY KEY (entidad_id);
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT pk_insumo PRIMARY KEY (insumo_id);
+  ADD CONSTRAINT pk_insumo PRIMARY KEY (insumo_id);
 
 
 --
@@ -5723,7 +5783,7 @@ ADD CONSTRAINT pk_insumo PRIMARY KEY (insumo_id);
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT pk_insumo_history PRIMARY KEY (insumo_history_id);
+  ADD CONSTRAINT pk_insumo_history PRIMARY KEY (insumo_history_id);
 
 
 --
@@ -5732,7 +5792,7 @@ ADD CONSTRAINT pk_insumo_history PRIMARY KEY (insumo_history_id);
 --
 
 ALTER TABLE ONLY tb_sys_menu
-ADD CONSTRAINT pk_menu PRIMARY KEY (menu_id);
+  ADD CONSTRAINT pk_menu PRIMARY KEY (menu_id);
 
 
 --
@@ -5741,7 +5801,7 @@ ADD CONSTRAINT pk_menu PRIMARY KEY (menu_id);
 --
 
 ALTER TABLE ONLY tb_moneda
-ADD CONSTRAINT pk_moneda PRIMARY KEY (moneda_codigo);
+  ADD CONSTRAINT pk_moneda PRIMARY KEY (moneda_codigo);
 
 
 --
@@ -5750,7 +5810,7 @@ ADD CONSTRAINT pk_moneda PRIMARY KEY (moneda_codigo);
 --
 
 ALTER TABLE ONLY tb_sys_perfil_detalle
-ADD CONSTRAINT pk_perfdet_id PRIMARY KEY (perfdet_id);
+  ADD CONSTRAINT pk_perfdet_id PRIMARY KEY (perfdet_id);
 
 
 --
@@ -5759,7 +5819,7 @@ ADD CONSTRAINT pk_perfdet_id PRIMARY KEY (perfdet_id);
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT pk_producto_detalle PRIMARY KEY (producto_detalle_id);
+  ADD CONSTRAINT pk_producto_detalle PRIMARY KEY (producto_detalle_id);
 
 
 --
@@ -5768,7 +5828,7 @@ ADD CONSTRAINT pk_producto_detalle PRIMARY KEY (producto_detalle_id);
 --
 
 ALTER TABLE ONLY tb_reglas
-ADD CONSTRAINT pk_reglas PRIMARY KEY (regla_id);
+  ADD CONSTRAINT pk_reglas PRIMARY KEY (regla_id);
 
 
 --
@@ -5777,7 +5837,7 @@ ADD CONSTRAINT pk_reglas PRIMARY KEY (regla_id);
 --
 
 ALTER TABLE ONLY ci_sessions
-ADD CONSTRAINT pk_sessions PRIMARY KEY (session_id);
+  ADD CONSTRAINT pk_sessions PRIMARY KEY (session_id);
 
 
 --
@@ -5786,7 +5846,7 @@ ADD CONSTRAINT pk_sessions PRIMARY KEY (session_id);
 --
 
 ALTER TABLE ONLY tb_sys_sistemas
-ADD CONSTRAINT pk_sistemas PRIMARY KEY (sys_systemcode);
+  ADD CONSTRAINT pk_sistemas PRIMARY KEY (sys_systemcode);
 
 
 --
@@ -5795,7 +5855,7 @@ ADD CONSTRAINT pk_sistemas PRIMARY KEY (sys_systemcode);
 --
 
 ALTER TABLE ONLY tb_sys_perfil
-ADD CONSTRAINT pk_sys_perfil PRIMARY KEY (perfil_id);
+  ADD CONSTRAINT pk_sys_perfil PRIMARY KEY (perfil_id);
 
 
 --
@@ -5804,7 +5864,7 @@ ADD CONSTRAINT pk_sys_perfil PRIMARY KEY (perfil_id);
 --
 
 ALTER TABLE ONLY tb_tcostos
-ADD CONSTRAINT pk_tcostos PRIMARY KEY (tcostos_codigo);
+  ADD CONSTRAINT pk_tcostos PRIMARY KEY (tcostos_codigo);
 
 
 --
@@ -5813,7 +5873,7 @@ ADD CONSTRAINT pk_tcostos PRIMARY KEY (tcostos_codigo);
 --
 
 ALTER TABLE ONLY tb_tinsumo
-ADD CONSTRAINT pk_tinsumo PRIMARY KEY (tinsumo_codigo);
+  ADD CONSTRAINT pk_tinsumo PRIMARY KEY (tinsumo_codigo);
 
 
 --
@@ -5822,7 +5882,7 @@ ADD CONSTRAINT pk_tinsumo PRIMARY KEY (tinsumo_codigo);
 --
 
 ALTER TABLE ONLY tb_tipo_cambio
-ADD CONSTRAINT pk_tipo_cambio PRIMARY KEY (tipo_cambio_id);
+  ADD CONSTRAINT pk_tipo_cambio PRIMARY KEY (tipo_cambio_id);
 
 
 --
@@ -5831,7 +5891,7 @@ ADD CONSTRAINT pk_tipo_cambio PRIMARY KEY (tipo_cambio_id);
 --
 
 ALTER TABLE ONLY tb_tipo_cliente
-ADD CONSTRAINT pk_tipo_cliente PRIMARY KEY (tipo_cliente_codigo);
+  ADD CONSTRAINT pk_tipo_cliente PRIMARY KEY (tipo_cliente_codigo);
 
 
 --
@@ -5840,7 +5900,7 @@ ADD CONSTRAINT pk_tipo_cliente PRIMARY KEY (tipo_cliente_codigo);
 --
 
 ALTER TABLE ONLY tb_tipo_empresa
-ADD CONSTRAINT pk_tipo_empresa PRIMARY KEY (tipo_empresa_codigo);
+  ADD CONSTRAINT pk_tipo_empresa PRIMARY KEY (tipo_empresa_codigo);
 
 
 --
@@ -5849,7 +5909,7 @@ ADD CONSTRAINT pk_tipo_empresa PRIMARY KEY (tipo_empresa_codigo);
 --
 
 ALTER TABLE ONLY tb_unidad_medida_conversion
-ADD CONSTRAINT pk_unidad_conversion PRIMARY KEY (unidad_medida_conversion_id);
+  ADD CONSTRAINT pk_unidad_conversion PRIMARY KEY (unidad_medida_conversion_id);
 
 
 --
@@ -5858,7 +5918,7 @@ ADD CONSTRAINT pk_unidad_conversion PRIMARY KEY (unidad_medida_conversion_id);
 --
 
 ALTER TABLE ONLY tb_unidad_medida
-ADD CONSTRAINT pk_unidad_medida PRIMARY KEY (unidad_medida_codigo);
+  ADD CONSTRAINT pk_unidad_medida PRIMARY KEY (unidad_medida_codigo);
 
 
 --
@@ -5867,7 +5927,7 @@ ADD CONSTRAINT pk_unidad_medida PRIMARY KEY (unidad_medida_codigo);
 --
 
 ALTER TABLE ONLY tb_sys_usuario_perfiles
-ADD CONSTRAINT pk_usuarioperfiles PRIMARY KEY (usuario_perfil_id);
+  ADD CONSTRAINT pk_usuarioperfiles PRIMARY KEY (usuario_perfil_id);
 
 
 --
@@ -5876,7 +5936,7 @@ ADD CONSTRAINT pk_usuarioperfiles PRIMARY KEY (usuario_perfil_id);
 --
 
 ALTER TABLE ONLY tb_usuarios
-ADD CONSTRAINT pk_usuarios PRIMARY KEY (usuarios_id);
+  ADD CONSTRAINT pk_usuarios PRIMARY KEY (usuarios_id);
 
 
 --
@@ -5885,7 +5945,7 @@ ADD CONSTRAINT pk_usuarios PRIMARY KEY (usuarios_id);
 --
 
 ALTER TABLE ONLY tb_sys_menu
-ADD CONSTRAINT unq_codigomenu UNIQUE (menu_codigo);
+  ADD CONSTRAINT unq_codigomenu UNIQUE (menu_codigo);
 
 
 --
@@ -5894,7 +5954,7 @@ ADD CONSTRAINT unq_codigomenu UNIQUE (menu_codigo);
 --
 
 ALTER TABLE ONLY tb_cotizacion
-ADD CONSTRAINT unq_cotizacion_numero UNIQUE (empresa_id, cotizacion_numero);
+  ADD CONSTRAINT unq_cotizacion_numero UNIQUE (empresa_id, cotizacion_numero);
 
 
 --
@@ -5903,7 +5963,7 @@ ADD CONSTRAINT unq_cotizacion_numero UNIQUE (empresa_id, cotizacion_numero);
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT unq_insumo_codigo UNIQUE (insumo_codigo);
+  ADD CONSTRAINT unq_insumo_codigo UNIQUE (insumo_codigo);
 
 
 --
@@ -5912,7 +5972,7 @@ ADD CONSTRAINT unq_insumo_codigo UNIQUE (insumo_codigo);
 --
 
 ALTER TABLE ONLY tb_sys_perfil
-ADD CONSTRAINT unq_perfil_syscode_codigo UNIQUE (sys_systemcode, perfil_codigo);
+  ADD CONSTRAINT unq_perfil_syscode_codigo UNIQUE (sys_systemcode, perfil_codigo);
 
 
 --
@@ -5921,7 +5981,7 @@ ADD CONSTRAINT unq_perfil_syscode_codigo UNIQUE (sys_systemcode, perfil_codigo);
 --
 
 ALTER TABLE ONLY tb_sys_perfil
-ADD CONSTRAINT unq_perfil_syscode_perfil_id UNIQUE (sys_systemcode, perfil_id);
+  ADD CONSTRAINT unq_perfil_syscode_perfil_id UNIQUE (sys_systemcode, perfil_id);
 
 
 --
@@ -5930,7 +5990,7 @@ ADD CONSTRAINT unq_perfil_syscode_perfil_id UNIQUE (sys_systemcode, perfil_id);
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT unq_producto_detalle UNIQUE (insumo_id_origen, insumo_id);
+  ADD CONSTRAINT unq_producto_detalle UNIQUE (insumo_id_origen, insumo_id);
 
 
 --
@@ -5939,7 +5999,7 @@ ADD CONSTRAINT unq_producto_detalle UNIQUE (insumo_id_origen, insumo_id);
 --
 
 ALTER TABLE ONLY tb_reglas
-ADD CONSTRAINT unq_regla UNIQUE (regla_empresa_origen_id, regla_empresa_destino_id);
+  ADD CONSTRAINT unq_regla UNIQUE (regla_empresa_origen_id, regla_empresa_destino_id);
 
 
 --
@@ -5948,7 +6008,7 @@ ADD CONSTRAINT unq_regla UNIQUE (regla_empresa_origen_id, regla_empresa_destino_
 --
 
 ALTER TABLE ONLY tb_unidad_medida_conversion
-ADD CONSTRAINT uq_unidad_conversion UNIQUE (unidad_medida_origen, unidad_medida_destino);
+  ADD CONSTRAINT uq_unidad_conversion UNIQUE (unidad_medida_origen, unidad_medida_destino);
 
 
 --
@@ -6633,7 +6693,7 @@ CREATE TRIGGER tr_usuarios BEFORE INSERT OR UPDATE ON tb_usuarios FOR EACH ROW E
 --
 
 ALTER TABLE ONLY tb_cliente
-ADD CONSTRAINT fk_cliente_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_cliente_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6642,7 +6702,7 @@ ADD CONSTRAINT fk_cliente_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa
 --
 
 ALTER TABLE ONLY tb_cliente
-ADD CONSTRAINT fk_cliente_tipo_empresa FOREIGN KEY (tipo_cliente_codigo) REFERENCES tb_tipo_cliente(tipo_cliente_codigo);
+  ADD CONSTRAINT fk_cliente_tipo_empresa FOREIGN KEY (tipo_cliente_codigo) REFERENCES tb_tipo_cliente(tipo_cliente_codigo);
 
 
 --
@@ -6651,7 +6711,7 @@ ADD CONSTRAINT fk_cliente_tipo_empresa FOREIGN KEY (tipo_cliente_codigo) REFEREN
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT fk_cotizacion_detalle_cotizacion FOREIGN KEY (cotizacion_id) REFERENCES tb_cotizacion(cotizacion_id);
+  ADD CONSTRAINT fk_cotizacion_detalle_cotizacion FOREIGN KEY (cotizacion_id) REFERENCES tb_cotizacion(cotizacion_id);
 
 
 --
@@ -6660,7 +6720,7 @@ ADD CONSTRAINT fk_cotizacion_detalle_cotizacion FOREIGN KEY (cotizacion_id) REFE
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT fk_cotizacion_detalle_insumo FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id);
+  ADD CONSTRAINT fk_cotizacion_detalle_insumo FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id);
 
 
 --
@@ -6669,7 +6729,7 @@ ADD CONSTRAINT fk_cotizacion_detalle_insumo FOREIGN KEY (insumo_id) REFERENCES t
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT fk_cotizacion_detalle_moneda_codigo_costo FOREIGN KEY (log_moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_cotizacion_detalle_moneda_codigo_costo FOREIGN KEY (log_moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
@@ -6678,7 +6738,7 @@ ADD CONSTRAINT fk_cotizacion_detalle_moneda_codigo_costo FOREIGN KEY (log_moneda
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT fk_cotizacion_detalle_umedida FOREIGN KEY (unidad_medida_codigo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_cotizacion_detalle_umedida FOREIGN KEY (unidad_medida_codigo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6687,7 +6747,7 @@ ADD CONSTRAINT fk_cotizacion_detalle_umedida FOREIGN KEY (unidad_medida_codigo) 
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-ADD CONSTRAINT fk_cotizacion_detalle_umedida_costo FOREIGN KEY (log_unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_cotizacion_detalle_umedida_costo FOREIGN KEY (log_unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6696,7 +6756,7 @@ ADD CONSTRAINT fk_cotizacion_detalle_umedida_costo FOREIGN KEY (log_unidad_medid
 --
 
 ALTER TABLE ONLY tb_cotizacion
-ADD CONSTRAINT fk_cotizacion_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_cotizacion_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6705,7 +6765,7 @@ ADD CONSTRAINT fk_cotizacion_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empr
 --
 
 ALTER TABLE ONLY tb_cotizacion
-ADD CONSTRAINT fk_cotizacion_moneda FOREIGN KEY (moneda_codigo) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_cotizacion_moneda FOREIGN KEY (moneda_codigo) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
@@ -6714,7 +6774,7 @@ ADD CONSTRAINT fk_cotizacion_moneda FOREIGN KEY (moneda_codigo) REFERENCES tb_mo
 --
 
 ALTER TABLE ONLY tb_empresa
-ADD CONSTRAINT fk_empresa_tipo_empresa FOREIGN KEY (tipo_empresa_codigo) REFERENCES tb_tipo_empresa(tipo_empresa_codigo);
+  ADD CONSTRAINT fk_empresa_tipo_empresa FOREIGN KEY (tipo_empresa_codigo) REFERENCES tb_tipo_empresa(tipo_empresa_codigo);
 
 
 --
@@ -6723,52 +6783,52 @@ ADD CONSTRAINT fk_empresa_tipo_empresa FOREIGN KEY (tipo_empresa_codigo) REFEREN
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_insumo_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
--- TOC entry 2355 (class 2606 OID 246570)
+-- TOC entry 2359 (class 2606 OID 262825)
 -- Name: fk_insumo_history_insumo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT fk_insumo_history_insumo FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id);
+  ADD CONSTRAINT fk_insumo_history_insumo FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id) ON DELETE CASCADE;
 
 
 --
--- TOC entry 2356 (class 2606 OID 246575)
+-- TOC entry 2355 (class 2606 OID 246575)
 -- Name: fk_insumo_history_moneda_costo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT fk_insumo_history_moneda_costo FOREIGN KEY (moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_insumo_history_moneda_costo FOREIGN KEY (moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
--- TOC entry 2357 (class 2606 OID 246580)
+-- TOC entry 2356 (class 2606 OID 246580)
 -- Name: fk_insumo_history_tcostos; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT fk_insumo_history_tcostos FOREIGN KEY (tcostos_codigo) REFERENCES tb_tcostos(tcostos_codigo);
+  ADD CONSTRAINT fk_insumo_history_tcostos FOREIGN KEY (tcostos_codigo) REFERENCES tb_tcostos(tcostos_codigo);
 
 
 --
--- TOC entry 2358 (class 2606 OID 246585)
+-- TOC entry 2357 (class 2606 OID 246585)
 -- Name: fk_insumo_history_tinsumo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT fk_insumo_history_tinsumo FOREIGN KEY (tinsumo_codigo) REFERENCES tb_tinsumo(tinsumo_codigo);
+  ADD CONSTRAINT fk_insumo_history_tinsumo FOREIGN KEY (tinsumo_codigo) REFERENCES tb_tinsumo(tinsumo_codigo);
 
 
 --
--- TOC entry 2359 (class 2606 OID 246590)
+-- TOC entry 2358 (class 2606 OID 246590)
 -- Name: fk_insumo_history_unidad_medida_costo; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY tb_insumo_history
-ADD CONSTRAINT fk_insumo_history_unidad_medida_costo FOREIGN KEY (unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_insumo_history_unidad_medida_costo FOREIGN KEY (unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6777,7 +6837,7 @@ ADD CONSTRAINT fk_insumo_history_unidad_medida_costo FOREIGN KEY (unidad_medida_
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_moneda_costo FOREIGN KEY (moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_insumo_moneda_costo FOREIGN KEY (moneda_codigo_costo) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
@@ -6786,7 +6846,7 @@ ADD CONSTRAINT fk_insumo_moneda_costo FOREIGN KEY (moneda_codigo_costo) REFERENC
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_tcostos FOREIGN KEY (tcostos_codigo) REFERENCES tb_tcostos(tcostos_codigo);
+  ADD CONSTRAINT fk_insumo_tcostos FOREIGN KEY (tcostos_codigo) REFERENCES tb_tcostos(tcostos_codigo);
 
 
 --
@@ -6795,7 +6855,7 @@ ADD CONSTRAINT fk_insumo_tcostos FOREIGN KEY (tcostos_codigo) REFERENCES tb_tcos
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_tinsumo FOREIGN KEY (tinsumo_codigo) REFERENCES tb_tinsumo(tinsumo_codigo);
+  ADD CONSTRAINT fk_insumo_tinsumo FOREIGN KEY (tinsumo_codigo) REFERENCES tb_tinsumo(tinsumo_codigo);
 
 
 --
@@ -6804,7 +6864,7 @@ ADD CONSTRAINT fk_insumo_tinsumo FOREIGN KEY (tinsumo_codigo) REFERENCES tb_tins
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_unidad_medida_costo FOREIGN KEY (unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_insumo_unidad_medida_costo FOREIGN KEY (unidad_medida_codigo_costo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6813,7 +6873,7 @@ ADD CONSTRAINT fk_insumo_unidad_medida_costo FOREIGN KEY (unidad_medida_codigo_c
 --
 
 ALTER TABLE ONLY tb_insumo
-ADD CONSTRAINT fk_insumo_unidad_medida_ingreso FOREIGN KEY (unidad_medida_codigo_ingreso) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_insumo_unidad_medida_ingreso FOREIGN KEY (unidad_medida_codigo_ingreso) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6822,7 +6882,7 @@ ADD CONSTRAINT fk_insumo_unidad_medida_ingreso FOREIGN KEY (unidad_medida_codigo
 --
 
 ALTER TABLE ONLY tb_sys_menu
-ADD CONSTRAINT fk_menu_parent FOREIGN KEY (menu_parent_id) REFERENCES tb_sys_menu(menu_id);
+  ADD CONSTRAINT fk_menu_parent FOREIGN KEY (menu_parent_id) REFERENCES tb_sys_menu(menu_id);
 
 
 --
@@ -6831,7 +6891,7 @@ ADD CONSTRAINT fk_menu_parent FOREIGN KEY (menu_parent_id) REFERENCES tb_sys_men
 --
 
 ALTER TABLE ONLY tb_sys_menu
-ADD CONSTRAINT fk_menu_sistemas FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_sistemas(sys_systemcode);
+  ADD CONSTRAINT fk_menu_sistemas FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_sistemas(sys_systemcode);
 
 
 --
@@ -6840,7 +6900,7 @@ ADD CONSTRAINT fk_menu_sistemas FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_s
 --
 
 ALTER TABLE ONLY tb_tipo_cambio
-ADD CONSTRAINT fk_moneda_destino FOREIGN KEY (moneda_codigo_destino) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_moneda_destino FOREIGN KEY (moneda_codigo_destino) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
@@ -6849,7 +6909,7 @@ ADD CONSTRAINT fk_moneda_destino FOREIGN KEY (moneda_codigo_destino) REFERENCES 
 --
 
 ALTER TABLE ONLY tb_tipo_cambio
-ADD CONSTRAINT fk_moneda_origen FOREIGN KEY (moneda_codigo_origen) REFERENCES tb_moneda(moneda_codigo);
+  ADD CONSTRAINT fk_moneda_origen FOREIGN KEY (moneda_codigo_origen) REFERENCES tb_moneda(moneda_codigo);
 
 
 --
@@ -6858,7 +6918,7 @@ ADD CONSTRAINT fk_moneda_origen FOREIGN KEY (moneda_codigo_origen) REFERENCES tb
 --
 
 ALTER TABLE ONLY tb_sys_perfil_detalle
-ADD CONSTRAINT fk_perfdet_perfil FOREIGN KEY (perfil_id) REFERENCES tb_sys_perfil(perfil_id);
+  ADD CONSTRAINT fk_perfdet_perfil FOREIGN KEY (perfil_id) REFERENCES tb_sys_perfil(perfil_id);
 
 
 --
@@ -6867,7 +6927,7 @@ ADD CONSTRAINT fk_perfdet_perfil FOREIGN KEY (perfil_id) REFERENCES tb_sys_perfi
 --
 
 ALTER TABLE ONLY tb_sys_perfil
-ADD CONSTRAINT fk_perfil_sistema FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_sistemas(sys_systemcode);
+  ADD CONSTRAINT fk_perfil_sistema FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_sistemas(sys_systemcode);
 
 
 --
@@ -6876,7 +6936,7 @@ ADD CONSTRAINT fk_perfil_sistema FOREIGN KEY (sys_systemcode) REFERENCES tb_sys_
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT fk_producto_detalle_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_producto_detalle_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6885,7 +6945,7 @@ ADD CONSTRAINT fk_producto_detalle_empresa FOREIGN KEY (empresa_id) REFERENCES t
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT fk_producto_detalle_insumo_id FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id);
+  ADD CONSTRAINT fk_producto_detalle_insumo_id FOREIGN KEY (insumo_id) REFERENCES tb_insumo(insumo_id);
 
 
 --
@@ -6894,7 +6954,7 @@ ADD CONSTRAINT fk_producto_detalle_insumo_id FOREIGN KEY (insumo_id) REFERENCES 
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT fk_producto_detalle_insumo_id_origen FOREIGN KEY (insumo_id_origen) REFERENCES tb_insumo(insumo_id);
+  ADD CONSTRAINT fk_producto_detalle_insumo_id_origen FOREIGN KEY (insumo_id_origen) REFERENCES tb_insumo(insumo_id);
 
 
 --
@@ -6903,7 +6963,7 @@ ADD CONSTRAINT fk_producto_detalle_insumo_id_origen FOREIGN KEY (insumo_id_orige
 --
 
 ALTER TABLE ONLY tb_producto_detalle
-ADD CONSTRAINT fk_producto_detalle_unidad_medida FOREIGN KEY (unidad_medida_codigo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_producto_detalle_unidad_medida FOREIGN KEY (unidad_medida_codigo) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6912,7 +6972,7 @@ ADD CONSTRAINT fk_producto_detalle_unidad_medida FOREIGN KEY (unidad_medida_codi
 --
 
 ALTER TABLE ONLY tb_reglas
-ADD CONSTRAINT fk_regla_empresa_destino FOREIGN KEY (regla_empresa_destino_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_regla_empresa_destino FOREIGN KEY (regla_empresa_destino_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6921,7 +6981,7 @@ ADD CONSTRAINT fk_regla_empresa_destino FOREIGN KEY (regla_empresa_destino_id) R
 --
 
 ALTER TABLE ONLY tb_reglas
-ADD CONSTRAINT fk_regla_empresa_origen FOREIGN KEY (regla_empresa_origen_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_regla_empresa_origen FOREIGN KEY (regla_empresa_origen_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6930,7 +6990,7 @@ ADD CONSTRAINT fk_regla_empresa_origen FOREIGN KEY (regla_empresa_origen_id) REF
 --
 
 ALTER TABLE ONLY tb_unidad_medida_conversion
-ADD CONSTRAINT fk_unidad_conversion_medida_destino FOREIGN KEY (unidad_medida_destino) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_unidad_conversion_medida_destino FOREIGN KEY (unidad_medida_destino) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6939,7 +6999,7 @@ ADD CONSTRAINT fk_unidad_conversion_medida_destino FOREIGN KEY (unidad_medida_de
 --
 
 ALTER TABLE ONLY tb_unidad_medida_conversion
-ADD CONSTRAINT fk_unidad_conversion_medida_origen FOREIGN KEY (unidad_medida_origen) REFERENCES tb_unidad_medida(unidad_medida_codigo);
+  ADD CONSTRAINT fk_unidad_conversion_medida_origen FOREIGN KEY (unidad_medida_origen) REFERENCES tb_unidad_medida(unidad_medida_codigo);
 
 
 --
@@ -6948,7 +7008,7 @@ ADD CONSTRAINT fk_unidad_conversion_medida_origen FOREIGN KEY (unidad_medida_ori
 --
 
 ALTER TABLE ONLY tb_usuarios
-ADD CONSTRAINT fk_usuario_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
+  ADD CONSTRAINT fk_usuario_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa(empresa_id);
 
 
 --
@@ -6957,7 +7017,7 @@ ADD CONSTRAINT fk_usuario_empresa FOREIGN KEY (empresa_id) REFERENCES tb_empresa
 --
 
 ALTER TABLE ONLY tb_sys_usuario_perfiles
-ADD CONSTRAINT fk_usuarioperfiles FOREIGN KEY (perfil_id) REFERENCES tb_sys_perfil(perfil_id);
+  ADD CONSTRAINT fk_usuarioperfiles FOREIGN KEY (perfil_id) REFERENCES tb_sys_perfil(perfil_id);
 
 
 --
@@ -6966,12 +7026,12 @@ ADD CONSTRAINT fk_usuarioperfiles FOREIGN KEY (perfil_id) REFERENCES tb_sys_perf
 --
 
 ALTER TABLE ONLY tb_sys_usuario_perfiles
-ADD CONSTRAINT fk_usuarioperfiles_usuario FOREIGN KEY (usuarios_id) REFERENCES tb_usuarios(usuarios_id);
+  ADD CONSTRAINT fk_usuarioperfiles_usuario FOREIGN KEY (usuarios_id) REFERENCES tb_usuarios(usuarios_id);
 
 
 --
 -- TOC entry 2561 (class 0 OID 0)
--- Dependencies: 6
+-- Dependencies: 8
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
@@ -6981,7 +7041,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2017-01-31 02:18:25
+-- Completed on 2017-02-21 15:56:37 PET
 
 --
 -- PostgreSQL database dump complete
