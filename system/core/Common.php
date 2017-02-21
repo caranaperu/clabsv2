@@ -613,7 +613,7 @@ if ( ! function_exists('_error_handler'))
 		// they are above the error_reporting threshold.
 		if ($is_error)
 		{
-			set_status_header(500);
+			set_status_header(200);
 		}
 
 		// Should we ignore the error? We'll get the current error_reporting
