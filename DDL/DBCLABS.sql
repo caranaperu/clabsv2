@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.3.15
 -- Dumped by pg_dump version 9.3.16
--- Started on 2017-02-21 15:56:36 PET
+-- Started on 2017-02-23 02:08:16 PET
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -681,7 +681,7 @@ $$;
 ALTER FUNCTION public.fn_get_producto_detalle_costo_old(p_producto_detalle_id integer, p_a_fecha date) OWNER TO clabsuser;
 
 --
--- TOC entry 302 (class 1255 OID 262833)
+-- TOC entry 301 (class 1255 OID 262833)
 -- Name: fn_get_producto_precio(integer, integer, integer, boolean, character varying, date, boolean); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1592,7 +1592,7 @@ $$;
 ALTER FUNCTION public.sp_get_historico_costos_for_insumo(p_insumo_id integer, p_date_from date, p_date_to date, p_max_results integer, p_offset integer) OWNER TO postgres;
 
 --
--- TOC entry 291 (class 1255 OID 100637)
+-- TOC entry 290 (class 1255 OID 100637)
 -- Name: sp_get_insumos_for_producto(integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -1954,7 +1954,7 @@ $$;
 ALTER FUNCTION public.sp_get_insumos_for_producto_detalle_old(p_product_header_id integer, p_max_results integer, p_offset integer) OWNER TO clabsuser;
 
 --
--- TOC entry 301 (class 1255 OID 109739)
+-- TOC entry 300 (class 1255 OID 109739)
 -- Name: sp_get_productos_for_cotizacion(integer, integer, character varying, integer, integer); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3064,7 +3064,7 @@ $$;
 ALTER FUNCTION public.sptrg_insumo_history_log() OWNER TO postgres;
 
 --
--- TOC entry 300 (class 1255 OID 59436)
+-- TOC entry 302 (class 1255 OID 59436)
 -- Name: sptrg_insumo_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3075,6 +3075,7 @@ DECLARE v_insumo_codigo character varying(15);
   DECLARE v_insumo_tipo character varying(2) := NULL;
   DECLARE v_insumo_descripcion character varying(60);
   DECLARE v_tcostos_indirecto boolean;
+  DECLARE v_can_be_changed boolean;
 
   -------------------------------------------------------------------------------------------
   --
@@ -3146,17 +3147,58 @@ BEGIN
       RAISE 'Debera existir la conversion entre las unidades de medidas indicadas [% - %]',NEW.unidad_medida_codigo_ingreso,NEW.unidad_medida_codigo_costo  USING ERRCODE = 'restrict_violation';
     END IF;
 
-    -- busco si este insumo es parte de un producto ya cotizado y de serlo no permito modificaciones
-    IF EXISTS (select * from tb_cotizacion_detalle cd
-    where insumo_id in (
-      SELECT DISTINCT i.insumo_id FROM tb_producto_detalle pd
-        INNER JOIN tb_insumo i ON i.insumo_id = pd.insumo_id_origen
-      WHERE pd.insumo_id = NEW.insumo_id
-    ) LIMIT 1)
+    IF TG_OP = 'UPDATE'
     THEN
-      RAISE 'No puede modificarse un insumo que es parte de un producto ya cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
-    END IF;
+      -- Validacion si puede modificarse el registro o no dependiendo si el insumo/producto esta cotizado.
+      v_can_be_changed := TRUE;
 
+      IF NEW.insumo_tipo = 'IN'
+      THEN
+        -- busco si este insumo es parte de un producto ya cotizado y de serlo no permito modificaciones   .
+        -- Si una cotizacion es de otra empresa es irrelevante .
+        IF EXISTS (select 1 from tb_cotizacion_detalle cd
+          inner join tb_cotizacion c on c.cotizacion_id = cd.cotizacion_id
+        where insumo_id in (
+          SELECT DISTINCT i.insumo_id FROM tb_producto_detalle pd
+            INNER JOIN tb_insumo i ON i.insumo_id = pd.insumo_id_origen
+          WHERE pd.insumo_id = NEW.insumo_id
+        )
+                   LIMIT 1)
+        THEN
+          v_can_be_changed := FALSE;
+        END IF;
+      ELSE
+        -- busco si este insumo es parte de un producto ya cotizado y de serlo no permito modificaciones
+        -- Dado que es un producto se busca si el mismo esta cotizado tambien.
+        -- Si una cotizacion es de otra empresa es irrelevante .
+        IF EXISTS (select 1 from tb_cotizacion_detalle cd
+          inner join tb_cotizacion c on c.cotizacion_id = cd.cotizacion_id
+        where insumo_id in (
+          SELECT DISTINCT i.insumo_id FROM tb_producto_detalle pd
+            INNER JOIN tb_insumo i ON i.insumo_id = pd.insumo_id_origen
+          WHERE pd.insumo_id = NEW.insumo_id
+          UNION
+          SELECT NEW.insumo_id
+        )
+                   LIMIT 1)
+        THEN
+          v_can_be_changed := FALSE;
+        END IF;
+      END IF;
+
+      -- Si esta cotizado indicamos dependiendo de los campos si puede grabarse los cambios.
+      IF v_can_be_changed = FALSE
+      THEN
+        -- Solo puede cambiarse los campos insumo_merma,insumo_costo,insumo_precio_mercado
+        IF OLD.tinsumo_codigo != NEW.tinsumo_codigo OR OLD.tcostos_codigo != NEW.tcostos_codigo OR
+           OLD.unidad_medida_codigo_ingreso !=  NEW.unidad_medida_codigo_ingreso OR
+           OLD.unidad_medida_codigo_costo != NEW.unidad_medida_codigo_costo OR
+           OLD.moneda_codigo_costo != NEW.moneda_codigo_costo
+        THEN
+          RAISE 'Un insumo ya cotizado solo puede cambiarse el costo,precio mercado o merma' USING ERRCODE = 'restrict_violation';
+        END IF;
+      END IF;
+    END IF;
   END IF;
   RETURN NEW;
 END;
@@ -3218,7 +3260,7 @@ $$;
 ALTER FUNCTION public.sptrg_moneda_validate_save() OWNER TO clabsuser;
 
 --
--- TOC entry 290 (class 1255 OID 75870)
+-- TOC entry 291 (class 1255 OID 75870)
 -- Name: sptrg_producto_detalle_validate_save(); Type: FUNCTION; Schema: public; Owner: clabsuser
 --
 
@@ -3252,7 +3294,7 @@ BEGIN
     -- Si ya esta cotizado el producto principal no pueden cambiarse un componente del mismo.
     IF EXISTS (SELECT 1 FROM tb_cotizacion_detalle where insumo_id = NEW.insumo_id_origen LIMIT 1)
     THEN
-      RAISE 'No puede modificarse un producto que ya se encuentra cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
+      RAISE 'No puede modificarse la composicion de un producto que ya se encuentra cotizado , cree uno nuevo o elimine las cotizaciones' USING ERRCODE = 'restrict_violation';
     END IF;
 
 
@@ -5147,6 +5189,7 @@ COPY tb_cotizacion (cotizacion_id, empresa_id, cliente_id, cotizacion_es_cliente
 20	5	1	t	27	EURO	2017-02-15	t	ADMIN	2017-02-15 03:54:16.466348	ADMIN	2017-02-20 04:05:35.195021	t
 12	5	7	f	21	USD	2016-12-22	t	ADMIN	2016-12-22 03:41:41.650949	ADMIN	2017-02-20 04:12:06.006455	t
 10	5	7	f	19	USD	2016-12-21	t	ADMIN	2016-12-21 15:08:17.359936	ADMIN	2017-02-20 04:19:28.406972	f
+26	7	23	f	33	EURO	2017-02-22	t	PUSER	2017-02-23 00:31:52.466435	PUSER	2017-02-23 00:49:54.993534	t
 \.
 
 
@@ -5156,7 +5199,7 @@ COPY tb_cotizacion (cotizacion_id, empresa_id, cliente_id, cotizacion_es_cliente
 -- Name: tb_cotizacion_cotizacion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_cotizacion_cotizacion_id_seq', 22, true);
+SELECT pg_catalog.setval('tb_cotizacion_cotizacion_id_seq', 26, true);
 
 
 --
@@ -5166,7 +5209,7 @@ SELECT pg_catalog.setval('tb_cotizacion_cotizacion_id_seq', 22, true);
 --
 
 COPY tb_cotizacion_counter (cotizacion_counter_last_id) FROM stdin;
-29
+33
 \.
 
 
@@ -5186,6 +5229,7 @@ COPY tb_cotizacion_detalle (cotizacion_detalle_id, cotizacion_id, insumo_id, uni
 32	20	12	GALON	2.00	700.00	1400.00	t	ADMIN	2017-02-15 04:40:08.262112	\N	\N	\N	\N	2.0000	3.0000	USD	GALON	350.00	350.00	-2.00
 33	20	10	GALON	4.00	3500.00	14000.00	t	ADMIN	2017-02-15 04:40:22.32689	ADMIN	2017-02-15 14:39:31.618328	\N	\N	1.0000	1.0000	EURO	GALON	3500.00	3500.00	-2.00
 34	20	16	GALON	3.00	840.00	2520.00	t	ADMIN	2017-02-15 14:39:43.246157	\N	\N	\N	\N	2.0000	3.0000	USD	GALON	420.00	420.00	-2.00
+37	26	36	GALON	2.00	4069.58	8139.16	t	PUSER	2017-02-23 00:32:07.230166	\N	\N	\N	\N	2.0000	3.0000	USD	GALON	2034.79	5.00	1975.52
 \.
 
 
@@ -5195,7 +5239,7 @@ COPY tb_cotizacion_detalle (cotizacion_detalle_id, cotizacion_id, insumo_id, uni
 -- Name: tb_cotizacion_detalle_cotizacion_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_cotizacion_detalle_cotizacion_detalle_id_seq', 34, true);
+SELECT pg_catalog.setval('tb_cotizacion_detalle_cotizacion_detalle_id_seq', 37, true);
 
 
 --
@@ -5260,18 +5304,19 @@ COPY tb_igv (fecha_desde, fecha_hasta, igv_valor, activo, usuario, fecha_creacio
 
 COPY tb_insumo (insumo_id, insumo_tipo, insumo_codigo, insumo_descripcion, tinsumo_codigo, tcostos_codigo, unidad_medida_codigo_ingreso, unidad_medida_codigo_costo, insumo_merma, insumo_costo, moneda_codigo_costo, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion, empresa_id, insumo_precio_mercado) FROM stdin;
 15	IN	XXXX	xxxxxx	EQUIP	CIND	NING	LITROS	0.0000	30.0000	EURO	t	PUSER	2016-10-05 02:23:31.072687	\N	\N	7	0.00
-14	PR	ERTERT	ertert	NING	NING	NING	LITROS	4.0000	\N	USD	t	PUSER	2016-09-28 16:07:13.050767	ADMIN	2016-11-29 01:45:21.965095	7	0.00
 12	PR	PRODDOS	prodos	NING	NING	NING	GALON	10.0000	\N	USD	t	TESTUSER	2016-09-01 03:30:37.600921	ADMIN	2016-11-30 21:54:07.394495	5	350.00
-13	IN	PUTTTT	Insumo 1 de PUSER	SOLUCION	CDIR	LITROS	LITROS	23.0000	4.0000	EURO	t	PUSER	2016-09-27 00:05:46.171545	PUSER	2016-11-30 22:38:07.781714	7	6.00
-16	PR	PROTREES	qweqwwqe	NING	NING	NING	GALON	2.0000	\N	USD	t	ADMIN	2016-10-10 02:05:38.919148	ADMIN	2016-11-30 22:39:36.281245	5	420.00
 10	PR	PRODUNO	Producto 1	NING	NING	NING	GALON	2.0000	\N	EURO	t	TESTUSER	2016-08-31 23:07:15.951263	ADMIN	2016-12-17 16:12:05.442705	5	3500.00
 30	IN	DFGD	dfgdfgdfg	SERV	CDIR	GALON	GALON	3.0000	22.0000	EURO	t	ADMIN	2017-02-20 04:30:35.549945	ADMIN	2017-02-20 04:33:21.112207	5	24.00
-1	IN	CODUNO	Agente de Aduanas	SERV	CIND	NING	COMIS	0.0000	3.0000	USD	t	TESTUSER	2016-08-30 21:23:10.087079	ADMIN	2017-02-21 02:31:37.171505	5	0.00
 9	IN	CODTRES	Transportista	SERV	CIND	NING	COMIS	0.0000	3.0000	USD	t	TESTUSER	2016-08-31 01:51:52.552593	ADMIN	2017-01-13 15:07:46.781123	5	0.00
 2	IN	CODDOS	Ivermectina	SOLUCION	CDIR	GALON	LITROS	0.0000	24.0000	EURO	t	TESTUSER	2016-08-30 21:24:05.160225	ADMIN	2017-01-13 15:49:01.904693	5	40.00
+13	IN	PUTTTT	Insumo 1 de PUSER	SOLUCION	CDIR	LITROS	LITROS	23.0000	7.0000	EURO	t	PUSER	2016-09-27 00:05:46.171545	PUSER	2017-02-22 01:44:32.674313	7	7.00
+1	IN	CODUNO	Agente de Aduanas	SERV	CIND	NING	COMIS	0.0000	4.0000	USD	t	TESTUSER	2016-08-30 21:23:10.087079	ADMIN	2017-02-22 17:44:37.819658	5	0.00
 20	IN	DDDDD	ddddd	MOBRA	CDIR	GALON	GALON	2.0000	4.0000	EURO	t	ADMIN	2017-01-26 17:00:36.528241	ADMIN	2017-01-26 19:19:32.082665	5	4523.12
+16	PR	PROTREES	qweqwwqe	NING	NING	NING	GALON	2.0000	\N	USD	t	ADMIN	2016-10-10 02:05:38.919148	ADMIN	2016-11-30 22:39:36.281245	5	420.00
 21	IN	XXXVVV	asdjkasdkasjhd	SERV	CIND	NING	KILOS	0.0000	45.0000	EURO	t	ADMIN	2017-02-06 04:24:53.60653	ADMIN	2017-02-15 02:55:09.45106	5	0.00
 27	IN	GGGGG	ggggg	MOBRA	CIND	NING	GALON	0.0000	2.0000	EURO	t	ADMIN	2017-02-15 02:57:56.512351	\N	\N	5	0.00
+14	PR	ERTERT	ertert	NING	NING	NING	LITROS	3.0000	\N	USD	t	PUSER	2016-09-28 16:07:13.050767	PUSER	2017-02-23 00:43:16.207969	7	12.00
+36	PR	WERWER	43r34	NING	NING	NING	LITROS	3.0000	\N	USD	t	PUSER	2017-02-22 00:40:03.008797	PUSER	2017-02-23 01:21:11.070369	7	5.00
 \.
 
 
@@ -5283,6 +5328,13 @@ COPY tb_insumo (insumo_id, insumo_tipo, insumo_codigo, insumo_descripcion, tinsu
 
 COPY tb_insumo_history (insumo_history_id, insumo_history_fecha, insumo_id, insumo_tipo, tinsumo_codigo, tcostos_codigo, unidad_medida_codigo_costo, insumo_merma, insumo_costo, moneda_codigo_costo, insumo_precio_mercado, insumo_history_origen_id, activo, usuario, fecha_creacion, usuario_mod, fecha_modificacion) FROM stdin;
 57	2017-02-21 02:31:37.171505	1	IN	SERV	CIND	COMIS	0.0000	3.0000	USD	0.00	\N	\N	clabsuser	2017-02-21 02:31:37.171505	\N	\N
+59	2017-02-22 01:36:16.070428	13	IN	SOLUCION	CDIR	LITROS	23.0000	5.0000	EURO	6.00	\N	\N	clabsuser	2017-02-22 01:36:16.070428	\N	\N
+60	2017-02-22 01:43:05.408002	13	IN	SOLUCION	CDIR	LITROS	23.0000	7.0000	EURO	6.00	\N	\N	clabsuser	2017-02-22 01:43:05.408002	\N	\N
+61	2017-02-22 01:44:32.674313	13	IN	SOLUCION	CDIR	LITROS	23.0000	7.0000	EURO	7.00	\N	\N	clabsuser	2017-02-22 01:44:32.674313	\N	\N
+62	2017-02-22 17:44:37.819658	1	IN	SERV	CIND	COMIS	0.0000	4.0000	USD	0.00	\N	\N	clabsuser	2017-02-22 17:44:37.819658	\N	\N
+63	2017-02-22 00:00:00	12	PR	NING	NING	GALON	10.0000	48.1497	USD	350.00	26	\N	clabsuser	2017-02-23 00:49:54.993534	\N	\N
+64	2017-02-22 00:00:00	36	PR	NING	NING	GALON	3.0000	1975.5218	USD	5.00	26	\N	clabsuser	2017-02-23 00:49:54.993534	\N	\N
+65	2017-02-22 00:00:00	14	PR	NING	NING	LITROS	3.0000	949.7701	USD	12.00	26	\N	clabsuser	2017-02-23 00:49:54.993534	\N	\N
 19	2016-12-15 00:00:00	16	PR	NING	NING	GALON	2.0000	404.4942	USD	420.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
 20	2016-12-15 00:00:00	12	PR	NING	NING	GALON	10.0000	198.2114	USD	350.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
 21	2016-12-15 00:00:00	10	PR	NING	NING	GALON	2.0000	2140.7236	EURO	3500.00	5	\N	clabsuser	2017-01-16 02:09:50.115133	\N	\N
@@ -5324,7 +5376,7 @@ COPY tb_insumo_history (insumo_history_id, insumo_history_fecha, insumo_id, insu
 -- Name: tb_insumo_history_insumo_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('tb_insumo_history_insumo_history_id_seq', 58, true);
+SELECT pg_catalog.setval('tb_insumo_history_insumo_history_id_seq', 65, true);
 
 
 --
@@ -5333,7 +5385,7 @@ SELECT pg_catalog.setval('tb_insumo_history_insumo_history_id_seq', 58, true);
 -- Name: tb_insumo_insumo_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_insumo_insumo_id_seq', 35, true);
+SELECT pg_catalog.setval('tb_insumo_insumo_id_seq', 36, true);
 
 
 --
@@ -5367,11 +5419,12 @@ COPY tb_producto_detalle (producto_detalle_id, insumo_id_origen, insumo_id, unid
 19	14	15	NING	2.0000	30.0000	0.0000	t	PUSER	2016-10-05 02:23:47.353582	\N	\N	7
 27	14	12	GALON	2.0000	217.6800	2.0000	t	PUSER	2016-10-05 04:29:22.858285	\N	\N	5
 30	14	2	LITROS	23.0000	23.0000	0.0000	t	PUSER	2016-10-05 04:53:19.621915	\N	\N	5
-31	14	10	GALON	2.0000	310.8302	2.0000	t	PUSER	2016-10-05 04:56:40.967503	\N	\N	5
 32	16	12	GALON	2.0000	217.6800	2.0000	t	ADMIN	2016-10-10 02:07:20.921027	\N	\N	5
 33	10	16	GALON	5.0000	444.0672	2.0000	t	ADMIN	2016-10-10 02:07:32.777017	\N	\N	5
 34	16	1	NING	2.0000	45.0000	0.0000	t	ADMIN	2016-11-01 17:47:30.196773	\N	\N	5
 35	12	9	NING	3.0000	1.0000	0.0000	t	ADMIN	2016-11-09 04:09:30.589009	\N	\N	5
+31	14	21	NING	2.0000	45.0000	0.0000	t	PUSER	2016-10-05 04:56:40.967503	PUSER	2017-02-22 00:45:21.038866	5
+43	36	14	LITROS	2.0000	941.2046	4.0000	t	PUSER	2017-02-22 00:48:56.480582	\N	\N	7
 \.
 
 
@@ -5381,7 +5434,7 @@ COPY tb_producto_detalle (producto_detalle_id, insumo_id_origen, insumo_id, unid
 -- Name: tb_producto_detalle_producto_detalle_id_seq; Type: SEQUENCE SET; Schema: public; Owner: clabsuser
 --
 
-SELECT pg_catalog.setval('tb_producto_detalle_producto_detalle_id_seq', 42, true);
+SELECT pg_catalog.setval('tb_producto_detalle_producto_detalle_id_seq', 45, true);
 
 
 --
@@ -5608,11 +5661,11 @@ COPY tb_tipo_cambio (tipo_cambio_id, moneda_codigo_origen, moneda_codigo_destino
 14	EURO	USD	2016-12-26	2016-12-26	0.9500	0.9400	t	ADMIN	2016-12-26 14:33:32.727022	\N	\N
 4	PEN	USD	2016-09-13	2016-09-13	3.2500	3.3000	t	TESTUSER	2016-08-23 14:31:00.466178	TESTUSER	2016-09-13 01:31:28.473115
 15	USD	EURO	2017-01-10	2017-01-14	4.2500	4.2100	t	ADMIN	2017-01-10 01:19:50.376197	ADMIN	2017-01-14 00:07:44.046276
-19	USD	EURO	2017-02-15	2017-02-20	2.0000	3.0000	t	ADMIN	2017-02-15 04:34:29.168028	ADMIN	2017-02-20 23:25:51.373333
-20	USD	PEN	2017-02-15	2017-02-20	4.0000	5.0000	t	ADMIN	2017-02-15 04:35:05.101076	ADMIN	2017-02-20 23:26:15.52793
-17	EURO	USD	2017-01-10	2017-02-20	0.9000	0.9100	t	ADMIN	2017-01-12 01:44:16.450111	ADMIN	2017-02-20 23:26:47.434478
-11	PEN	USD	2016-12-21	2017-02-20	3.2400	3.2300	t	ADMIN	2016-12-21 22:22:57.348017	ADMIN	2017-02-20 23:27:23.078125
 2	USD	JPY	2016-08-22	2017-02-20	3.1000	3.2000	t	TESTUSER	2016-08-22 15:35:06.442191	ADMIN	2017-02-20 23:28:08.789636
+20	USD	PEN	2017-02-15	2017-02-22	4.0000	5.0000	t	ADMIN	2017-02-15 04:35:05.101076	PUSER	2017-02-22 00:41:16.91239
+19	USD	EURO	2017-02-15	2017-02-22	2.0000	3.0000	t	ADMIN	2017-02-15 04:34:29.168028	ADMIN	2017-02-22 00:47:42.531617
+11	PEN	USD	2016-12-21	2017-02-23	3.2400	3.2300	t	ADMIN	2016-12-21 22:22:57.348017	PUSER	2017-02-23 01:45:31.09867
+17	EURO	USD	2017-01-10	2017-02-24	0.9000	0.9100	t	ADMIN	2017-01-12 01:44:16.450111	PUSER	2017-02-23 01:45:45.221144
 \.
 
 
@@ -6706,16 +6759,16 @@ ALTER TABLE ONLY tb_cliente
 
 
 --
--- TOC entry 2350 (class 2606 OID 109783)
+-- TOC entry 2354 (class 2606 OID 262864)
 -- Name: fk_cotizacion_detalle_cotizacion; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
 ALTER TABLE ONLY tb_cotizacion_detalle
-  ADD CONSTRAINT fk_cotizacion_detalle_cotizacion FOREIGN KEY (cotizacion_id) REFERENCES tb_cotizacion(cotizacion_id);
+  ADD CONSTRAINT fk_cotizacion_detalle_cotizacion FOREIGN KEY (cotizacion_id) REFERENCES tb_cotizacion(cotizacion_id) ON DELETE CASCADE;
 
 
 --
--- TOC entry 2351 (class 2606 OID 109788)
+-- TOC entry 2350 (class 2606 OID 109788)
 -- Name: fk_cotizacion_detalle_insumo; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6724,7 +6777,7 @@ ALTER TABLE ONLY tb_cotizacion_detalle
 
 
 --
--- TOC entry 2354 (class 2606 OID 109826)
+-- TOC entry 2353 (class 2606 OID 109826)
 -- Name: fk_cotizacion_detalle_moneda_codigo_costo; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6733,7 +6786,7 @@ ALTER TABLE ONLY tb_cotizacion_detalle
 
 
 --
--- TOC entry 2352 (class 2606 OID 109793)
+-- TOC entry 2351 (class 2606 OID 109793)
 -- Name: fk_cotizacion_detalle_umedida; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6742,7 +6795,7 @@ ALTER TABLE ONLY tb_cotizacion_detalle
 
 
 --
--- TOC entry 2353 (class 2606 OID 109821)
+-- TOC entry 2352 (class 2606 OID 109821)
 -- Name: fk_cotizacion_detalle_umedida_costo; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6931,7 +6984,7 @@ ALTER TABLE ONLY tb_sys_perfil
 
 
 --
--- TOC entry 2342 (class 2606 OID 92417)
+-- TOC entry 2340 (class 2606 OID 92417)
 -- Name: fk_producto_detalle_empresa; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6940,7 +6993,7 @@ ALTER TABLE ONLY tb_producto_detalle
 
 
 --
--- TOC entry 2339 (class 2606 OID 84316)
+-- TOC entry 2341 (class 2606 OID 262849)
 -- Name: fk_producto_detalle_insumo_id; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6949,7 +7002,7 @@ ALTER TABLE ONLY tb_producto_detalle
 
 
 --
--- TOC entry 2340 (class 2606 OID 84321)
+-- TOC entry 2342 (class 2606 OID 262859)
 -- Name: fk_producto_detalle_insumo_id_origen; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -6958,7 +7011,7 @@ ALTER TABLE ONLY tb_producto_detalle
 
 
 --
--- TOC entry 2341 (class 2606 OID 84326)
+-- TOC entry 2339 (class 2606 OID 84326)
 -- Name: fk_producto_detalle_unidad_medida; Type: FK CONSTRAINT; Schema: public; Owner: clabsuser
 --
 
@@ -7041,7 +7094,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2017-02-21 15:56:37 PET
+-- Completed on 2017-02-23 02:08:16 PET
 
 --
 -- PostgreSQL database dump complete
