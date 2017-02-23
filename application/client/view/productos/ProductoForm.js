@@ -465,6 +465,13 @@ isc.WinProductoForm.addProperties({
             paneClass: 'InsumoCostosHistoricosForm',
             joinField: 'insumo_id'
         });
+
+        tabset.addAdditionalTab({
+            ID: 'TabInfoUsedByFormProducto',
+            title: 'Usado Por',
+            paneClass: 'InsumoUsedByForm',
+            joinField: 'insumo_id'
+        });
     },
     initWidget: function() {
         this.Super("initWidget", arguments);

@@ -131,7 +131,12 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
                 $sql = $this->_getFecthNormalized();
             } else if ($subOperation == 'fetchSimpleList') {
                 $sql =  'select empresa_id,insumo_id,insumo_tipo,insumo_codigo,insumo_descripcion from tb_insumo ins ';
-            } else {
+            } else if ($subOperation == 'fetchForInsumosUsedBy') {
+                $sql =  'SELECT  i.insumo_id,i.insumo_codigo,i.insumo_descripcion,e.empresa_razon_social 
+                          FROM tb_producto_detalle ins
+                          INNER JOIN tb_insumo i ON i.insumo_id = ins.insumo_id_origen
+                          INNER JOIN tb_empresa e on e.empresa_id = i.empresa_id ';
+            }else {
                 $sql =  'select empresa_id,insumo_id,insumo_tipo,insumo_codigo,insumo_descripcion,tinsumo_codigo,tcostos_codigo,'.
                     'unidad_medida_codigo_ingreso,unidad_medida_codigo_costo,insumo_merma,insumo_costo,insumo_precio_mercado,moneda_codigo_costo,activo,' .
                     'xmin as "versionId" from tb_insumo ins ';
@@ -144,11 +149,19 @@ class InsumoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
             if (isset($constraints)) {
                 $where = $constraints->getFilterFieldsAsString();
                 if (strlen($where) > 0) {
-                    // Mapeamos las virtuales a los campos reales
-                    $where = str_replace('"unidad_medida_descripcion_ingreso"', 'umi.unidad_medida_descripcion', $where);
-                    $where = str_replace('"unidad_medida_descripcion_costo"', 'umc.unidad_medida_descripcion', $where);
+                    if ($subOperation == 'fetchForInsumosUsedBy') {
+                        $where = str_replace('"insumo_id"', 'ins.insumo_id', $where);
+                    } else {
+                        // Mapeamos las virtuales a los campos reales
+                        $where = str_replace('"unidad_medida_descripcion_ingreso"', 'umi.unidad_medida_descripcion', $where);
+                        $where = str_replace('"unidad_medida_descripcion_costo"', 'umc.unidad_medida_descripcion', $where);
+                    }
 
-                    $sql .= ' and '.$where;
+                    if ($this->activeSearchOnly == TRUE) {
+                        $sql .= ' and '.$where;
+                    } else {
+                        $sql .= ' where '.$where;
+                    }
                 }
 
                 $orderby = $constraints->getSortFieldsAsString();

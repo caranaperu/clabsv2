@@ -80,7 +80,9 @@
     <SCRIPT SRC=./view/tcostos/TipoCostosForm.js></SCRIPT>
 
     <SCRIPT SRC=view/insumos/InsumoCostosHistoricosForm.js></SCRIPT>
+    <SCRIPT SRC=view/insumos/InsumoUsedByForm.js></SCRIPT>
     <SCRIPT SRC=./model/InsumoCostosHistoricoModel.js></SCRIPT>
+    <SCRIPT SRC=./model/InsumoUsedByModel.js></SCRIPT>
     <SCRIPT SRC=./model/InsumoModel.js></SCRIPT>
     <SCRIPT SRC=./model/InsumoProductoDetalleModel.js></SCRIPT>
     <SCRIPT SRC=./view/insumos/InsumoWindow.js></SCRIPT>
