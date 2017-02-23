@@ -171,6 +171,7 @@ class ProductoDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre {
         'insumo_descripcion=\'' . $record->get_insumo_descripcion() . '\',' .
         'insumo_merma=' . $record->get_insumo_merma() . ',' .
         'insumo_precio_mercado=' . $record->get_insumo_precio_mercado() . ',' .
+        'unidad_medida_codigo_costo=\'' . $record->get_unidad_medida_codigo_costo() . '\',' .
         'moneda_codigo_costo=\'' . $record->get_moneda_codigo_costo() . '\',' .
         'activo=\'' . $record->getActivo() . '\',' .
         'usuario_mod=\'' . $record->get_Usuario_mod() . '\'' .
