@@ -33,7 +33,7 @@ isc.WinUsuariosWindow.addProperties({
             canGroupBy: false,
             canMultiSort: false,
             autoSize: true,
-            autoFitWidthApproach: 'both',
+            autoFitWidthApproach: 'both'
         });
     },
     initWidget: function () {

@@ -73,10 +73,11 @@ class ReglasDAO_postgre extends \app\common\dao\TSLAppBasicRecordDAO_postgre
         $where = $constraints->getFilterFieldsAsString();
 
         if (strlen($where) > 0) {
-            // Mapeamos las virtuales a los campos reales
-            $where = str_replace('"empresa_razon_social_o"', 'e1.empresa_razon_social', $where);
-            $where = str_replace('"empresa_razon_social_d"', 'e2.empresa_razon_social', $where);
-
+            if ($subOperation == 'fetchJoined') {
+                // Mapeamos las virtuales a los campos reales
+                $where = str_replace('"empresa_razon_social_o"', 'e1.empresa_razon_social', $where);
+                $where = str_replace('"empresa_razon_social_d"', 'e2.empresa_razon_social', $where);
+            }
             if ($this->activeSearchOnly == TRUE) {
                 $sql .= ' and ' . $where;
             } else {

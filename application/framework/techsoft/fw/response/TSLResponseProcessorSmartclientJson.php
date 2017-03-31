@@ -29,8 +29,8 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
 
             if (strlen($outMessage->getAnswerMesage()) > 0) {
                 // STATUS_OK = 0
-                $out = 'status:-1';
-                $out .= ',data:"' . $outMessage->getAnswerMesage() . '- Cod.Error: ' . $outMessage->getErrorCode() . '"';
+                $out = '"status":-1';
+                $out .= ',"data":"' . $outMessage->getAnswerMesage() . '- Cod.Error: ' . $outMessage->getErrorCode() . '"';
             }
 
             if ($outMessage->isSuccess() == FALSE) {
@@ -59,7 +59,7 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
                     $out .= '}';
                 } else if ($outMessage->hasProcessErrors()) {
                     // STATUS_FAILURE = -1
-                    $out = 'status:-1';
+                    $out = '"status":-1';
 
                     $processErrors = &$outMessage->getProcessErrors();
                     // Si ya tiene longitud , ponemos una coma para indicar
@@ -69,7 +69,7 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
                     }
 
                     // la lista de process errors.
-                    $out .= 'data:';
+                    $out .= '"data":';
                     $count = count($processErrors);
 
                     for ($i = 0; $i < $count; $i++) {
@@ -100,7 +100,7 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
                 }
             } else {
                 // STATUS_OK = 0
-                $out = 'status:0';
+                $out = '"status":0';
             }
             // Si tiene parametros de salida los agregamos  antres de la data.
             $outParams = &$outMessage->getOutputparameters();
@@ -123,7 +123,7 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
                         $oneRecord = true;
                     }
 
-                    $out .= ',data:';
+                    $out .= ',"data":';
 
                  //   $dataResults = $outMessage->getResultData();
                     $this->_processExtraData($data);
@@ -137,19 +137,19 @@ class TSLResponseProcessorSmartclientJson implements TSLIResponseProcessor {
 
                     // SE hace de tal forma que si no es el ultimo registro osea numRecords es menor a la ultima fila solicitada
                     // Ponemos como el total de registros una pagina mas (esto para evitar hacer un count)
-                    $out .= ',endRow : "' . $numRecords . '"';
-                    $out .= ',totalRows: "' . ( ($numRecords < $constraints->getEndRow() || $constraints->getEndRow() == 0) ? ($numRecords) : $constraints->getEndRow() + ($constraints->getEndRow() - $constraints->getStartRow())) . '"';
+                    $out .= ',"endRow" : "' . $numRecords . '"';
+                    $out .= ',"totalRows": "' . ( ($numRecords < $constraints->getEndRow() || $constraints->getEndRow() == 0) ? ($numRecords) : $constraints->getEndRow() + ($constraints->getEndRow() - $constraints->getStartRow())) . '"';
                     //                   $out .= ',totalRows: "'. ( $numRecords < 1000 ? ($numRecords)  :  1000 + (1000 - $constraints->getStartRow())) .'"';
                 } else {
                     if ($out == NULL) {
                         // STATUS_OK = 0
-                        $out = 'status:-1';
-                        $out .= ',data:"Error Desconocido"';
+                        $out = '"status":-1';
+                        $out .= ',"data":"Error Desconocido"';
                     }
                 }
             }
 
-            $out = '{response:{' . $out . '}}';
+            $out = '{"response":{' . $out . '}}';
             return $out;
         } else {
             $out = '?????????????????';

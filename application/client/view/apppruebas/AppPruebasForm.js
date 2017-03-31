@@ -112,7 +112,7 @@ isc.WinAppPruebasForm.addProperties({
                  */
                 dataArrived: function (startRow, endRow, data)
                 {
-                    record = formAppPruebas.getItem('pruebas_clasificacion_codigo').getSelectedRecord();
+                    var record = formAppPruebas.getItem('pruebas_clasificacion_codigo').getSelectedRecord();
                     // En el caso que se agregue un registro este record todavia no exisira.
                     if (record) {
                         formAppPruebas._pruebas_clasificacion_descripcion = record.pruebas_clasificacion_descripcion;

@@ -77,7 +77,7 @@ and open the template in the editor.
 
     AmCharts.prepareLabels = function (value, validate) {
         var size = chart.panels[0].stockGraphs[0].chart.graphs.length;
-        for (i = 0; i < size; i++) {
+        for (var i = 0; i < size; i++) {
             chart.panels[0].stockGraphs[0].chart.graphs[i].labelText = value;
             chart.panels[0].stockGraphs[0].chart.graphs[i].labelPosition = 'right';
         }
@@ -109,7 +109,7 @@ and open the template in the editor.
         var len = chartData.response.seriesTitles.length;
         if (len > 0) {
             chartDef.dataSets = [];
-            for (i = 0; i < len; i++) {
+            for (var i = 0; i < len; i++) {
                 chartDef.dataSets.push({
                     title: chartData.response.seriesTitles[i],
                     fieldMappings: [{
@@ -129,9 +129,9 @@ and open the template in the editor.
         // por ser una marca pobre cambiamos la unidad de medida para que se comporte como minutos,segundos
         if (chartData.response.um == 'SEG') {
             if (len > 0) {
-                for (i = 0; i < len; i++) {
+                for (var i = 0; i < len; i++) {
                     var lenData = chartData.response.seriesData[i].length
-                    for (j = 0; j < lenData; j++) {
+                    for (var j = 0; j < lenData; j++) {
                         if (chartData.response.seriesData[i][j].nresultado >= 60) {
                             chartData.response.um = 'MS';
                         }
@@ -156,9 +156,9 @@ and open the template in the editor.
             chartDef.valueAxesSettings.unit = "cm";
             chartDef.panels[0].stockGraphs[0].precision = 2;
             if (len > 0) {
-                for (i = 0; i < len; i++) {
+                for (var i = 0; i < len; i++) {
                     var lenData = chartData.response.seriesData[i].length
-                    for (j = 0; j < lenData; j++) {
+                    for (var j = 0; j < lenData; j++) {
                         chartData.response.seriesData[i][j].nresultado = chartData.response.seriesData[i][j].nresultado / 100.00;
                     }
                 }
@@ -171,9 +171,9 @@ and open the template in the editor.
         ///////////////////////////////////////////////////////////////////////////
         // Creamos los stock events
         if (len > 0) {
-            for (i = 0; i < len; i++) {
+            for (var i = 0; i < len; i++) {
                 var lenData = chartData.response.seriesData[i].length;
-                for (j = 0; j < lenData; j++) {
+                for (var j = 0; j < lenData; j++) {
                     if (chartData.response.seriesData[i][j].manual == 't') {
                         if (!chartDef.dataSets[i].stockEvents) {
                             chartDef.dataSets[i].stockEvents = [];
@@ -239,7 +239,7 @@ $url = '/atletismo/index.php/recordsGraphDataController?op=fetch&libid=Amcharts&
 foreach ($_GET as $key => $value) {
     $url .= '&' . $key . '=' . $value;
 }
-?>;
+?>
         var chartData = AmCharts.loadJSON('<?php echo $url ?>');
 
         if (!chartData.response.seriesData || chartData.response.seriesData.length == 0) {

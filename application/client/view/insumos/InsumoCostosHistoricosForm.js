@@ -86,7 +86,7 @@ isc.InsumoCostosHistoricosForm.addProperties({
                             });
                     }
                 }
-            ],
+            ]
            // cellBorder: 1
 
         });
@@ -128,7 +128,7 @@ isc.InsumoCostosHistoricosForm.addProperties({
                 {name: "insumo_costo", width: '12%',align: 'right'},
                 {name: "moneda_costo_descripcion", width: '10%'}
             ]
-        })
+        });
 
         this.addMember(historicoInfoLabel);
         this.addMember(historyDateForm);
@@ -166,10 +166,10 @@ isc.InsumoCostosHistoricosForm.addClassProperties({
      */
     create: function(args) {
         if (this._myInstance === undefined) {
-            console.log('Paso a crear')
+            console.log('Paso a crear');
             this._myInstance = this.Super('create',arguments);
         }
-        console.log('Retornar la instancia')
+        console.log('Retornar la instancia');
         return this._myInstance;
     }
 

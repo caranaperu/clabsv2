@@ -40,7 +40,7 @@ isc.WinUsuariosForm.addProperties({
                     displayField: "empresa_razon_social",
                     optionDataSource: mdl_empresa,
                     pickListFields: [{
-                        name: "empresa_razon_social",
+                        name: "empresa_razon_social"
                     }],
                     pickListWidth: 260,
                     completeOnTab: true,

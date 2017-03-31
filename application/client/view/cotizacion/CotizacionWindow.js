@@ -56,7 +56,7 @@ isc.WinCotizacionWindow.addProperties({
                 var fieldName = this.getFieldName(colNum);
 
                 if (fieldName == "I" && record.cotizacion_cerrada == true) {
-                    var chartImg = isc.ImgButton.create({
+                    return isc.ImgButton.create({
                         showDown: false,
                         showRollOver: false,
                         layoutAlign: "center",
@@ -86,7 +86,6 @@ isc.WinCotizacionWindow.addProperties({
                                 });
                         }
                     });
-                    return chartImg;
                 } else {
                     return null;
                 }
@@ -100,11 +99,6 @@ isc.WinCotizacionWindow.addProperties({
                     component.src = "";
                 }
                 return component;
-            },
-            getCellCSSText2: function(record, rowNum, colNum) {
-                if (record.insumo_costo < 0) {
-                    return "font-weight:bold; color:red;";
-                }
             },
             initialCriteria: {
                 _constructor: "AdvancedCriteria",

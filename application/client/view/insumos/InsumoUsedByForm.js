@@ -75,7 +75,7 @@ isc.InsumoUsedByForm.addProperties({
                 {name: "insumo_descripcion", width: '45%'},
                 {name: "empresa_razon_social", width: '40%'}
             ]
-        })
+        });
 
         this.addMember(usedByInfoLabel);
         this.addMember(usedByList);
@@ -112,10 +112,10 @@ isc.InsumoUsedByForm.addClassProperties({
      */
     create: function(args) {
         if (this._myInstance === undefined) {
-            console.log('Paso a crear')
+            console.log('Paso a crear');
             this._myInstance = this.Super('create',arguments);
         }
-        console.log('Retornar la instancia')
+        console.log('Retornar la instancia');
         return this._myInstance;
     }
 

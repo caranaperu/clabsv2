@@ -68,7 +68,7 @@ isc.AtletasResultadosGraphWindow.addProperties({
                         url += '&incluye_observadas=' + formGraphAtletasResultados.getValue('incluye_observadas');
                         url += '&categorias_desde=' + formGraphAtletasResultados.getValue('categorias_desde');
                         url += '&categorias_hasta=' + formGraphAtletasResultados.getValue('categorias_hasta');
-                        for (i = 1; i <= 5; i++) {
+                        for (var i = 1; i <= 5; i++) {
                             atleta_num = 'atletas_codigo_0' + i;
                             if (formGraphAtletasResultados.getValue(atleta_num)) {
                                 url += '&' + atleta_num + '=' + formGraphAtletasResultados.getValue(atleta_num);
@@ -401,13 +401,13 @@ isc.AtletasResultadosGraphWindow.addProperties({
              * SOPORTE PARA EVITAR CODIGO REPETITIVO.
              */
             setAtletasCodigoDisabledState: function (from, to, disabled) {
-                for (i = from; i <= to; i++) {
+                for (var i = from; i <= to; i++) {
                     var atleta_num = 'atletas_codigo_0' + i;
                     formGraphAtletasResultados.getItem(atleta_num).setDisabled(disabled);
                 }
             },
             clearAtletasCodigo: function (from, to) {
-                for (i = from; i <= to; i++) {
+                for (var i = from; i <= to; i++) {
                     var atleta_num = 'atletas_codigo_0' + i;
                     formGraphAtletasResultados.getItem(atleta_num).clearValue();
                 }

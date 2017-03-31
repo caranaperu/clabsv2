@@ -120,10 +120,10 @@ isc.WinProductoForm.addProperties({
                     // de lo contrario el sort se hace en el lado cliente.
                     initialSort: [{property: 'moneda_descripcion'}]
                 },
-                {name: "insumo_precio_mercado", showPending: true, width: '80',
+                {name: "insumo_precio_mercado", showPending: true, width: '80'
                  //   visibleWhen: {tcostos_indirecto: false}
                 }
-            ],
+            ]
             //, cellBorder: 1
         });
     },
@@ -303,7 +303,6 @@ isc.WinProductoForm.addProperties({
                                         isc.say('El producto principal no puede ser un componente');
                                         return false;
                                     }
-                                    ;
                                     return true;
                                 },
                                 changed: function(form, item, value) {

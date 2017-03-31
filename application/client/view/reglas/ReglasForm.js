@@ -88,7 +88,7 @@ isc.WinReglasForm.addProperties({
 
                 var record = component.getSelectedRecord();
                 this.getField('regla_by_costo').updateTitle(record.regla_by_costo);
-            },
+            }
         });
     },
     initWidget: function() {

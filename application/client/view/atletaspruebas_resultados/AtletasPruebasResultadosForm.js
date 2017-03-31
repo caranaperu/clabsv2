@@ -365,7 +365,7 @@ isc.WinAtletasPruebasResultadosForm.addProperties({
                     expression: "formAtletasPruebasResultados.getValue('competencias_pruebas_tipo_serie') != 'SU' && formAtletasPruebasResultados.getValue('competencias_pruebas_tipo_serie') != 'FI'",
                     errorMessage: "Indique el nro de hit,serie,etc"
                 }],
-                defaultValue: 1,
+                defaultValue: 1
             }, {
                 name: 'apr_resultados_separator',
                 defaultValue: "Resultado",
@@ -890,7 +890,7 @@ isc.WinAtletasPruebasResultadosForm.addProperties({
                              startRow: true
                          },{
                             name: "atletas_resultados_puesto",
-                            showPending: true,
+                            showPending: true
                         }],
                         editSelectedData: function(component) {
                             this.Super('editSelectedData',arguments);
