@@ -60,7 +60,7 @@ isc.WinCotizacionWindow.addProperties({
                         showDown: false,
                         showRollOver: false,
                         layoutAlign: "center",
-                        src: "../assets/images/print.png",
+                        src: "[ISOMORPHIC]/../assets/images/print.png",
                         prompt: "Imprimir",
                         height: 16,
                         width: 16,
@@ -94,7 +94,7 @@ isc.WinCotizacionWindow.addProperties({
                 var fieldName = this.getFieldName(colNum);
 
                 if (fieldName == "I" && record.cotizacion_cerrada == true) {
-                    component.src = "../assets/images/print.png";
+                    component.src = "[ISOMORPHIC]/../assets/images/print.png";
                 } else {
                     component.src = "";
                 }

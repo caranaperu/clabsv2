@@ -98,7 +98,7 @@ switch (ENVIRONMENT)
  * This variable must contain the name of your "system" directory.
  * Set the path if it is not in the same directory as this file.
  */
-	$system_path = 'system';
+$system_path = '/var/www/common/system';
 
 /*
  *---------------------------------------------------------------
@@ -184,8 +184,7 @@ switch (ENVIRONMENT)
  * es la lista de los directorios que incluyen los dao sin
  * el APPPATH el cual se apendeara automaticamente
  */
-$G_DAOPATHS = array('../framework/techsoft/fw/app/dao/impl', 'dao');
-
+$G_DAOPATHS = array($system_path.'/../framework/techsoft/fw/app/dao/impl', $application_folder.'/dao');
 
 // --------------------------------------------------------------------
 // END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE

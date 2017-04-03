@@ -525,46 +525,46 @@ $config['proxy_ips'] = '';
 function __autoload($class) {
     if (strstr($class, 'TSL')) {
         if (strstr($class, 'Exception')) {
-            include_once(APPPATH . '../framework/techsoft/fw/exceptions/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/exceptions/' . $class . '.php');
         } else if (strstr($class, 'DataModel')) {
-            include_once(APPPATH . '../framework/techsoft/fw/datamodel/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/datamodel/' . $class . '.php');
         } else if (strstr($class, 'DataTransferObj') || strstr($class, 'DTO')) {
-            include_once(APPPATH . '../framework/techsoft/fw/dto/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/dto/' . $class . '.php');
         } else if (strstr($class, 'Message')) {
-            include_once(APPPATH . '../framework/techsoft/fw/dto/message/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/dto/message/' . $class . '.php');
         } else if (strstr($class, 'Helper')) {
-            include_once(APPPATH . '../framework/techsoft/fw/helpers/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/helpers/' . $class . '.php');
         } else if (strstr($class, 'TransactionManager') or strstr($class, 'TrxFactoryManager')) {
-            include_once(APPPATH . '../framework/techsoft/fw/db/trx/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/db/trx/' . $class . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'Controller') && strstr($class, 'app\\common\\controller')) {
-            include_once( APPPATH . '../framework/techsoft/fw/app/controller/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once( APPPATH . '../../../common/framework/techsoft/fw/app/controller/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'Controller')) {
-            include_once(APPPATH . '../framework/techsoft/fw/controller/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/controller/' . $class . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'BussinessService') && strstr($class, 'app\\common\\bussiness')) {
-            include_once(APPPATH . '../framework/techsoft/fw/app/bussiness/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/app/bussiness/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'BussinessService')) {
-            include_once(APPPATH . '../framework/techsoft/fw/bussiness/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/bussiness/' . $class . '.php');
         } else if (strstr($class, 'TSLDb') || strstr($class, 'RequestConstraints')) {
-            include_once(APPPATH . '../framework/techsoft/fw/db/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/db/' . $class . '.php');
         } else if (strstr($class, 'FilterProcessor') || strstr($class, 'ParametersProcessor') || strstr($class, 'SorterProcessor') || strstr($class, 'ConstraintProcessor')) {
-            include_once(APPPATH . '../framework/techsoft/fw/request/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/request/' . $class . '.php');
         } else if (strstr($class, 'ResponseProcessor')) {
-            include_once(APPPATH . '../framework/techsoft/fw/response/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/response/' . $class . '.php');
         } else if (strstr($class, 'ResponseView')) {
-            include_once(APPPATH . '../framework/techsoft/fw/view/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/view/' . $class . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'DAO') && strstr($class, 'app\\common\\dao\\impl\\')) {
-            include_once(APPPATH . '../framework/techsoft/fw/app/dao/impl/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/app/dao/impl/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'DAO') && strstr($class, 'app\\common\\dao\\')) {
-            include_once(APPPATH . '../framework/techsoft/fw/app/dao/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/app/dao/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'Model') && strstr($class, 'app\\common\\model\\impl')) {
-            include_once(APPPATH . '../framework/techsoft/fw/app/model/impl/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/app/model/impl/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'TSLApp') && strstr($class, 'Model')) {
-            include_once(APPPATH . '../framework/techsoft/fw/app/model/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/app/model/' . substr(($t = strrchr($class, '\\')) !== false ? $t : '', 1) . '.php');
         } else if (strstr($class, 'DAO')) {
-            include_once(APPPATH . '../framework/techsoft/fw/dao/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/dao/' . $class . '.php');
         } else {
             // Sino cae en ninguno va a defs
-            include_once(APPPATH . '../framework/techsoft/fw/defs/' . $class . '.php');
+            include_once(APPPATH . '../../../common/framework/techsoft/fw/defs/' . $class . '.php');
         }
     } else if (strstr($class, 'DAO')) {
         include_once(APPPATH . 'dao/' . $class . '.php');
