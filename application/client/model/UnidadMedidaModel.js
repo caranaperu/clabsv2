@@ -9,6 +9,8 @@
 isc.RestDataSource.create({
     ID: "mdl_unidadmedida",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     cacheAllData: true, // Son datos pequeños hay que evitar releer
     fields: [
         {name: "unidad_medida_codigo", title: 'Codigo', primaryKey: "true", required: true},

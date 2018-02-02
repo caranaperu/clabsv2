@@ -10,6 +10,8 @@
 isc.RestDataSource.create({
     ID: "mdl_entidad",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {name: "entidad_id", title: "id", canEdit: "false", primaryKey: true,required: false},
         {name: "entidad_razon_social", title: "Razon Social", required: true,

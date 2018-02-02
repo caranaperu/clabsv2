@@ -13,6 +13,8 @@ isc.RestDataSourceReglas.create({
     ID: "mdl_reglas",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {name: "regla_id", primaryKey: "true", required: true},
         {name: "regla_empresa_origen_id", title:'Emp.Origen',foreignKey: "mdl_empresas.empresa_id", required: true},

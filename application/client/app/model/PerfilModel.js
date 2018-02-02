@@ -10,6 +10,8 @@
 isc.RestDataSource.create({
     ID: "mdl_perfil",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     //  requestProperties:  {params:{sys_systemcode:glb_systemident}},
   //  cacheAllData : true, // Son datos pequeños hay que evitar releer
     fields: [

@@ -9,6 +9,8 @@
 isc.RestDataSource.create({
     ID: "mdl_system_menu",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     autoCacheAllData: true, // Son datos pequeños hay que evitar releer
     separateFolders: true,
     fields: [

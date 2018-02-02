@@ -12,6 +12,8 @@ isc.defineClass("RestDataSourceInsumosCostos", "RestDataSourceExt");
 isc.RestDataSourceInsumo.create({
     ID: "mdl_insumo_costos_historico_report",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

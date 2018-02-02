@@ -10,6 +10,8 @@ isc.RestDataSource.create({
     ID: "mdl_productodetalle",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {
             name: "producto_detalle_id",

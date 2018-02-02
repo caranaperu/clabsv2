@@ -9,6 +9,8 @@
 isc.RestDataSource.create({
     ID: "mdl_tipocliente",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     //cacheAllData: true, // Son datos pequeños hay que evitar releer
     fields: [
         {name: "tipo_cliente_codigo", title: 'Codigo', primaryKey: "true", required: true},

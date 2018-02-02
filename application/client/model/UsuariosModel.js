@@ -11,6 +11,8 @@ isc.defineClass("RestDataSourceUsuarios", "RestDataSourceExt");
 isc.RestDataSourceUsuarios.create({
     ID: "mdl_usuarios",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {name: "usuarios_id", primaryKey: "true"},

@@ -10,6 +10,8 @@ isc.RestDataSource.create({
     ID: "mdl_umconversion",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {name: "unidad_medida_conversion_id", primaryKey: "true", required: true},
         {name: "unidad_medida_origen", title:'U.M Origen',foreignKey: "mdl_unidadmedida.unidad_medida_codigo", required: true},

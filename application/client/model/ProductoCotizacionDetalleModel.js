@@ -12,6 +12,8 @@
 isc.RestDataSource.create({
     ID: "mdl_producto_cotizacion_detalle",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

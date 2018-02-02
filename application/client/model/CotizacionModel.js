@@ -13,6 +13,8 @@ isc.RestDataSourceCotizacion.create({
     ID: "mdl_cotizacion",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {name: "cotizacion_id", primaryKey: "true", required: true},
         {name: "empresa_id",foreignKey: "mdl_empresa.empresa_id", required: true},

@@ -10,6 +10,8 @@
 isc.RestDataSource.create({
     ID: "mdl_empresa",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     disableQueuing: true,
     fields: [
         {name: "empresa_id", title: "id", canEdit: "false", primaryKey: true,required: false},

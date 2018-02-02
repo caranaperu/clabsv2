@@ -10,6 +10,8 @@ isc.RestDataSource.create({
     ID: "mdl_cotizaciondetalle",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
    // dropExtraFields: true,
     fields: [
         {name: "cotizacion_detalle_id", primaryKey: "true", required: true},

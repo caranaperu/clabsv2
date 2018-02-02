@@ -15,6 +15,8 @@
 isc.RestDataSource.create({
     ID: "mdl_perfil_detalle",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
    // disableQueuing: true,
     //  cacheAllData : true, // Son datos pequeños hay que evitar releer
     fields: [

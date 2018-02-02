@@ -10,6 +10,8 @@
 isc.RestDataSource.create({
     ID: "mdl_insumo_costos_historico",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

@@ -11,6 +11,8 @@ isc.defineClass("RestDataSourceCliente", "RestDataSourceExt");
 
 isc.RestDataSourceCliente.create({
     ID: "mdl_cliente",
+    jsonPrefix: '',
+    jsonSuffix: '',
     dataFormat: "json",
   //  disableQueuing: true,
     fields: [

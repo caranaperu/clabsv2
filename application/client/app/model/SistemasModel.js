@@ -9,6 +9,8 @@
 isc.RestDataSource.create({
     ID: "mdl_sistemas",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     autoCacheAllData: true, // Son datos pequeños hay que evitar releer
     fields: [
         {name: "sys_systemcode", primaryKey: "true"},

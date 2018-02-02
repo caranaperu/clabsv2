@@ -11,6 +11,8 @@ isc.defineClass("RestDataSourceInsumo", "RestDataSourceExt");
 isc.RestDataSourceInsumo.create({
     ID: "mdl_insumo",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

@@ -12,6 +12,8 @@
 isc.RestDataSource.create({
     ID: "mdl_insumo_producto_detalle",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

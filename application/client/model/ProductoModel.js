@@ -11,6 +11,8 @@ isc.defineClass("RestDataSourceProducto", "RestDataSourceExt");
 isc.RestDataSourceProducto.create({
     ID: "mdl_producto",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {

@@ -14,6 +14,8 @@ isc.RestDataSource.create({
     ID: "mdl_usuario_perfil",
     showPrompt: true,
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     fields: [
         {name: "usuario_perfil_id", primaryKey: "true"},
         {name: "usuarios_id", required: true, hidden: true},

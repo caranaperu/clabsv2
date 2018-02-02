@@ -14,6 +14,8 @@
 isc.RestDataSource.create({
     ID: "mdl_cliente_cotizacion",
     dataFormat: "json",
+    jsonPrefix: '',
+    jsonSuffix: '',
     showPrompt: true,
     fields: [
         {name: "cliente_id", title: "Id",primaryKey: "true"},
